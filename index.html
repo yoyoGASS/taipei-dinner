@@ -419,9 +419,18 @@ canvas{width:100%;height:100%;display:block}
 .fortune-btn{position:fixed;bottom:clamp(14px,2.5vh,28px);left:clamp(14px,3vw,28px);z-index:10;
   font-family:var(--serif);font-size:10px;font-weight:400;letter-spacing:.2em;
   color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.12);
-  padding:6px 14px;cursor:pointer;transition:all .4s;
+  padding:6px 14px;cursor:pointer;transition:all .6s var(--ease);
   text-transform:uppercase;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .fortune-btn:hover{color:var(--accent);border-color:rgba(200,168,124,.25)}
+.fortune-btn.greedy{color:var(--accent);border-color:rgba(200,168,124,.25);
+  background:rgba(200,168,124,.04);
+  box-shadow:0 0 18px rgba(200,168,124,.08),0 0 6px rgba(255,240,200,.06);
+  animation:greedyGlow 3s ease-in-out infinite}
+@keyframes greedyGlow{
+  0%,100%{box-shadow:0 0 18px rgba(200,168,124,.08),0 0 6px rgba(255,240,200,.06);
+    border-color:rgba(200,168,124,.2)}
+  50%{box-shadow:0 0 28px rgba(200,168,124,.14),0 0 10px rgba(255,240,200,.1);
+    border-color:rgba(200,168,124,.35)}}
 @media(max-width:480px){
   .fortune-btn{font-size:13px;padding:10px 18px}
 }
@@ -1477,8 +1486,20 @@ function getFortuneState() {
 }
 function saveFortuneState() {
   localStorage.setItem(getFortuneDateKey(), JSON.stringify({ count: fortuneDraws.length, draws: fortuneDraws, bonus: fortuneBonusUsed }));
+  updateFortuneBtn();
 }
 let fortuneBonusUsed = false;
+
+function updateFortuneBtn() {
+  const btn = document.getElementById('fortuneBtn');
+  if (fortuneDraws.length >= FORTUNE_MAX) {
+    btn.textContent = '貪心鬼';
+    btn.classList.add('greedy');
+  } else {
+    btn.textContent = '抽食籤';
+    btn.classList.remove('greedy');
+  }
+}
 
 // Restore state on load
 (function restoreFortuneState() {
@@ -1488,6 +1509,7 @@ let fortuneBonusUsed = false;
     fortuneBonusUsed = !!s.bonus;
     usedCats = s.draws.map(d => d.cat);
   }
+  updateFortuneBtn();
 })();
 
 function pickRandomCat() {
