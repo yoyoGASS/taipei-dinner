@@ -223,13 +223,35 @@ canvas{width:100%;height:100%;display:block}
 .hist-item:hover,.hist-item:active{color:var(--accent);border-bottom-color:rgba(200,168,124,.3)}
 .hist-item+.hist-item::before{content:'\00B7';position:absolute;left:-10px;opacity:.3}
 
-/* ══ Edit ══ */
-.edit-btn{position:fixed;bottom:clamp(14px,2.5vh,28px);right:clamp(14px,3vw,28px);z-index:10;
-  font-family:var(--serif);font-size:10px;font-weight:400;letter-spacing:.2em;
-  color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.12);
-  padding:6px 14px;cursor:pointer;transition:all .4s;
-  text-transform:uppercase;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.edit-btn:hover{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.25)}
+/* ══ Neko Agent — 芋泥 ══ */
+.neko{position:fixed;bottom:12px;z-index:60;cursor:pointer;
+  transition:left 3s var(--ease),right 3s var(--ease);user-select:none;-webkit-user-select:none;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+.neko.walk-r{animation:nekoWalk .4s ease-in-out infinite}
+.neko.walk-l{animation:nekoWalk .4s ease-in-out infinite;transform:scaleX(-1)}
+.neko.idle{animation:nekoIdle 3s ease-in-out infinite}
+.neko.sleep{animation:nekoSleep 2s ease-in-out infinite;opacity:.7}
+@keyframes nekoWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes nekoIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(1deg)}}
+@keyframes nekoSleep{0%,100%{transform:scale(1)}50%{transform:scale(.97)}}
+.neko svg{width:56px;height:auto;display:block}
+.neko-blink .neko-eye-pupil{ry:0.5;transition:ry .15s}
+.neko-tail-wag{animation:tailWag 1s ease-in-out infinite}
+@keyframes tailWag{0%,100%{transform:rotate(0)}25%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}
+
+/* speech bubble */
+.neko-bubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  margin-bottom:8px;white-space:nowrap;
+  background:rgba(12,12,20,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border);border-radius:12px;
+  padding:8px 14px;font-family:var(--serif);font-size:clamp(11px,2.2vw,13px);
+  font-weight:300;color:var(--text);letter-spacing:.06em;
+  opacity:0;pointer-events:none;transition:opacity .4s,transform .4s var(--ease);
+  transform:translateX(-50%) translateY(6px);max-width:min(260px,70vw);white-space:normal;text-align:center;line-height:1.6}
+.neko-bubble.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.neko-bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:rgba(12,12,20,.88)}
+.neko-name{color:var(--accent);font-size:clamp(9px,1.8vw,10px);letter-spacing:.15em;display:block;margin-bottom:3px;font-weight:400}
 
 /* ══ Music Bar ══ */
 .music-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
@@ -246,38 +268,6 @@ canvas{width:100%;height:100%;display:block}
   padding:3px 8px;transition:color .3s}
 .music-bar-close:hover{color:var(--text2)}
 
-/* ══ Panel ══ */
-.overlay{position:fixed;inset:0;z-index:100;background:rgba(7,7,12,.9);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  opacity:0;pointer-events:none;transition:opacity .4s}
-.overlay.open{opacity:1;pointer-events:auto}
-.panel{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);
-  width:min(88vw,440px);max-height:72vh;padding:clamp(24px,4vw,36px);
-  transition:transform .5s var(--ease),opacity .4s;opacity:0}
-.overlay.open .panel{transform:translate(-50%,-50%);opacity:1}
-.panel-title{font-size:clamp(16px,2.5vw,18px);font-weight:200;letter-spacing:.2em;
-  color:var(--accent);margin-bottom:20px;text-align:center}
-.panel-row{display:flex;gap:8px;margin-bottom:14px}
-.panel-input{flex:1;font-family:var(--serif);font-size:12px;font-weight:300;
-  color:var(--text);background:rgba(255,255,255,.02);border:1px solid var(--border);
-  padding:8px 12px;outline:none;letter-spacing:.04em;transition:border-color .3s}
-.panel-input::placeholder{color:var(--text3)}
-.panel-input:focus{border-color:rgba(200,168,124,.25)}
-.panel-add{font-family:var(--serif);font-size:11px;color:var(--accent);background:none;
-  border:1px solid rgba(200,168,124,.15);padding:8px 14px;cursor:pointer;
-  letter-spacing:.12em;transition:all .3s;white-space:nowrap}
-.panel-add:hover{border-color:rgba(200,168,124,.3)}
-.panel-list{max-height:35vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--text3) transparent}
-.panel-item{display:flex;justify-content:space-between;align-items:center;padding:8px 2px;
-  border-bottom:1px solid var(--border);font-size:11px;font-weight:300;letter-spacing:.04em}
-.panel-item .cl{color:var(--accent-dim);font-size:9px;margin-left:8px;letter-spacing:.1em}
-.panel-rm{font-family:var(--serif);font-size:9px;color:var(--text3);background:none;
-  border:none;cursor:pointer;padding:3px 6px;transition:color .3s}
-.panel-rm:hover{color:#c47a7a}
-.panel-close{display:block;margin:18px auto 0;font-family:var(--serif);font-size:10px;
-  font-weight:300;color:var(--text2);background:none;border:none;cursor:pointer;
-  letter-spacing:.2em;transition:color .3s}
-.panel-close:hover{color:var(--text)}
 
 @keyframes fu{to{opacity:1;transform:translateY(0)}}
 .cats,.wheel-wrap,.spin-area{transform:translateY(10px)}
@@ -413,14 +403,8 @@ canvas{width:100%;height:100%;display:block}
   .history{bottom:10px}
   .hist-label{font-size:12px}
   .hist-item{font-size:14px}
-  .edit-btn{font-size:13px;padding:10px 18px}
-  .panel-input{font-size:16px;padding:12px 14px}
-  .panel-add{font-size:15px;padding:12px 18px}
-  .panel-item{padding:14px 4px;font-size:15px}
-  .panel-item .cl{font-size:12px}
-  .panel-rm{font-size:13px;padding:8px 12px}
-  .panel-close{font-size:14px;padding:8px}
-  .panel-title{font-size:20px}
+  .neko svg{width:48px}
+  .neko-bubble{font-size:12px;padding:7px 12px}
   .pointer{border-left-width:8px;border-right-width:8px;border-top-width:20px;top:-4px}
 }
 @media(max-width:380px){
@@ -660,8 +644,57 @@ canvas{width:100%;height:100%;display:block}
   <div class="hist-label" id="histLabel">今晚的軌跡</div>
   <div class="hist-items" id="histItems"></div>
 </div>
-<button class="edit-btn" id="editBtn">編輯菜單</button>
 <button class="fortune-btn" id="fortuneBtn">抽食籤</button>
+
+<!-- ══ 芋泥 — Neko Agent ══ -->
+<div class="neko idle" id="neko" style="left:30px">
+  <div class="neko-bubble" id="nekoBubble">
+    <span class="neko-name">芋泥</span>
+    <span id="nekoText"></span>
+  </div>
+  <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <!-- body -->
+    <ellipse cx="40" cy="60" rx="18" ry="14" fill="#c0b8b0"/>
+    <ellipse cx="40" cy="63" rx="12" ry="9" fill="#ddd8d4"/>
+    <!-- tail -->
+    <path d="M58 56 Q70 46 66 36" stroke="#c0b8b0" stroke-width="5" fill="none" stroke-linecap="round" class="neko-tail"/>
+    <!-- head -->
+    <circle cx="40" cy="30" r="20" fill="#ccc5bc"/>
+    <!-- cheek fluff -->
+    <circle cx="24" cy="36" r="6" fill="#d8d0c8" opacity=".5"/>
+    <circle cx="56" cy="36" r="6" fill="#d8d0c8" opacity=".5"/>
+    <!-- ear L (folded Scottish Fold) -->
+    <ellipse cx="25" cy="16" rx="7" ry="5.5" fill="#c0b8b0" transform="rotate(-15 25 16)"/>
+    <ellipse cx="25" cy="16" rx="4" ry="3" fill="#d4a0a0" transform="rotate(-15 25 16)"/>
+    <!-- ear R (folded) -->
+    <ellipse cx="55" cy="16" rx="7" ry="5.5" fill="#c0b8b0" transform="rotate(15 55 16)"/>
+    <ellipse cx="55" cy="16" rx="4" ry="3" fill="#d4a0a0" transform="rotate(15 55 16)"/>
+    <!-- eye L -->
+    <circle cx="32" cy="28" r="5.5" fill="#d4a84a"/>
+    <circle cx="32" cy="28" r="4" fill="#b88c30"/>
+    <ellipse class="neko-eye-pupil" cx="32" cy="28" rx="2.5" ry="2.5" fill="#1a1a1a"/>
+    <circle cx="30.5" cy="26.5" r="1.3" fill="#fff" opacity=".85"/>
+    <!-- eye R -->
+    <circle cx="48" cy="28" r="5.5" fill="#d4a84a"/>
+    <circle cx="48" cy="28" r="4" fill="#b88c30"/>
+    <ellipse class="neko-eye-pupil" cx="48" cy="28" rx="2.5" ry="2.5" fill="#1a1a1a"/>
+    <circle cx="46.5" cy="26.5" r="1.3" fill="#fff" opacity=".85"/>
+    <!-- nose -->
+    <ellipse cx="40" cy="35" rx="2.2" ry="1.6" fill="#e0a0a0"/>
+    <!-- mouth -->
+    <path d="M37 37.5 Q40 40 43 37.5" fill="none" stroke="#b8a8a0" stroke-width=".7"/>
+    <!-- whiskers -->
+    <g opacity=".35" stroke="#e0d8d0" stroke-width=".5">
+      <line x1="14" y1="33" x2="27" y2="34"/>
+      <line x1="14" y1="37" x2="27" y2="37"/>
+      <line x1="53" y1="34" x2="66" y2="33"/>
+      <line x1="53" y1="37" x2="66" y2="37"/>
+    </g>
+    <!-- front paws -->
+    <ellipse cx="32" cy="72" rx="6" ry="3.5" fill="#ccc5bc"/>
+    <ellipse cx="48" cy="72" rx="6" ry="3.5" fill="#ccc5bc"/>
+  </svg>
+</div>
 
 <!-- ══ Fortune Panel ══ -->
 <div class="fortune-overlay" id="fortuneOverlay">
@@ -703,18 +736,6 @@ canvas{width:100%;height:100%;display:block}
   </div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="panel">
-    <div class="panel-title">編輯菜單</div>
-    <div class="panel-row">
-      <input class="panel-input" id="pInput" type="text" placeholder="菜色名稱">
-      <select class="panel-input" id="pCat" style="flex:.55"></select>
-      <button class="panel-add" id="pAdd">加入</button>
-    </div>
-    <div class="panel-list" id="pList"></div>
-    <button class="panel-close" id="pClose">關閉</button>
-  </div>
-</div>
 
 <script>
 /* ══════════════════════════════════════
@@ -809,13 +830,6 @@ const spinBtn = document.getElementById('spinBtn');
 const musicBtn = document.getElementById('musicBtn');
 const histLabel = document.getElementById('histLabel');
 const histItems = document.getElementById('histItems');
-const editBtn = document.getElementById('editBtn');
-const overlay = document.getElementById('overlay');
-const pList = document.getElementById('pList');
-const pInput = document.getElementById('pInput');
-const pCat = document.getElementById('pCat');
-const pAdd = document.getElementById('pAdd');
-const pClose = document.getElementById('pClose');
 const musicBar = document.getElementById('musicBar');
 const ytFrame = document.getElementById('ytFrame');
 const musicBarClose = document.getElementById('musicBarClose');
@@ -1162,29 +1176,183 @@ function renderHistory() {
 }
 
 /* ══════════════════════════════════════
-   Edit Panel
+   芋泥 — Neko Agent 🐱
    ══════════════════════════════════════ */
-function renderPanel() {
-  pCat.innerHTML = '';
-  Object.keys(menuData).forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; pCat.appendChild(o); });
-  pList.innerHTML = '';
-  Object.entries(menuData).forEach(([cat, items]) => {
-    items.forEach(item => {
-      const d = document.createElement('div'); d.className = 'panel-item';
-      d.innerHTML = `<span>${item}<span class="cl">${cat}</span></span><button class="panel-rm" data-c="${cat}" data-i="${item}">移除</button>`;
-      pList.appendChild(d);
-    });
+(function initNeko() {
+  const neko = document.getElementById('neko');
+  const bubble = document.getElementById('nekoBubble');
+  const nekoText = document.getElementById('nekoText');
+  const pupils = neko.querySelectorAll('.neko-eye-pupil');
+  const tail = neko.querySelector('.neko-tail');
+
+  const OWNER = '悠悠';
+  const W = () => window.innerWidth - 70;
+  let nekoX = 30;
+  let state = 'idle';
+  let bubbleTimer = null;
+  let stateTimer = null;
+  let blinkInterval = null;
+
+  /* ── Dialogue ── */
+  const hour = new Date().getHours();
+  const isLate = hour >= 22 || hour < 5;
+  const isEvening = hour >= 17 && hour < 22;
+
+  const GREETINGS = [
+    `${OWNER}～今晚想吃什麼呀？`,
+    `喵！${OWNER}來啦～`,
+    `${OWNER}～芋泥等你好久了！`,
+    `哼哼，${OWNER}終於想到要吃飯了`,
+  ];
+  const IDLE_CHAT = [
+    '（歪頭）…你在想什麼？',
+    '（舔毛中）…不要看我',
+    '（伸懶腰～）呼——',
+    '肚子好餓…有小魚乾嗎',
+    '芋泥覺得…今晚適合吃鍋',
+    '你有沒有聞到？好像有東西很香',
+    '轉輪盤！讓命運幫你決定～',
+    '摺耳貓的第六感告訴我…今晚會很好吃',
+    '（搖尾巴）嘿嘿',
+    '不知道吃什麼的話…問我呀',
+    '抽個食籤看看命運怎麼說～',
+    '（踏踏踏）芋泥在巡邏',
+    '…我剛剛好像看到一隻老鼠',
+    '要不要試試看新的餐廳？',
+    '（打呵欠）但是一聞到食物就精神了',
+    '芋泥推薦：跟著鼻子走就對了',
+    '（蹭蹭你的腳）…陪我玩',
+  ];
+  const FOOD_TIPS = [
+    '今晚的氣溫適合吃火鍋喔！',
+    '日式料理的職人精神…芋泥很佩服',
+    '韓式烤肉配燒酒，芋泥也想要一口',
+    '台式小吃的靈魂在巷弄裡',
+    '西式牛排配紅酒…好大人的感覺',
+    '東南亞的酸辣，能把味蕾叫醒',
+    '熱炒配啤酒才是台北的夜晚嘛',
+    '麵食是療癒系食物第一名',
+  ];
+  const LATE_NIGHT = [
+    `${OWNER}…這麼晚還不睡？`,
+    '深夜的食物都是零卡路里的喵',
+    '（揉眼睛）芋泥有點睏了…',
+    '月亮出來了…適合吃宵夜',
+  ];
+  const CLICK_REACT = [
+    '喵！不要突然戳我啦',
+    '（翻肚）…只有你可以摸',
+    '嗯？叫我有什麼事？',
+    '（咕嚕咕嚕）…好舒服',
+    '再戳一次試試看？',
+    '芋泥在呢～怎麼了？',
+    '（瞇眼）…你的手好溫暖',
+    `${OWNER}想我了嗎？`,
+  ];
+
+  function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function say(text, duration) {
+    duration = duration || 4000;
+    nekoText.textContent = text;
+    bubble.classList.add('show');
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), duration);
+  }
+
+  /* ── Blink ── */
+  function blink() {
+    pupils.forEach(p => { p.setAttribute('ry', '0.5'); });
+    setTimeout(() => { pupils.forEach(p => { p.setAttribute('ry', '2.5'); }); }, 150);
+  }
+  blinkInterval = setInterval(() => {
+    if (state !== 'sleep' && Math.random() < 0.4) blink();
+  }, 2800);
+
+  /* ── Tail wag ── */
+  function wagTail() {
+    tail.style.transformOrigin = '58px 56px';
+    tail.classList.add('neko-tail-wag');
+    setTimeout(() => tail.classList.remove('neko-tail-wag'), 2000);
+  }
+
+  /* ── Movement ── */
+  function walkTo(targetX, cb) {
+    const dir = targetX > nekoX ? 'walk-r' : 'walk-l';
+    neko.className = 'neko ' + dir;
+    neko.style.left = targetX + 'px';
+    nekoX = targetX;
+    const dist = Math.abs(targetX - nekoX);
+    const dur = Math.max(2000, Math.min(4000, dist * 8));
+    neko.style.transition = `left ${dur}ms var(--ease)`;
+    setTimeout(() => {
+      neko.className = 'neko idle';
+      neko.style.transition = 'left 3s var(--ease)';
+      if (cb) cb();
+    }, dur);
+  }
+
+  /* ── State machine ── */
+  function nextState() {
+    clearTimeout(stateTimer);
+    const r = Math.random();
+
+    if (r < 0.35) {
+      // walk to random position
+      const target = Math.floor(Math.random() * W());
+      walkTo(target, () => {
+        if (Math.random() < 0.3) {
+          say(pickRandom(IDLE_CHAT));
+          wagTail();
+        }
+        stateTimer = setTimeout(nextState, 3000 + Math.random() * 5000);
+      });
+    } else if (r < 0.6) {
+      // idle with occasional chat
+      neko.className = 'neko idle';
+      state = 'idle';
+      if (Math.random() < 0.35) {
+        const pool = isLate ? LATE_NIGHT : (Math.random() < 0.4 ? FOOD_TIPS : IDLE_CHAT);
+        say(pickRandom(pool));
+        wagTail();
+      }
+      stateTimer = setTimeout(nextState, 5000 + Math.random() * 6000);
+    } else if (r < 0.8 && isLate) {
+      // sleep
+      neko.className = 'neko sleep';
+      state = 'sleep';
+      stateTimer = setTimeout(nextState, 8000 + Math.random() * 10000);
+    } else {
+      // just chill
+      neko.className = 'neko idle';
+      state = 'idle';
+      stateTimer = setTimeout(nextState, 4000 + Math.random() * 4000);
+    }
+  }
+
+  /* ── Click interaction ── */
+  neko.addEventListener('click', (e) => {
+    e.stopPropagation();
+    wagTail();
+    blink();
+    say(pickRandom(CLICK_REACT), 3500);
+    if (typeof _track === 'function') _track('neko_click');
   });
-  pList.querySelectorAll('.panel-rm').forEach(b => {
-    b.onclick = () => { menuData[b.dataset.c] = (menuData[b.dataset.c]||[]).filter(x => x !== b.dataset.i); if (!menuData[b.dataset.c]?.length) delete menuData[b.dataset.c]; saveMenu(); renderPanel(); renderCats(); refreshWheel(); };
-  });
-}
-function addItem() { const name = pInput.value.trim(); const cat = pCat.value; if (!name || !cat) return; if (!menuData[cat]) menuData[cat] = []; if (!menuData[cat].includes(name)) { menuData[cat].push(name); saveMenu(); renderPanel(); renderCats(); refreshWheel(); } pInput.value = ''; }
-editBtn.onclick = () => { renderPanel(); overlay.classList.add('open'); };
-pClose.onclick = () => overlay.classList.remove('open');
-overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove('open'); };
-pAdd.onclick = addItem;
-pInput.onkeydown = e => { if (e.key === 'Enter') addItem(); };
+
+  /* ── Init ── */
+  // Greeting on first appear (delayed so entrance animation can play)
+  setTimeout(() => {
+    say(pickRandom(GREETINGS), 5000);
+    wagTail();
+  }, 2500);
+
+  // Start behavior loop
+  stateTimer = setTimeout(nextState, 8000);
+
+  // Position randomly on load
+  nekoX = Math.floor(Math.random() * W());
+  neko.style.left = nekoX + 'px';
+})();
 
 /* ══════════════════════════════════════
    Restaurant Recommendations (Google Reviews)
@@ -1433,7 +1601,6 @@ let lastWinnerCat = '';
 centerCircle.onclick = () => { if (lastWinnerCat && !spinning) showRecs(lastWinnerCat); };
 document.addEventListener('keydown', e => {
   if (recsOverlay.classList.contains('open')) { if (e.key === 'Escape') hideRecs(); return; }
-  if (overlay.classList.contains('open')) { if (e.key === 'Escape') overlay.classList.remove('open'); return; }
   if (e.key === ' ') { e.preventDefault(); spin(); }
   if (e.key === 'm' || e.key === 'M') toggleMusic();
 });
