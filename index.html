@@ -258,16 +258,23 @@ canvas{width:100%;height:100%;display:block}
   color:var(--text2);margin-top:4px}
 .recs-list{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
 .rec-card{background:rgba(18,18,28,.5);border:1px solid rgba(200,168,124,.06);
-  padding:clamp(14px,2vw,18px) clamp(16px,2.5vw,22px);
+  padding:0;display:flex;gap:0;
   transition:all .5s var(--ease);cursor:pointer;
   opacity:0;transform:translateY(24px);
   position:relative;overflow:hidden}
 .rec-card.show{opacity:1;transform:translateY(0)}
 .rec-card::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(200,168,124,.04) 0%,transparent 50%);pointer-events:none}
+  background:linear-gradient(135deg,rgba(200,168,124,.04) 0%,transparent 50%);pointer-events:none;z-index:1}
 .rec-card:active{transform:scale(.97);border-color:rgba(200,168,124,.2);
   background:rgba(18,18,28,.7)}
-.rec-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.rec-img{width:clamp(72px,18vw,96px);flex-shrink:0;position:relative;overflow:hidden}
+.rec-img img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:brightness(.8) saturate(1.2);transition:all .5s var(--ease)}
+.rec-card:active .rec-img img{filter:brightness(.9) saturate(1.3);transform:scale(1.05)}
+.rec-img::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 60%,rgba(18,18,28,.8) 100%)}
+.rec-body{flex:1;padding:clamp(12px,2vw,16px) clamp(14px,2vw,18px);position:relative;z-index:1}
+.rec-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
 .rec-name{font-size:clamp(15px,2.2vw,17px);font-weight:500;color:var(--text);
   letter-spacing:.03em;line-height:1.3}
 .rec-score-badge{font-size:clamp(13px,1.8vw,15px);font-weight:600;color:var(--accent);
@@ -867,49 +874,49 @@ pInput.onkeydown = e => { if (e.key === 'Enter') addItem(); };
    ══════════════════════════════════════ */
 const RESTAURANTS = {
   '台式':[
-    {name:'茂園餐廳',stars:4.3,desc:'米其林必比登・50年老字號台菜',reviews:'3000+',price:'$400–800',area:'中正區'},
-    {name:'雙月食品社',stars:4.5,desc:'連續多年米其林必比登推薦',reviews:'2000+',price:'$300–600',area:'大安區'},
-    {name:'駱記小炒',stars:4.4,desc:'米其林必比登・道地台式熱炒',reviews:'1500+',price:'$200–500',area:'中山區'},
-    {name:'金山大碗螃蟹',stars:4.5,desc:'海鮮粥・霸氣份量',reviews:'800+',price:'$300–700',area:'萬里區'},
+    {name:'茂園餐廳',stars:4.3,desc:'米其林必比登・50年老字號台菜',reviews:'3000+',price:'$400–800',area:'中正區',img:'https://images.unsplash.com/photo-1583032015879-e5022cb87c3b?w=300&h=300&fit=crop&q=80'},
+    {name:'雙月食品社',stars:4.5,desc:'連續多年米其林必比登推薦',reviews:'2000+',price:'$300–600',area:'大安區',img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80'},
+    {name:'駱記小炒',stars:4.4,desc:'米其林必比登・道地台式熱炒',reviews:'1500+',price:'$200–500',area:'中山區',img:'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&h=300&fit=crop&q=80'},
+    {name:'金山大碗螃蟹',stars:4.5,desc:'海鮮粥・霸氣份量',reviews:'800+',price:'$300–700',area:'萬里區',img:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=300&fit=crop&q=80'},
   ],
   '日式':[
-    {name:'大村武串燒居酒屋',stars:4.8,desc:'百年老屋・居酒屋傳奇',reviews:'9000+',price:'$400–800',area:'萬華區'},
-    {name:'鮨荻 sushi ogi',stars:4.8,desc:'全預約制・日本空運頂級漁獲',reviews:'500+',price:'$2000–4000',area:'中山區'},
-    {name:'忻鮨壽司割烹',stars:4.7,desc:'無菜單日料 17道 $1480',reviews:'600+',price:'$1480–2500',area:'萬華區'},
-    {name:'麵屋武藏神山',stars:4.3,desc:'大塊叉燒濃郁豚骨拉麵',reviews:'2000+',price:'$250–400',area:'中山區'},
+    {name:'大村武串燒居酒屋',stars:4.8,desc:'百年老屋・居酒屋傳奇',reviews:'9000+',price:'$400–800',area:'萬華區',img:'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=300&h=300&fit=crop&q=80'},
+    {name:'鮨荻 sushi ogi',stars:4.8,desc:'全預約制・日本空運頂級漁獲',reviews:'500+',price:'$2000–4000',area:'中山區',img:'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=300&h=300&fit=crop&q=80'},
+    {name:'忻鮨壽司割烹',stars:4.7,desc:'無菜單日料 17道 $1480',reviews:'600+',price:'$1480–2500',area:'萬華區',img:'https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop&q=80'},
+    {name:'麵屋武藏神山',stars:4.3,desc:'大塊叉燒濃郁豚骨拉麵',reviews:'2000+',price:'$250–400',area:'中山區',img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop&q=80'},
   ],
   '韓式':[
-    {name:'梨谷韓式料理烤肉',stars:4.9,desc:'ATT店・頂級韓式烤肉體驗',reviews:'3200+',price:'$600–1200',area:'信義區'},
-    {name:'梨泰院',stars:4.7,desc:'道地韓式料理・隱藏名店',reviews:'1000+',price:'$300–600',area:'大安區'},
-    {name:'新村站著吃烤肉',stars:4.5,desc:'首爾60年老店海外首店',reviews:'6300+',price:'$500–900',area:'信義區'},
-    {name:'GG季吉韓國美食',stars:4.5,desc:'部隊鍋・馬鈴薯排骨湯必點',reviews:'2000+',price:'$300–600',area:'松山區'},
+    {name:'梨谷韓式料理烤肉',stars:4.9,desc:'ATT店・頂級韓式烤肉體驗',reviews:'3200+',price:'$600–1200',area:'信義區',img:'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=300&h=300&fit=crop&q=80'},
+    {name:'梨泰院',stars:4.7,desc:'道地韓式料理・隱藏名店',reviews:'1000+',price:'$300–600',area:'大安區',img:'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=300&h=300&fit=crop&q=80'},
+    {name:'新村站著吃烤肉',stars:4.5,desc:'首爾60年老店海外首店',reviews:'6300+',price:'$500–900',area:'信義區',img:'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=300&h=300&fit=crop&q=80'},
+    {name:'GG季吉韓國美食',stars:4.5,desc:'部隊鍋・馬鈴薯排骨湯必點',reviews:'2000+',price:'$300–600',area:'松山區',img:'https://images.unsplash.com/photo-1534256958597-7fe685cbd745?w=300&h=300&fit=crop&q=80'},
   ],
   '火鍋':[
-    {name:'武鶴和牛火鍋',stars:4.6,desc:'A5和牛吃到飽',reviews:'1500+',price:'$1380–2000',area:'中山區'},
-    {name:'巴適經典麻辣鍋',stars:4.5,desc:'麻辣鍋吃到飽霸主',reviews:'3000+',price:'$600–900',area:'林口區'},
-    {name:'橋山壽喜燒',stars:4.5,desc:'宮崎A5和牛壽喜燒・精品桌邊服務',reviews:'1200+',price:'$1200–2500',area:'大安區'},
-    {name:'辛殿麻辣鍋',stars:4.3,desc:'鴨血豆腐必點',reviews:'4000+',price:'$568–800',area:'多店'},
+    {name:'武鶴和牛火鍋',stars:4.6,desc:'A5和牛吃到飽',reviews:'1500+',price:'$1380–2000',area:'中山區',img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80'},
+    {name:'巴適經典麻辣鍋',stars:4.5,desc:'麻辣鍋吃到飽霸主',reviews:'3000+',price:'$600–900',area:'林口區',img:'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&h=300&fit=crop&q=80'},
+    {name:'橋山壽喜燒',stars:4.5,desc:'宮崎A5和牛壽喜燒・精品桌邊服務',reviews:'1200+',price:'$1200–2500',area:'大安區',img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80'},
+    {name:'辛殿麻辣鍋',stars:4.3,desc:'鴨血豆腐必點',reviews:'4000+',price:'$568–800',area:'多店',img:'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=300&h=300&fit=crop&q=80'},
   ],
   '西式':[
-    {name:'Range餐酒館',stars:4.8,desc:'Prime肋眼牛排・氛圍滿分',reviews:'3000+',price:'$800–1800',area:'大安區'},
-    {name:'Leone Restaurant',stars:4.7,desc:'中西融合創意料理',reviews:'1200+',price:'$600–1500',area:'中山區'},
-    {name:'茱莉金牛排餐酒館',stars:4.5,desc:'松露蕈菇燉飯・約會首選',reviews:'1400+',price:'$500–1200',area:'大安區'},
-    {name:'GMT義大利餐廳',stars:4.4,desc:'美福大飯店・義籍主廚坐鎮',reviews:'1000+',price:'$1500–3000',area:'中山區'},
+    {name:'Range餐酒館',stars:4.8,desc:'Prime肋眼牛排・氛圍滿分',reviews:'3000+',price:'$800–1800',area:'大安區',img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=300&fit=crop&q=80'},
+    {name:'Leone Restaurant',stars:4.7,desc:'中西融合創意料理',reviews:'1200+',price:'$600–1500',area:'中山區',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop&q=80'},
+    {name:'茱莉金牛排餐酒館',stars:4.5,desc:'松露蕈菇燉飯・約會首選',reviews:'1400+',price:'$500–1200',area:'大安區',img:'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&h=300&fit=crop&q=80'},
+    {name:'GMT義大利餐廳',stars:4.4,desc:'美福大飯店・義籍主廚坐鎮',reviews:'1000+',price:'$1500–3000',area:'中山區',img:'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=300&h=300&fit=crop&q=80'},
   ],
   '熱炒':[
-    {name:'駱記小炒',stars:4.4,desc:'米其林必比登推薦熱炒',reviews:'1500+',price:'$200–500',area:'中山區'},
-    {name:'阿才的店',stars:4.2,desc:'台味十足老字號',reviews:'800+',price:'$200–400',area:'大安區'},
-    {name:'松竹園',stars:4.3,desc:'米其林必比登・土雞野菜',reviews:'900+',price:'$300–700',area:'士林區'},
+    {name:'駱記小炒',stars:4.4,desc:'米其林必比登推薦熱炒',reviews:'1500+',price:'$200–500',area:'中山區',img:'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&h=300&fit=crop&q=80'},
+    {name:'阿才的店',stars:4.2,desc:'台味十足老字號',reviews:'800+',price:'$200–400',area:'大安區',img:'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&h=300&fit=crop&q=80'},
+    {name:'松竹園',stars:4.3,desc:'米其林必比登・土雞野菜',reviews:'900+',price:'$300–700',area:'士林區',img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80'},
   ],
   '麵食':[
-    {name:'林東芳牛肉麵',stars:4.3,desc:'米其林推薦・清燉牛肉麵經典',reviews:'5000+',price:'$200–350',area:'中山區'},
-    {name:'永康牛肉麵',stars:4.0,desc:'經典紅燒半筋半肉',reviews:'8000+',price:'$220–350',area:'大安區'},
-    {name:'老王記牛肉麵',stars:4.2,desc:'金華街・濃郁紅燒湯頭',reviews:'1500+',price:'$180–300',area:'大安區'},
+    {name:'林東芳牛肉麵',stars:4.3,desc:'米其林推薦・清燉牛肉麵經典',reviews:'5000+',price:'$200–350',area:'中山區',img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop&q=80'},
+    {name:'永康牛肉麵',stars:4.0,desc:'經典紅燒半筋半肉',reviews:'8000+',price:'$220–350',area:'大安區',img:'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=300&h=300&fit=crop&q=80'},
+    {name:'老王記牛肉麵',stars:4.2,desc:'金華街・濃郁紅燒湯頭',reviews:'1500+',price:'$180–300',area:'大安區',img:'https://images.unsplash.com/photo-1555126634-323283e090fa?w=300&h=300&fit=crop&q=80'},
   ],
   '東南亞':[
-    {name:'ABV南洋餐酒館',stars:4.5,desc:'東南亞九國多元料理',reviews:'2000+',price:'$400–800',area:'大安區'},
-    {name:'心泰原創泰國料理',stars:4.4,desc:'正宗泰北風味',reviews:'1200+',price:'$300–600',area:'大安區'},
-    {name:'雲南小鎮泰緬料理',stars:4.1,desc:'泰緬吃到飽',reviews:'800+',price:'$450–650',area:'大安區'},
+    {name:'ABV南洋餐酒館',stars:4.5,desc:'東南亞九國多元料理',reviews:'2000+',price:'$400–800',area:'大安區',img:'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=300&h=300&fit=crop&q=80'},
+    {name:'心泰原創泰國料理',stars:4.4,desc:'正宗泰北風味',reviews:'1200+',price:'$300–600',area:'大安區',img:'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=300&h=300&fit=crop&q=80'},
+    {name:'雲南小鎮泰緬料理',stars:4.1,desc:'泰緬吃到飽',reviews:'800+',price:'$450–650',area:'大安區',img:'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop&q=80'},
   ],
 };
 
@@ -940,16 +947,19 @@ function showRecs(cat) {
     const card = document.createElement('div');
     card.className = 'rec-card';
     card.innerHTML = `
-      <div class="rec-top">
-        <span class="rec-name">${r.name}</span>
-        <span class="rec-score-badge">${r.stars}</span>
-      </div>
-      <div class="rec-stars">${renderStarsSvg(r.stars)}<span class="rec-reviews">${r.reviews} 則評論</span></div>
-      <div class="rec-info">
-        <span class="rec-price">${r.price}</span>
-        <span class="rec-area">${r.area}</span>
-      </div>
-      <div class="rec-desc">${r.desc}</div>`;
+      <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy"></div>
+      <div class="rec-body">
+        <div class="rec-top">
+          <span class="rec-name">${r.name}</span>
+          <span class="rec-score-badge">${r.stars}</span>
+        </div>
+        <div class="rec-stars">${renderStarsSvg(r.stars)}<span class="rec-reviews">${r.reviews} 則評論</span></div>
+        <div class="rec-info">
+          <span class="rec-price">${r.price}</span>
+          <span class="rec-area">${r.area}</span>
+        </div>
+        <div class="rec-desc">${r.desc}</div>
+      </div>`;
     recsList.appendChild(card);
     // Staggered entrance
     setTimeout(() => card.classList.add('show'), 80 + i * 100);
