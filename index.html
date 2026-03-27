@@ -647,9 +647,6 @@ canvas{width:100%;height:100%;display:block}
 </head>
 <body>
 
-<!-- YouTube Player (hidden, audio only) -->
-<div id="ytPlayerHost" style="position:fixed;top:-10px;left:-10px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1"></div>
-
 <!-- ══ Entry Screen ══ -->
 <div class="entry" id="entry" onclick="enterApp()">
   <div class="entry-bg" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&h=900&fit=crop&q=80')"></div>
@@ -2268,60 +2265,20 @@ recsOverlay.onclick = e => { if (e.target === recsOverlay) hideRecs(); };
 /* ══════════════════════════════════════
    Music
    ══════════════════════════════════════ */
-/* ══ Music — YouTube IFrame API ══ */
+/* ══ Music — Local MP3 (HTML5 Audio) ══ */
 let musicOn = false;
-let ytPlayer = null;
-let ytReady = false;
-let ytPendingPlay = false;
-
-/* Load YouTube IFrame API */
-(function() {
-  const tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
-})();
-
-function onYouTubeIframeAPIReady() {
-  ytPlayer = new YT.Player('ytPlayerHost', {
-    height: '1', width: '1',
-    videoId: 'SmpbY2VIbj0',
-    playerVars: {
-      autoplay: 0,
-      loop: 1,
-      playlist: 'SmpbY2VIbj0',
-      controls: 0,
-      disablekb: 1,
-      fs: 0,
-      modestbranding: 1,
-      playsinline: 1,
-      rel: 0
-    },
-    events: {
-      onReady: function() {
-        ytReady = true;
-        ytPlayer.setVolume(60);
-        if (ytPendingPlay) { ytPlayer.playVideo(); ytPendingPlay = false; }
-      },
-      onStateChange: function(e) {
-        /* If ended, replay (backup for loop) */
-        if (e.data === YT.PlayerState.ENDED) ytPlayer.playVideo();
-      }
-    }
-  });
-}
+const bgmAudio = new Audio('bgm.mp3');
+bgmAudio.loop = true;
+bgmAudio.volume = 0.6;
 
 function startMusic() {
-  if (ytReady && ytPlayer) {
-    ytPlayer.playVideo();
-  } else {
-    ytPendingPlay = true;
-  }
+  bgmAudio.play();
   musicOn = true;
   musicBtn.classList.add('on');
 }
 
 function stopMusic() {
-  if (ytReady && ytPlayer) ytPlayer.pauseVideo();
+  bgmAudio.pause();
   musicOn = false;
   musicBtn.classList.remove('on');
 }
