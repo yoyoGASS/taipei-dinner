@@ -224,22 +224,33 @@ canvas{width:100%;height:100%;display:block}
 .hist-item+.hist-item::before{content:'\00B7';position:absolute;left:-10px;opacity:.3}
 
 /* ══ Neko Agent — 比特幣 ══ */
-.neko{position:fixed;bottom:0;left:0;z-index:60;cursor:pointer;
+.neko{position:fixed;top:0;left:0;z-index:60;cursor:pointer;
   user-select:none;-webkit-user-select:none;will-change:transform;pointer-events:auto}
-.neko-body{position:relative;pointer-events:auto}
+.neko-body{position:relative;pointer-events:auto;transition:transform .1s}
 .neko-sprite{width:clamp(56px,10vw,72px);height:clamp(56px,10vw,72px);border-radius:46% 46% 40% 40%;
   overflow:hidden;position:relative;
   box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 40px rgba(200,168,124,.06);
-  transition:box-shadow .3s}
+  transition:box-shadow .3s,transform .2s}
 .neko:hover .neko-sprite{box-shadow:0 4px 24px rgba(0,0,0,.6),0 0 50px rgba(200,168,124,.12)}
 .neko-sprite img{width:115%;height:115%;object-fit:cover;object-position:center 18%;
   margin:-4% 0 0 -7.5%;pointer-events:none;display:block;
   filter:brightness(.95) contrast(1.05) saturate(1.1)}
+/* eyelids */
+.neko-eyelids{position:absolute;top:28%;left:15%;right:15%;height:18%;z-index:2;
+  pointer-events:none;display:flex;gap:24%;opacity:0;transition:opacity .06s}
+.neko-eyelid{flex:1;background:rgba(170,160,148,.88);border-radius:0 0 50% 50%}
+/* tail */
+.neko-tail{position:absolute;bottom:2px;right:-16px;width:26px;height:16px;pointer-events:none;
+  opacity:0;transition:opacity .5s ease}
+.neko-tail::before{content:'';position:absolute;bottom:0;right:0;width:22px;height:12px;
+  border:2.5px solid rgba(175,165,155,.55);border-top:none;border-left:none;
+  border-radius:0 0 60% 0;transform-origin:left bottom;animation:tailWag 1.8s ease-in-out infinite}
+@keyframes tailWag{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(18deg)}}
 .neko-shadow{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
   width:60%;height:8px;background:radial-gradient(ellipse,rgba(0,0,0,.35) 0%,transparent 70%);
   border-radius:50%;pointer-events:none;transition:all .2s}
 /* paw prints */
-.neko-paw{position:fixed;bottom:6px;width:8px;height:8px;border-radius:50%;
+.neko-paw{position:fixed;width:8px;height:8px;border-radius:50%;
   background:rgba(200,168,124,.08);pointer-events:none;z-index:59;
   animation:pawFade 1.5s ease-out forwards}
 @keyframes pawFade{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(.3)}}
@@ -249,21 +260,21 @@ canvas{width:100%;height:100%;display:block}
 @keyframes zzzFloat{0%,100%{opacity:0;transform:translateY(0)}30%{opacity:.6}70%{opacity:.4}100%{opacity:0;transform:translateY(-14px)}}
 
 /* speech bubble */
-.neko-bubble{position:absolute;bottom:calc(100% + 6px);left:50%;
-  background:rgba(12,12,20,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(200,168,124,.1);border-radius:14px;
-  padding:10px 16px;font-family:var(--serif);font-size:clamp(11px,2.2vw,13px);
-  font-weight:300;color:var(--text);letter-spacing:.05em;line-height:1.65;
-  text-align:center;max-width:min(240px,68vw);white-space:normal;
+.neko-bubble{position:absolute;bottom:calc(100% + 8px);left:50%;
+  background:rgba(12,12,20,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(200,168,124,.12);border-radius:12px;
+  padding:7px 12px;font-family:var(--serif);font-size:clamp(12px,2.5vw,14px);
+  font-weight:300;color:var(--text);letter-spacing:.04em;line-height:1.5;
+  text-align:center;max-width:min(170px,52vw);white-space:nowrap;
   opacity:0;pointer-events:none;
-  transform:translateX(-50%) translateY(8px) scale(.95);
-  transition:opacity .35s,transform .4s var(--ease)}
+  transform:translateX(-50%) translateY(6px) scale(.95);
+  transition:opacity .3s,transform .3s var(--ease)}
 .neko-bubble.show{opacity:1;pointer-events:auto;
   transform:translateX(-50%) translateY(0) scale(1)}
 .neko-bubble::after{content:'';position:absolute;top:100%;left:50%;
-  transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(12,12,20,.9)}
-.neko-name{color:var(--accent);font-size:clamp(9px,1.6vw,10px);letter-spacing:.18em;
-  display:block;margin-bottom:3px;font-weight:400;text-transform:uppercase}
+  transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(12,12,20,.92)}
+.neko-name{color:var(--accent);font-size:clamp(9px,1.6vw,10px);letter-spacing:.15em;
+  display:block;margin-bottom:2px;font-weight:400;text-transform:uppercase}
 
 /* ══ Music Bar ══ */
 .music-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
@@ -416,7 +427,7 @@ canvas{width:100%;height:100%;display:block}
   .hist-label{font-size:12px}
   .hist-item{font-size:14px}
   .neko-sprite{width:52px;height:52px}
-  .neko-bubble{font-size:12px;padding:8px 13px;max-width:200px}
+  .neko-bubble{font-size:13px;padding:8px 12px;max-width:160px}
   .pointer{border-left-width:8px;border-right-width:8px;border-top-width:20px;top:-4px}
 }
 @media(max-width:380px){
@@ -459,8 +470,16 @@ canvas{width:100%;height:100%;display:block}
     border-color:rgba(200,168,124,.2)}
   50%{box-shadow:0 0 28px rgba(200,168,124,.14),0 0 10px rgba(255,240,200,.1);
     border-color:rgba(200,168,124,.35)}}
+/* ══ Gomoku Button ══ */
+.gomoku-btn{position:fixed;bottom:clamp(14px,2.5vh,28px);right:clamp(14px,3vw,28px);z-index:10;
+  font-family:var(--serif);font-size:10px;font-weight:400;letter-spacing:.2em;
+  color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.12);
+  padding:6px 14px;cursor:pointer;transition:all .6s var(--ease);
+  text-transform:uppercase;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.gomoku-btn:hover{color:var(--accent);border-color:rgba(200,168,124,.25)}
 @media(max-width:480px){
   .fortune-btn{font-size:13px;padding:10px 18px}
+  .gomoku-btn{font-size:13px;padding:10px 18px}
 }
 
 /* ══ Fortune Panel ══ */
@@ -596,6 +615,56 @@ canvas{width:100%;height:100%;display:block}
   45%{transform:scale(1.01) rotate(-1.5deg)}
   60%{transform:scale(1) rotate(1deg)}
   80%{transform:scale(1.005) rotate(-.5deg)}}
+
+/* ══ Gomoku — 五子棋 ══ */
+.gomoku-overlay{position:fixed;inset:0;z-index:300;
+  background:rgba(7,7,12,.96);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+.gomoku-overlay.open{opacity:1;pointer-events:auto}
+.gomoku-header{text-align:center;margin-bottom:clamp(8px,1.5vh,16px);flex-shrink:0}
+.gomoku-title{font-size:clamp(11px,1.4vw,13px);font-weight:300;letter-spacing:.5em;
+  color:var(--accent-dim);text-transform:uppercase;margin-bottom:4px}
+.gomoku-status{font-size:clamp(13px,2vw,16px);font-weight:300;color:var(--text);
+  letter-spacing:.08em;min-height:1.5em}
+.gomoku-hint{font-size:clamp(10px,1.2vw,11px);font-weight:300;letter-spacing:.15em;
+  color:var(--text3);margin-top:4px}
+.gomoku-board-wrap{position:relative;width:min(380px,88vw,70vh);height:min(380px,88vw,70vh);flex-shrink:0}
+.gomoku-board{width:100%;height:100%;display:block;cursor:pointer;
+  border-radius:2px;touch-action:none}
+.gomoku-actions{display:flex;gap:10px;margin-top:clamp(10px,2vh,20px);flex-shrink:0}
+.gomoku-act{font-family:var(--serif);font-size:clamp(11px,1.4vw,13px);font-weight:300;
+  padding:10px 24px;cursor:pointer;letter-spacing:.15em;transition:all .4s;border:1px solid}
+.gomoku-act-primary{color:var(--accent);border-color:rgba(200,168,124,.18);background:none}
+.gomoku-act-primary:hover{border-color:rgba(200,168,124,.4);background:rgba(200,168,124,.04)}
+.gomoku-act-secondary{color:var(--text3);border-color:rgba(255,255,255,.08);background:none}
+.gomoku-act-secondary:hover{color:var(--text2);border-color:rgba(255,255,255,.15)}
+/* secret menu reveal */
+.gomoku-secret{text-align:center;padding:clamp(20px,3vh,36px) clamp(16px,3vw,32px)}
+.gomoku-secret-icon{font-size:clamp(32px,8vw,48px);margin-bottom:16px;display:block}
+.gomoku-secret-title{font-size:clamp(20px,5vw,28px);font-weight:200;color:var(--accent);
+  letter-spacing:.12em;margin-bottom:8px}
+.gomoku-secret-sub{font-size:clamp(12px,1.6vw,14px);font-weight:300;color:var(--text2);
+  letter-spacing:.04em;line-height:1.8;margin-bottom:20px}
+.gomoku-secret-list{text-align:left;max-width:400px;margin:0 auto}
+.gomoku-secret-item{padding:14px 0;border-bottom:1px solid rgba(200,168,124,.06)}
+.gomoku-secret-item:last-child{border-bottom:none}
+.gomoku-secret-name{font-size:clamp(16px,2.5vw,20px);font-weight:400;color:var(--text);
+  letter-spacing:.04em;margin-bottom:3px}
+.gomoku-secret-desc{font-size:clamp(11px,1.4vw,13px);font-weight:300;color:var(--accent-dim);
+  letter-spacing:.03em;line-height:1.6}
+.gomoku-cat-bubble{position:absolute;top:clamp(8px,1.5vh,16px);right:clamp(8px,2vw,20px);
+  background:rgba(12,12,20,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(200,168,124,.1);border-radius:12px;padding:8px 14px;
+  font-family:var(--serif);font-size:clamp(12px,1.8vw,14px);font-weight:300;color:var(--text);
+  max-width:180px;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.gomoku-cat-bubble.show{opacity:1}
+.gomoku-cat-bubble .gm-cat-name{color:var(--accent);font-size:9px;letter-spacing:.15em;
+  display:block;margin-bottom:2px;text-transform:uppercase}
+@media(max-width:480px){
+  .gomoku-board-wrap{width:min(380px,94vw,65vh);height:min(380px,94vw,65vh)}
+  .gomoku-act{font-size:14px;padding:12px 24px}
+}
 </style>
 </head>
 <body>
@@ -657,6 +726,27 @@ canvas{width:100%;height:100%;display:block}
   <div class="hist-items" id="histItems"></div>
 </div>
 <button class="fortune-btn" id="fortuneBtn">抽食籤</button>
+<button class="gomoku-btn" id="gomokuBtn" onclick="openGomoku()">五子棋</button>
+
+<!-- ══ Gomoku Overlay ══ -->
+<div class="gomoku-overlay" id="gomokuOverlay">
+  <div class="gomoku-header">
+    <div class="gomoku-title">五 子 棋 對 決</div>
+    <div class="gomoku-status" id="gomokuStatus">挑戰比特幣！</div>
+    <div class="gomoku-hint" id="gomokuHint">贏了有隱藏菜單喔</div>
+  </div>
+  <div class="gomoku-board-wrap">
+    <canvas class="gomoku-board" id="gomokuBoard"></canvas>
+    <div class="gomoku-cat-bubble" id="gmCatBubble">
+      <span class="gm-cat-name">比特幣</span>
+      <span id="gmCatText"></span>
+    </div>
+  </div>
+  <div class="gomoku-actions">
+    <button class="gomoku-act gomoku-act-primary" id="gomokuRestart">重新開始</button>
+    <button class="gomoku-act gomoku-act-secondary" id="gomokuClose">離開</button>
+  </div>
+</div>
 
 <!-- ══ 比特幣 — Neko Agent ══ -->
 <div class="neko" id="neko">
@@ -667,7 +757,12 @@ canvas{width:100%;height:100%;display:block}
   <div class="neko-body">
     <div class="neko-sprite">
       <img src="bitcoin.png" alt="比特幣" draggable="false">
+      <div class="neko-eyelids" id="nekoEyelids">
+        <div class="neko-eyelid"></div>
+        <div class="neko-eyelid"></div>
+      </div>
     </div>
+    <div class="neko-tail" id="nekoTail"></div>
     <div class="neko-shadow"></div>
   </div>
 </div>
@@ -1162,6 +1257,8 @@ function renderHistory() {
   const shadow = el.querySelector('.neko-shadow');
   const bubble = document.getElementById('nekoBubble');
   const textEl = document.getElementById('nekoText');
+  const tail = document.getElementById('nekoTail');
+  const eyelids = document.getElementById('nekoEyelids');
 
   const NAME = '比特幣';
   const OWNER = '悠悠';
@@ -1170,12 +1267,14 @@ function renderHistory() {
 
   /* ── Physics state ── */
   let x = Math.random() * (window.innerWidth - 80);
-  let y = 0;
+  let y = window.innerHeight - 80;
   let targetX = x;
+  let targetY = y;
   let vx = 0;
+  let vy = 0;
   let rot = 0;
   let sc = 1;
-  let state = 'idle'; // idle | walk | sleep | jump
+  let state = 'idle'; // idle | walk | sleep | jump | sit
   let stateTime = 0;
   let nextSwitch = 4 + Math.random() * 4;
   let frame = 0;
@@ -1183,175 +1282,185 @@ function renderHistory() {
   let jumpVy = 0;
   let bubbleTimer = null;
   let pawTimer = 0;
+  let blinkTime = 0;
+  let lastBlink = 0;
 
-  /* ── Dialogue ── */
+  const W = () => window.innerWidth - 80;
+  const H = () => window.innerHeight - 80;
   const pick = a => a[Math.floor(Math.random() * a.length)];
 
+  /* ── Dialogue (SHORT: 5–12 chars) ── */
   const GREETS = [
-    `${OWNER}～今晚想吃什麼呀？`,
-    `喵！${OWNER}來啦～`,
-    `${OWNER}～${NAME}等你好久了！`,
-    `哼哼，${OWNER}終於想到要吃飯了`,
-    `嗨～${OWNER}！${NAME}肚子餓了`,
+    `${OWNER}～來啦！`,`喵！等好久了`,`嗨嗨～`,
+    `肚子餓了啦`,`${NAME}在這～`,`今晚吃啥？`,
   ];
   const IDLE = [
-    '（歪頭）…你在想什麼？',
-    '（舔毛中）…不要看我',
-    '（伸懶腰～）呼——',
-    '肚子好餓…有小魚乾嗎',
-    `${NAME}覺得…今晚適合吃鍋`,
-    '你有沒有聞到？好像很香',
-    '轉輪盤！讓命運幫你決定～',
-    '摺耳貓的第六感…今晚會很好吃',
-    '（搖尾巴）嘿嘿',
-    '不知道吃什麼的話…問我呀',
-    '抽個食籤看看命運怎麼說～',
-    `（踏踏踏）${NAME}在巡邏`,
-    '…我剛剛好像看到一隻老鼠',
-    '要不要試試看新的餐廳？',
-    '（打呵欠）一聞到食物就精神了',
-    `${NAME}推薦：跟著鼻子走`,
-    '（蹭蹭你的腳）…陪我玩',
-    '好無聊…快選餐廳帶我去吃',
-    '（踏踏踏）…地板涼涼的好舒服',
+    '（歪頭）…嗯？','（舔毛中）','呼——好睏',
+    '肚子好餓…','好像很香？','轉輪盤吧！',
+    '（搖尾巴）嘿','問我呀～','（踏踏踏）',
+    '有老鼠！','試新餐廳？','（打呵欠）',
+    '跟著鼻子走','（蹭蹭）','好無聊…',
+    '陪我玩嘛','地板涼涼的','（伸懶腰）',
+    '你在幹嘛？','（咕嚕嚕）','發什麼呆？',
+    '戳戳看呀','困了…','（舔手手）',
+    '窗外好多車','晚風好舒服','要下雨了嗎',
+    '月亮好亮喔','有星星耶','今晚涼涼的',
+    '好熱…不想動','雨聲好好聽','來下棋！',
+    '你贏不了我的','五子棋？怕了嗎',
+    '（翻滾）','坐著發呆中','巡邏完畢！',
+    '在想吃的…','（甩耳朵）','好想睡…',
   ];
   const FOOD = [
-    '今晚的氣溫適合吃火鍋喔！',
-    `日式料理的職人精神…${NAME}佩服`,
-    `韓式烤肉配燒酒，${NAME}也想要一口`,
-    '台式小吃的靈魂在巷弄裡',
-    '西式牛排配紅酒…好大人的感覺',
-    '東南亞的酸辣，能把味蕾叫醒',
-    '熱炒配啤酒才是台北的夜晚嘛',
-    '麵食是療癒系食物第一名',
+    '適合吃火鍋！','想吃拉麵…','烤肉配啤酒',
+    '巷口好香','想吃牛排','來碗熱湯吧',
+    '酸辣好開胃','炒飯的味道','甜點！甜點！',
+    '想喝珍奶','滷肉飯！','吃麵吧～',
   ];
   const NIGHT = [
-    `${OWNER}…這麼晚還不睡？`,
-    '深夜的食物都是零卡路里的喵',
-    `（揉眼睛）${NAME}有點睏了…`,
-    '月亮出來了…適合吃宵夜',
-    `（打呵欠）…${NAME}要睡了…`,
+    '還不睡？','深夜零卡路里','好睏…',
+    '月亮出來了','要睡了…','宵夜時間！',
   ];
   const CLICK = [
-    '喵！不要突然戳我啦',
-    '（翻肚）…只有你可以摸',
-    '嗯？叫我有什麼事？',
-    '（咕嚕咕嚕）…好舒服',
-    '再戳一次試試看？喵？',
-    `${NAME}在呢～怎麼了？`,
-    '（瞇眼）…你的手好溫暖',
-    `${OWNER}想我了嗎？`,
-    '喵嗚～（開心地蹭蹭）',
-    '你摸我的頭…我就告訴你吃什麼',
+    '喵！別戳我','（翻肚）摸摸','叫我幹嘛？',
+    '（咕嚕嚕）','再戳試試？','在呢～',
+    '手好溫暖','想我了？','喵嗚！',
+    '好啦好啦','幹嘛啦～','（瞇眼享受）',
   ];
 
   /* ── Say ── */
   function say(text, dur) {
-    dur = dur || 4000;
+    dur = dur || 3200;
     textEl.textContent = text;
     bubble.classList.add('show');
     clearTimeout(bubbleTimer);
     bubbleTimer = setTimeout(() => bubble.classList.remove('show'), dur);
   }
+  window._nekoSay = say;
+  window._nekoGomokuLines = [
+    '來下棋！','你贏不了我的','敢挑戰嗎？',
+    '五子棋？','（擺棋盤）','怕了嗎？',
+  ];
 
   /* ── Paw prints ── */
-  function spawnPaw(px) {
+  function spawnPaw(px, py) {
     const p = document.createElement('div');
     p.className = 'neko-paw';
     p.style.left = (px + 30) + 'px';
+    p.style.top = (py + 55) + 'px';
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 1500);
+  }
+
+  /* ── Eye blink ── */
+  function updateBlink(dt) {
+    blinkTime += dt;
+    if (blinkTime - lastBlink > 3 + Math.random() * 5) {
+      lastBlink = blinkTime;
+      eyelids.style.opacity = '1';
+      setTimeout(() => { eyelids.style.opacity = '0'; }, 120 + Math.random() * 80);
+    }
+    // Slow blink in sleep
+    if (state === 'sleep') eyelids.style.opacity = '1';
+  }
+
+  /* ── Tail ── */
+  function updateTail() {
+    tail.style.opacity = (state === 'sit' || state === 'sleep') ? '1' : '0';
   }
 
   /* ── State transitions ── */
   function enterState(s) {
     state = s;
     stateTime = 0;
+    updateTail();
     if (s === 'walk') {
-      const W = window.innerWidth - 80;
-      targetX = Math.random() * W;
-      nextSwitch = 999; // walk until arrival
+      targetX = Math.random() * W();
+      targetY = H() * (0.35 + Math.random() * 0.65);
+      nextSwitch = 999;
     } else if (s === 'idle') {
-      nextSwitch = 3 + Math.random() * 6;
-      if (Math.random() < 0.3) {
-        const pool = isLate ? NIGHT : (Math.random() < 0.35 ? FOOD : IDLE);
+      nextSwitch = 3 + Math.random() * 5;
+      if (Math.random() < 0.35) {
+        const pool = isLate ? NIGHT : (Math.random() < 0.3 ? FOOD : IDLE);
         say(pick(pool));
       }
     } else if (s === 'sleep') {
-      nextSwitch = 8 + Math.random() * 12;
+      nextSwitch = 6 + Math.random() * 10;
+    } else if (s === 'sit') {
+      nextSwitch = 5 + Math.random() * 8;
+      if (Math.random() < 0.4) say(pick(IDLE));
     }
   }
 
-  /* ── Update (called every frame) ── */
+  /* ── Update ── */
   function update(dt) {
     frame += dt;
     stateTime += dt;
     pawTimer += dt;
+    updateBlink(dt);
 
     switch (state) {
       case 'walk': {
-        const dx = targetX - x;
-        if (Math.abs(dx) < 4) {
-          enterState('idle');
-          break;
-        }
-        // Smooth acceleration
-        const speed = Math.min(90, Math.abs(dx) * 1.5);
-        vx += (Math.sign(dx) * speed - vx) * 3 * dt;
+        const dx = targetX - x, dy = targetY - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 8) { enterState(Math.random() < 0.3 ? 'sit' : 'idle'); break; }
+        const speed = Math.min(130, dist * 2);
+        vx += (dx / dist * speed - vx) * 3 * dt;
+        vy += (dy / dist * speed - vy) * 3 * dt;
         x += vx * dt;
-        // Walking oscillation
-        y = Math.sin(frame * 9) * 3;
+        y += vy * dt;
         rot = Math.sin(frame * 9) * 2.5 * Math.sign(vx);
         sc = 1 + Math.sin(frame * 18) * 0.015;
-        // Paw prints
-        if (pawTimer > 0.35) { pawTimer = 0; spawnPaw(x); }
+        sprite.style.transform = vx < -5 ? 'scaleX(-1)' : '';
+        if (pawTimer > 0.4) { pawTimer = 0; spawnPaw(x, y); }
         break;
       }
       case 'idle': {
-        // Gentle breathing
-        vx *= 0.9;
-        y = Math.sin(frame * 1.8) * 1.5;
+        vx *= 0.88; vy *= 0.88;
         rot *= 0.92;
         sc = 1 + Math.sin(frame * 1.8) * 0.008;
         if (stateTime >= nextSwitch) {
           const r = Math.random();
-          if (r < 0.45) enterState('walk');
-          else if (r < 0.65 && isLate) enterState('sleep');
+          if (r < 0.35) enterState('walk');
+          else if (r < 0.5) enterState('sit');
+          else if (r < 0.62 && isLate) enterState('sleep');
+          else if (r < 0.7) { state = 'jump'; stateTime = 0; jumpVy = -300 - Math.random() * 120; vx = (Math.random() - 0.5) * 100; }
           else enterState('idle');
         }
         break;
       }
+      case 'sit': {
+        vx *= 0.85; vy *= 0.85; rot *= 0.9;
+        sc = 0.96 + Math.sin(frame * 1.2) * 0.01;
+        if (stateTime >= nextSwitch) enterState(Math.random() < 0.5 ? 'walk' : 'idle');
+        break;
+      }
       case 'sleep': {
-        vx *= 0.9;
-        y = Math.sin(frame * 0.7) * 0.8;
-        rot = -4;
+        vx *= 0.9; vy *= 0.9; rot = -4;
         sc = 0.93 + Math.sin(frame * 0.7) * 0.015;
         if (stateTime >= nextSwitch) enterState('idle');
         break;
       }
       case 'jump': {
-        jumpVy += 600 * dt; // gravity
+        jumpVy += 550 * dt;
         y += jumpVy * dt;
-        if (y >= 0) { y = 0; jumpVy = 0; enterState('idle'); }
+        x += vx * dt;
+        if (y >= H()) { y = H(); jumpVy = 0; enterState('idle'); }
+        if (x < 5 || x > W()) vx = -vx * 0.5;
         break;
       }
     }
-
-    // Bounds
-    x = Math.max(5, Math.min(x, window.innerWidth - 80));
+    x = Math.max(5, Math.min(x, W()));
+    y = Math.max(50, Math.min(y, H()));
   }
 
-  /* ── Render (called every frame) ── */
+  /* ── Render ── */
   function render() {
     el.style.transform = `translate3d(${x}px,${y}px,0)`;
     body.style.transform = `rotate(${rot}deg) scale(${sc})`;
-    // Dynamic shadow
-    const shadowStretch = state === 'walk' ? 1.2 : (state === 'sleep' ? 0.8 : 1);
-    const shadowY = Math.max(0, -y * 0.08);
-    shadow.style.transform = `translateX(-50%) scaleX(${shadowStretch}) scaleY(${0.12 + shadowY})`;
-    shadow.style.opacity = state === 'sleep' ? 0.15 : 0.3;
-    // Sprite brightness on sleep
-    sprite.style.opacity = state === 'sleep' ? 0.55 : 1;
+    const sStr = state === 'walk' ? 1.2 : (state === 'sleep' ? 0.8 : (state === 'sit' ? 0.9 : 1));
+    shadow.style.transform = `translateX(-50%) scaleX(${sStr})`;
+    shadow.style.opacity = state === 'sleep' ? '0.15' : '0.3';
+    sprite.style.opacity = state === 'sleep' ? '0.55' : '1';
   }
 
   /* ── Main loop ── */
@@ -1366,31 +1475,456 @@ function renderHistory() {
   /* ── Click ── */
   el.addEventListener('click', e => {
     e.stopPropagation();
-    say(pick(CLICK), 3500);
-    // Cute jump
-    if (state !== 'jump') {
-      state = 'jump';
-      stateTime = 0;
-      jumpVy = -220;
+    // 20% chance to suggest gomoku
+    if (Math.random() < 0.2 && typeof openGomoku === 'function') {
+      say('來下棋！', 3000);
+    } else {
+      say(pick(CLICK), 3000);
     }
+    if (state !== 'jump') { state = 'jump'; stateTime = 0; jumpVy = -260; vx = (Math.random() - 0.5) * 80; }
     if (typeof _track === 'function') _track('neko_click');
   });
 
-  /* ── ZZZ indicator for sleep ── */
+  /* ── ZZZ ── */
   setInterval(() => {
     if (state === 'sleep') {
       const z = document.createElement('div');
-      z.className = 'neko-zzz';
-      z.textContent = 'z';
+      z.className = 'neko-zzz'; z.textContent = 'z';
       body.appendChild(z);
       setTimeout(() => z.remove(), 2000);
     }
   }, 2200);
 
   /* ── Init ── */
-  el.style.transform = `translate3d(${x}px,0,0)`;
+  y = H();
+  el.style.transform = `translate3d(${x}px,${y}px,0)`;
   requestAnimationFrame(loop);
-  setTimeout(() => say(pick(GREETS), 5500), 2200);
+  setTimeout(() => say(pick(GREETS), 4500), 2200);
+})();
+
+/* ══════════════════════════════════════
+   五子棋 — Gomoku Engine
+   ══════════════════════════════════════ */
+(function GomokuEngine() {
+  const SIZE = 15;
+  const overlay = document.getElementById('gomokuOverlay');
+  const canvas = document.getElementById('gomokuBoard');
+  const gctx = canvas.getContext('2d');
+  const statusEl = document.getElementById('gomokuStatus');
+  const hintEl = document.getElementById('gomokuHint');
+  const catBubble = document.getElementById('gmCatBubble');
+  const catText = document.getElementById('gmCatText');
+  const restartBtn = document.getElementById('gomokuRestart');
+  const closeBtn = document.getElementById('gomokuClose');
+
+  let board = []; // 0=empty, 1=player(black), 2=AI(white)
+  let gameOver = false;
+  let playerTurn = true;
+  let moveCount = 0;
+  let cellSize = 0;
+  let padding = 0;
+  let gdpr = 1;
+
+  const SECRET_RESTAURANTS = [
+    {name:'中山73・隱藏Bar',desc:'需要按門鈴才能進入的神秘酒吧，調酒師會依你的心情即興創作'},
+    {name:'地下室的秘密',desc:'寧夏夜市巷弄B1，只有12個座位的私廚割烹，每晚僅一輪'},
+    {name:'屋頂上的貓',desc:'大稻埕某棟老屋頂樓，需要爬鐵梯上去，無菜單料理只收現金'},
+  ];
+
+  /* ── Cat commentary ── */
+  const CAT_THINK = ['嗯…','讓我想想','（思考中）','哼哼…'];
+  const CAT_TAUNT = ['太簡單了','就這樣？','嘻嘻','再想想吧','認真一點！','弱喔～'];
+  const CAT_WORRY = ['不妙…','等等…','你運氣不錯','嗯？！'];
+  const CAT_WIN = ['喵哈哈！','我就說吧','不是對手～','再來一局？'];
+  const CAT_LOSE = ['怎麼可能！','你作弊！','好吧…認輸','居然贏了…'];
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+
+  function catSay(text, dur) {
+    catText.textContent = text;
+    catBubble.classList.add('show');
+    setTimeout(() => catBubble.classList.remove('show'), dur || 2500);
+  }
+
+  /* ── Board init ── */
+  function initBoard() {
+    board = Array.from({length:SIZE}, () => Array(SIZE).fill(0));
+    gameOver = false;
+    playerTurn = true;
+    moveCount = 0;
+    statusEl.textContent = '你的回合（黑子）';
+    hintEl.textContent = '贏了有隱藏菜單喔';
+    catSay('來吧！', 2000);
+  }
+
+  /* ── Canvas setup ── */
+  function setupGCanvas() {
+    const wrap = canvas.parentElement;
+    const rect = wrap.getBoundingClientRect();
+    const w = rect.width;
+    gdpr = window.devicePixelRatio || 1;
+    canvas.width = w * gdpr;
+    canvas.height = w * gdpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = w + 'px';
+    gctx.setTransform(gdpr, 0, 0, gdpr, 0, 0);
+    padding = w * 0.04;
+    cellSize = (w - padding * 2) / (SIZE - 1);
+  }
+
+  /* ── Draw board ── */
+  function drawBoard() {
+    const w = canvas.width / gdpr;
+    gctx.clearRect(0, 0, w, w);
+    // Background
+    gctx.fillStyle = 'rgba(18,18,28,.6)';
+    gctx.fillRect(0, 0, w, w);
+    // Grid lines
+    gctx.strokeStyle = 'rgba(200,168,124,.15)';
+    gctx.lineWidth = 0.5;
+    for (let i = 0; i < SIZE; i++) {
+      const pos = padding + i * cellSize;
+      gctx.beginPath(); gctx.moveTo(padding, pos); gctx.lineTo(w - padding, pos); gctx.stroke();
+      gctx.beginPath(); gctx.moveTo(pos, padding); gctx.lineTo(pos, w - padding); gctx.stroke();
+    }
+    // Star points
+    const stars = SIZE === 15 ? [[3,3],[3,11],[7,7],[11,3],[11,11]] : [[3,3],[3,11],[7,7],[11,3],[11,11]];
+    gctx.fillStyle = 'rgba(200,168,124,.25)';
+    stars.forEach(([r,c]) => {
+      gctx.beginPath();
+      gctx.arc(padding + c * cellSize, padding + r * cellSize, 2.5, 0, Math.PI * 2);
+      gctx.fill();
+    });
+    // Stones
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (board[r][c] === 0) continue;
+        const cx = padding + c * cellSize;
+        const cy = padding + r * cellSize;
+        const radius = cellSize * 0.42;
+        // Shadow
+        gctx.beginPath();
+        gctx.arc(cx + 1, cy + 1, radius, 0, Math.PI * 2);
+        gctx.fillStyle = 'rgba(0,0,0,.3)';
+        gctx.fill();
+        // Stone
+        const grad = gctx.createRadialGradient(cx - radius * 0.3, cy - radius * 0.3, 0, cx, cy, radius);
+        if (board[r][c] === 1) {
+          grad.addColorStop(0, '#555');
+          grad.addColorStop(1, '#111');
+        } else {
+          grad.addColorStop(0, '#fff');
+          grad.addColorStop(0.8, '#ccc');
+          grad.addColorStop(1, '#aaa');
+        }
+        gctx.beginPath();
+        gctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        gctx.fillStyle = grad;
+        gctx.fill();
+        gctx.strokeStyle = board[r][c] === 1 ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.15)';
+        gctx.lineWidth = 0.5;
+        gctx.stroke();
+      }
+    }
+  }
+
+  /* ── Win check ── */
+  function checkWin(r, c, player) {
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (const [dr, dc] of dirs) {
+      let count = 1;
+      for (let d = 1; d < 5; d++) { const nr = r+dr*d, nc = c+dc*d; if (nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player) count++; else break; }
+      for (let d = 1; d < 5; d++) { const nr = r-dr*d, nc = c-dc*d; if (nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===player) count++; else break; }
+      if (count >= 5) return true;
+    }
+    return false;
+  }
+
+  /* ══ AI Engine — Threat-based + Minimax ══ */
+  const SCORES = { five:1000000, openFour:100000, four:10000, openThree:5000, three:800, openTwo:120, two:15 };
+
+  function countLine(r, c, dr, dc, player) {
+    let count = 0, openEnds = 0;
+    // Forward
+    let fr = r + dr, fc = c + dc, fcount = 0;
+    while (fr>=0&&fr<SIZE&&fc>=0&&fc<SIZE&&board[fr][fc]===player) { fcount++; fr+=dr; fc+=dc; }
+    if (fr>=0&&fr<SIZE&&fc>=0&&fc<SIZE&&board[fr][fc]===0) openEnds++;
+    // Backward
+    let br = r - dr, bc = c - dc, bcount = 0;
+    while (br>=0&&br<SIZE&&bc>=0&&bc<SIZE&&board[br][bc]===player) { bcount++; br-=dr; bc-=dc; }
+    if (br>=0&&br<SIZE&&bc>=0&&bc<SIZE&&board[br][bc]===0) openEnds++;
+    count = fcount + bcount; // not counting center
+    return { count, openEnds };
+  }
+
+  function evaluatePosition(r, c, player) {
+    if (board[r][c] !== 0) return 0;
+    board[r][c] = player;
+    let score = 0;
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (const [dr,dc] of dirs) {
+      const { count, openEnds } = countLine(r, c, dr, dc, player);
+      const total = count + 1; // include the placed stone
+      if (total >= 5) score += SCORES.five;
+      else if (total === 4 && openEnds === 2) score += SCORES.openFour;
+      else if (total === 4 && openEnds === 1) score += SCORES.four;
+      else if (total === 3 && openEnds === 2) score += SCORES.openThree;
+      else if (total === 3 && openEnds === 1) score += SCORES.three;
+      else if (total === 2 && openEnds === 2) score += SCORES.openTwo;
+      else if (total === 2 && openEnds === 1) score += SCORES.two;
+    }
+    board[r][c] = 0;
+    return score;
+  }
+
+  function getCandidates() {
+    const cands = new Set();
+    const range = 2;
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (board[r][c] === 0) continue;
+        for (let dr = -range; dr <= range; dr++) {
+          for (let dc = -range; dc <= range; dc++) {
+            const nr = r+dr, nc = c+dc;
+            if (nr>=0&&nr<SIZE&&nc>=0&&nc<SIZE&&board[nr][nc]===0) cands.add(nr*SIZE+nc);
+          }
+        }
+      }
+    }
+    if (cands.size === 0) cands.add(7*SIZE+7);
+    return [...cands].map(v => [Math.floor(v/SIZE), v%SIZE]);
+  }
+
+  function boardScore(player) {
+    let score = 0;
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (board[r][c] === 0) continue;
+        const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+        for (const [dr,dc] of dirs) {
+          // Only count forward to avoid double-counting
+          const { count, openEnds } = countLine(r, c, dr, dc, board[r][c]);
+          const total = count + 1;
+          let s = 0;
+          if (total >= 5) s = SCORES.five;
+          else if (total === 4 && openEnds === 2) s = SCORES.openFour;
+          else if (total === 4 && openEnds === 1) s = SCORES.four;
+          else if (total === 3 && openEnds === 2) s = SCORES.openThree;
+          else if (total === 3 && openEnds === 1) s = SCORES.three;
+          else if (total === 2 && openEnds === 2) s = SCORES.openTwo;
+          else if (total === 2 && openEnds === 1) s = SCORES.two;
+          score += board[r][c] === player ? s : -s * 1.1;
+        }
+      }
+    }
+    return score;
+  }
+
+  function minimax(depth, alpha, beta, isMax) {
+    // Quick win/loss check from last move is handled by caller
+    if (depth === 0) return boardScore(2); // AI is player 2
+
+    const candidates = getCandidates();
+    // Sort by heuristic for better pruning
+    const player = isMax ? 2 : 1;
+    candidates.sort((a,b) => {
+      const sa = evaluatePosition(a[0],a[1],player) + evaluatePosition(a[0],a[1],player===1?2:1)*0.9;
+      const sb = evaluatePosition(b[0],b[1],player) + evaluatePosition(b[0],b[1],player===1?2:1)*0.9;
+      return sb - sa;
+    });
+
+    // Limit branching
+    const topCands = candidates.slice(0, 12);
+
+    if (isMax) {
+      let maxEval = -Infinity;
+      for (const [r,c] of topCands) {
+        board[r][c] = 2;
+        if (checkWin(r,c,2)) { board[r][c]=0; return SCORES.five * (depth+1); }
+        const ev = minimax(depth-1, alpha, beta, false);
+        board[r][c] = 0;
+        maxEval = Math.max(maxEval, ev);
+        alpha = Math.max(alpha, ev);
+        if (beta <= alpha) break;
+      }
+      return maxEval;
+    } else {
+      let minEval = Infinity;
+      for (const [r,c] of topCands) {
+        board[r][c] = 1;
+        if (checkWin(r,c,1)) { board[r][c]=0; return -SCORES.five * (depth+1); }
+        const ev = minimax(depth-1, alpha, beta, true);
+        board[r][c] = 0;
+        minEval = Math.min(minEval, ev);
+        beta = Math.min(beta, ev);
+        if (beta <= alpha) break;
+      }
+      return minEval;
+    }
+  }
+
+  function aiMove() {
+    statusEl.textContent = '比特幣思考中…';
+    catSay(pick(CAT_THINK), 2000);
+
+    setTimeout(() => {
+      if (gameOver) return;
+      // First: check immediate win
+      const candidates = getCandidates();
+      for (const [r,c] of candidates) {
+        board[r][c] = 2;
+        if (checkWin(r,c,2)) { board[r][c]=0; placeStone(r,c,2); return; }
+        board[r][c] = 0;
+      }
+      // Second: block player immediate win
+      for (const [r,c] of candidates) {
+        board[r][c] = 1;
+        if (checkWin(r,c,1)) { board[r][c]=0; placeStone(r,c,2); return; }
+        board[r][c] = 0;
+      }
+
+      // Minimax with depth based on move count
+      const depth = moveCount < 6 ? 2 : (moveCount < 20 ? 3 : 4);
+      let bestScore = -Infinity, bestMove = candidates[0];
+
+      // Score and sort candidates
+      const scored = candidates.map(([r,c]) => {
+        const atk = evaluatePosition(r,c,2);
+        const def = evaluatePosition(r,c,1);
+        return { r, c, h: atk + def * 1.05 };
+      }).sort((a,b) => b.h - a.h).slice(0, 15);
+
+      for (const {r,c} of scored) {
+        board[r][c] = 2;
+        const sc = minimax(depth, -Infinity, Infinity, false);
+        board[r][c] = 0;
+        if (sc > bestScore) { bestScore = sc; bestMove = [r,c]; }
+      }
+
+      placeStone(bestMove[0], bestMove[1], 2);
+
+      if (!gameOver) {
+        // Taunt or worry
+        const playerThreat = scored.some(s => s.h > SCORES.openThree);
+        catSay(pick(playerThreat ? CAT_WORRY : CAT_TAUNT), 2500);
+      }
+    }, 300 + Math.random() * 400);
+  }
+
+  function placeStone(r, c, player) {
+    board[r][c] = player;
+    moveCount++;
+    drawBoard();
+
+    if (checkWin(r, c, player)) {
+      gameOver = true;
+      if (player === 1) {
+        statusEl.textContent = '你贏了！';
+        catSay(pick(CAT_LOSE), 4000);
+        hintEl.textContent = '';
+        setTimeout(() => showSecretMenu(), 1500);
+      } else {
+        statusEl.textContent = '比特幣贏了！';
+        catSay(pick(CAT_WIN), 4000);
+        hintEl.textContent = '再來一局？';
+      }
+      if (typeof _track === 'function') _track('gomoku_end', { winner: player === 1 ? 'player' : 'ai' });
+      return;
+    }
+    if (moveCount >= SIZE * SIZE) {
+      gameOver = true;
+      statusEl.textContent = '平手！';
+      catSay('竟然平手…', 3000);
+      return;
+    }
+    if (player === 1) {
+      playerTurn = false;
+      aiMove();
+    } else {
+      playerTurn = true;
+      statusEl.textContent = '你的回合';
+    }
+  }
+
+  /* ── Secret Menu Reveal ── */
+  function showSecretMenu() {
+    const wrap = canvas.parentElement;
+    let html = `<div class="gomoku-secret">
+      <span class="gomoku-secret-icon">🏆</span>
+      <div class="gomoku-secret-title">隱 藏 菜 單</div>
+      <div class="gomoku-secret-sub">恭喜你打敗了比特幣！<br>解鎖了只有贏家才知道的秘密餐廳</div>
+      <div class="gomoku-secret-list">`;
+    SECRET_RESTAURANTS.forEach(r => {
+      html += `<div class="gomoku-secret-item">
+        <div class="gomoku-secret-name">${r.name}</div>
+        <div class="gomoku-secret-desc">${r.desc}</div>
+      </div>`;
+    });
+    html += `</div>
+      <div style="margin-top:20px">
+        <button class="gomoku-act gomoku-act-primary" onclick="this.closest('.gomoku-secret').remove();document.getElementById('gomokuBoard').style.display='block'">返回棋盤</button>
+      </div>
+    </div>`;
+    canvas.style.display = 'none';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    wrap.appendChild(div.firstElementChild);
+    if (window._nekoSay) window._nekoSay('哼…算你厲害', 4000);
+  }
+
+  /* ── Click handler ── */
+  canvas.addEventListener('click', e => {
+    if (gameOver || !playerTurn) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const col = Math.round((mx - padding) / cellSize);
+    const row = Math.round((my - padding) / cellSize);
+    if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return;
+    if (board[row][col] !== 0) return;
+    placeStone(row, col, 1);
+  });
+
+  /* ── Touch support ── */
+  canvas.addEventListener('touchend', e => {
+    if (gameOver || !playerTurn) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const t = e.changedTouches[0];
+    const mx = t.clientX - rect.left;
+    const my = t.clientY - rect.top;
+    const col = Math.round((mx - padding) / cellSize);
+    const row = Math.round((my - padding) / cellSize);
+    if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return;
+    if (board[row][col] !== 0) return;
+    placeStone(row, col, 1);
+  });
+
+  /* ── Open / Close ── */
+  window.openGomoku = function() {
+    overlay.classList.add('open');
+    setupGCanvas();
+    initBoard();
+    drawBoard();
+    if (typeof _track === 'function') _track('gomoku_open');
+  };
+
+  closeBtn.onclick = () => {
+    overlay.classList.remove('open');
+    // Restore canvas if hidden by secret menu
+    canvas.style.display = 'block';
+    const sec = overlay.querySelector('.gomoku-secret');
+    if (sec) sec.remove();
+  };
+  restartBtn.onclick = () => {
+    canvas.style.display = 'block';
+    const sec = overlay.querySelector('.gomoku-secret');
+    if (sec) sec.remove();
+    setupGCanvas();
+    initBoard();
+    drawBoard();
+  };
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeBtn.click(); });
+  window.addEventListener('resize', () => { if (overlay.classList.contains('open')) { setupGCanvas(); drawBoard(); } });
 })();
 
 /* ══════════════════════════════════════
@@ -1639,9 +2173,12 @@ musicBtn.onclick = toggleMusic;
 let lastWinnerCat = '';
 centerCircle.onclick = () => { if (lastWinnerCat && !spinning) showRecs(lastWinnerCat); };
 document.addEventListener('keydown', e => {
+  const gomokuOvl = document.getElementById('gomokuOverlay');
+  if (gomokuOvl && gomokuOvl.classList.contains('open')) { if (e.key === 'Escape') gomokuOvl.classList.remove('open'); return; }
   if (recsOverlay.classList.contains('open')) { if (e.key === 'Escape') hideRecs(); return; }
   if (e.key === ' ') { e.preventDefault(); spin(); }
   if (e.key === 'm' || e.key === 'M') toggleMusic();
+  if (e.key === 'g' || e.key === 'G') { if (typeof openGomoku === 'function') openGomoku(); }
 });
 window.addEventListener('resize', () => { setupCanvas(); setupParticleCanvas(); drawWheel(currentRotation); });
 
@@ -1707,16 +2244,16 @@ const FORTUNES = [
   {luck:'大吉',poem:'人生苦短\n甜的先吃',tip:'今晚別看熱量表'},
   {luck:'大吉',poem:'有些人出現\n不是巧合\n是剛好你需要',tip:'今晚對面坐的人很重要'},
   {luck:'大吉',poem:'最好的夜晚\n從一道好菜開始',tip:'選你第一個想到的'},
-  {luck:'大吉',poem:'你笑的時候\n整條街的燈\n都在幫你打光',tip:'今晚的你特別好看'},
+  {luck:'大吉',poem:'傍晚的雲\n被夕陽燒成橘紅',tip:'抬頭看看天空'},
   {luck:'大吉',poem:'遇見對的食物\n跟遇見對的人一樣幸運',tip:'今晚勇敢試新的'},
   {luck:'大吉',poem:'有些路要自己走\n但晚餐可以一起',tip:'揪人更好吃'},
   {luck:'大吉',poem:'世界上最短的情詩\n好吃',tip:'簡單就是幸福'},
-  {luck:'大吉',poem:'想你的時候\n剛好風吹過來\n剛好在台北',tip:'有些想念不需要理由'},
+  {luck:'大吉',poem:'雨後的空氣\n有種洗過的清爽',tip:'深呼吸一口'},
   {luck:'大吉',poem:'燈光昏黃\n碗裡冒著熱氣\n這就夠了',tip:'氛圍到了什麼都好吃'},
   {luck:'大吉',poem:'城市再忙\n總有一盞燈\n為你的胃亮著',tip:'那間店在等你'},
-  {luck:'大吉',poem:'今晚的月亮\n適合說那句\n一直沒說出口的話',tip:'勇敢一點'},
+  {luck:'大吉',poem:'風裡帶著\n哪家廚房的香氣',tip:'跟著風走'},
   {luck:'大吉',poem:'今晚的風\n帶著炭火的香氣',tip:'跟著鼻子走'},
-  {luck:'大吉',poem:'喜歡一個人\n就像走進一間店\n聞到味道就知道了',tip:'直覺從不騙人'},
+  {luck:'大吉',poem:'霧濛濛的夜\n路燈暈開了光',tip:'慢慢走就好'},
   {luck:'大吉',poem:'深巷裡的小店\n藏著最大的幸福',tip:'別怕繞路'},
   {luck:'大吉',poem:'一口咬下\n整個世界安靜了',tip:'那就是對的選擇'},
   {luck:'大吉',poem:'廚房裡的火光\n是夜裡最溫暖的星',tip:'去有煙火氣的地方'},
@@ -1724,36 +2261,36 @@ const FORTUNES = [
   {luck:'大吉',poem:'木桌上的熱湯\n比任何道理都有用',tip:'先喝湯再說'},
   {luck:'大吉',poem:'今晚你值得\n那張等了很久的訂位',tip:'對自己大方一次'},
   {luck:'大吉',poem:'街角的香氣\n是城市寫給你的情書',tip:'走慢一點就聞到了'},
-  {luck:'大吉',poem:'最浪漫的事\n是陪你吃到打烊',tip:'時間不重要 味道才是'},
+  {luck:'大吉',poem:'冷風吹來的時候\n想到的第一件事\n是一碗熱湯',tip:'從湯開始吧'},
   {luck:'大吉',poem:'鑄鐵鍋裡\n滾著今晚的答案',tip:'熱的東西要趁熱吃'},
-  {luck:'大吉',poem:'在對的時間\n遇到對的晚風\n就夠浪漫了',tip:'不用飛巴黎'},
+  {luck:'大吉',poem:'夕陽把影子拉好長\n是該找間店坐下了',tip:'別趕路'},
   {luck:'大吉',poem:'有些幸福\n聞得到卻看不見',tip:'那是後廚飄來的香'},
   {luck:'大吉',poem:'月光下的露天座位\n今晚是你的',tip:'挑靠窗的位子'},
-  {luck:'大吉',poem:'兩個人的沉默\n如果是舒服的\n那就是對的人',tip:'不說話也是一種陪伴'},
-  {luck:'大吉',poem:'你身上的味道\n比任何香水\n都讓人安心',tip:'靠近一點也沒關係'},
-  {luck:'大吉',poem:'今晚的星空\n配一杯微醺剛好',tip:'小酌怡情'},
+  {luck:'大吉',poem:'氣溫剛好的晚上\n什麼都變得溫柔',tip:'享受這個溫度'},
+  {luck:'大吉',poem:'雨滴打在遮雨棚\n是最好的配樂',tip:'聽雨吃飯最奢侈'},
+  {luck:'大吉',poem:'晚霞的顏色\n比濾鏡還美',tip:'挑有窗的位子'},
   {luck:'大吉',poem:'食物的溫度\n就是生活的溫度',tip:'趁熱才是王道'},
   // ── 吉 (30) ──
   {luck:'吉',poem:'吃飽了\n才有力氣想念',tip:'多點一份吧'},
-  {luck:'吉',poem:'今晚的風很輕\n像某個人的手\n不經意碰到你',tip:'心跳漏了一拍是正常的'},
+  {luck:'吉',poem:'微風穿過巷弄\n帶來遠方的炒菜聲',tip:'循聲而去'},
   {luck:'吉',poem:'今天的你閃閃發光\n值得加點小菜',tip:'加個蛋運氣更好'},
   {luck:'吉',poem:'食物是最溫柔的\n擁抱',tip:'選那個最想念的味道'},
-  {luck:'吉',poem:'城市那麼大\n你們還是會遇到\n這就是台北',tip:'不用相約也能巧遇'},
+  {luck:'吉',poem:'入夜後的溫度\n剛好適合散步覓食',tip:'走遠一點也值得'},
   {luck:'吉',poem:'一個人吃飯不孤單\n那叫品味',tip:'享受獨處的美食時光'},
   {luck:'吉',poem:'用一頓好飯\n跟今天和解',tip:'對自己好一點'},
   {luck:'吉',poem:'等紅燈的時候\n想好要吃什麼了嗎',tip:'綠燈亮了就出發'},
-  {luck:'吉',poem:'下雨的時候\n想到你\n心裡就撐了一把傘',tip:'雨天適合想念'},
+  {luck:'吉',poem:'路面映著霓虹\n雨天的台北\n特別有味道',tip:'雨天限定美味'},
   {luck:'吉',poem:'那些排隊的人\n都知道值得',tip:'好東西不怕等'},
   {luck:'吉',poem:'菜單翻了三遍\n其實第一眼就決定了',tip:'相信直覺'},
   {luck:'吉',poem:'吃到好吃的\n眼睛會自己笑',tip:'今晚會笑很多次'},
   {luck:'吉',poem:'巷口那盞燈\n亮了二十年\n一定有原因',tip:'老店通常不會錯'},
-  {luck:'吉',poem:'你發呆的側臉\n比夜景好看\n我偷偷看了三次',tip:'被發現也沒關係'},
+  {luck:'吉',poem:'頂樓晾著衣服\n巷口飄著滷汁\n這就是台北的傍晚',tip:'日常才是真理'},
   {luck:'吉',poem:'碗裡的蔥花\n是最後的溫柔',tip:'細節決定一切'},
   {luck:'吉',poem:'冒著熱氣的那碗\n不用濾鏡就很美',tip:'先吃再拍'},
   {luck:'吉',poem:'每座城市\n都有一道忘不了的味道',tip:'台北的在等你發現'},
   {luck:'吉',poem:'燈火闌珊處\n有人正在翻炒你的幸福',tip:'走過去就對了'},
-  {luck:'吉',poem:'我沒有很想你\n只是看到什麼\n都想跟你分享',tip:'這大概就是喜歡的樣子'},
-  {luck:'吉',poem:'擁抱的溫度\n大概是37度\n剛好能融化一天的疲憊',tip:'回家記得抱一下'},
+  {luck:'吉',poem:'天空從粉藍\n轉成深紫的時候\n是吃飯的信號',tip:'天色告訴你答案'},
+  {luck:'吉',poem:'溫度降了五度\n幸福感升了五度',tip:'冷天吃什麼都加分'},
   {luck:'吉',poem:'蒸籠掀開的瞬間\n幸福都是白色的',tip:'熱騰騰最迷人'},
   {luck:'吉',poem:'筷子交錯的聲音\n是最好的背景音樂',tip:'跟對的人什麼都好吃'},
   {luck:'吉',poem:'有些日子\n不特別卻很好\n就像今天',tip:'平凡是最高級的浪漫'},
@@ -1761,50 +2298,50 @@ const FORTUNES = [
   {luck:'吉',poem:'吧台最後一個座位\n留給今晚的你',tip:'一個人也很好'},
   {luck:'吉',poem:'如果你也在\n這頓飯的意義\n就不只是吃飯',tip:'重要的是跟誰一起'},
   {luck:'吉',poem:'晚風配啤酒\n是大人的浪漫',tip:'微醺就好'},
-  {luck:'吉',poem:'牽手走過騎樓\n連機車引擎聲\n都變成情歌',tip:'台北式浪漫'},
+  {luck:'吉',poem:'街燈亮起的瞬間\n城市換了一種表情',tip:'夜晚的城市更誠實'},
   {luck:'吉',poem:'外帶的路上\n是最幸福的一段路',tip:'因為知道等等要吃什麼'},
   {luck:'吉',poem:'打開便當的瞬間\n就像拆禮物',tip:'每餐都是驚喜'},
   // ── 中吉 (20) ──
   {luck:'中吉',poem:'胃暖了\n心也就暖了',tip:'選有湯的那道'},
-  {luck:'中吉',poem:'你的訊息還沒回\n但我已經笑了\n因為你正在打字',tip:'等待也是甜的'},
+  {luck:'中吉',poem:'今晚的雲\n像棉花糖\n看著就甜',tip:'甜的心情配甜點'},
   {luck:'中吉',poem:'深夜的冰箱\n藏著宇宙的秘密',tip:'但出門吃比較浪漫'},
   {luck:'中吉',poem:'今晚的月色\n配這頓飯剛好',tip:'記得抬頭看天空'},
   {luck:'中吉',poem:'選擇困難的時候\n閉眼隨便指一道',tip:'命運會幫你選'},
   {luck:'中吉',poem:'不確定的時候\n就選熱的',tip:'溫暖永遠不會錯'},
-  {luck:'中吉',poem:'喜歡的人\n不用太完美\n讓你想一起吃飯就好',tip:'這個門檻其實很高'},
+  {luck:'中吉',poem:'窗外起風了\n是時候找間\n溫暖的店窩著',tip:'風是最好的指南'},
   {luck:'中吉',poem:'等餐的時間\n是最好的放空',tip:'放下手機看看四周'},
   {luck:'中吉',poem:'隔壁桌點的\n看起來比較好吃',tip:'下次再來點那道'},
   {luck:'中吉',poem:'料理是一種語言\n今晚聽聽廚師說什麼',tip:'點主廚推薦'},
-  {luck:'中吉',poem:'你說沒事\n但我知道\n你今天需要一個擁抱',tip:'不用堅強也沒關係'},
-  {luck:'中吉',poem:'夜晚讓人誠實\n所以深夜說的話\n通常都是真的',tip:'趁現在說'},
+  {luck:'中吉',poem:'濕濕的地面\n映著紅紅綠綠的招牌',tip:'雨後的台北最美'},
+  {luck:'中吉',poem:'走在騎樓下\n雨聲和腳步聲\n節奏剛好',tip:'不急的話 慢慢走'},
   {luck:'中吉',poem:'今晚不趕時間\n慢慢吃',tip:'細嚼慢嚥是奢侈'},
   {luck:'中吉',poem:'味噌湯的鹹\n是日常的安慰',tip:'從湯開始'},
   {luck:'中吉',poem:'鍋子裡咕嘟咕嘟\n聽著就開心',tip:'火鍋永遠是答案'},
-  {luck:'中吉',poem:'對面那個人\n嘴角沾了醬\n卻笑得很好看',tip:'這種畫面記得存起來'},
+  {luck:'中吉',poem:'傍晚六點的光\n把什麼都鍍了一層金',tip:'這是魔幻時刻'},
   {luck:'中吉',poem:'油亮的滷汁\n是台灣的液態黃金',tip:'淋在飯上不用客氣'},
   {luck:'中吉',poem:'冬天的關東煮\n夏天的刨冰\n都是正確答案',tip:'跟著季節吃'},
-  {luck:'中吉',poem:'有些感覺\n說不清楚\n但你懂我在說什麼',tip:'懂的人自然會懂'},
+  {luck:'中吉',poem:'天氣預報說有雨\n但出門的時候\n陽光灑了一地',tip:'意外比預報準'},
   {luck:'中吉',poem:'甜點是另一個胃\n這是科學',tip:'永遠有甜點的空間'},
   // ── 小吉 (12) ──
   {luck:'小吉',poem:'沒有什麼事\n是一頓飯解決不了的',tip:'如果有就吃兩頓'},
   {luck:'小吉',poem:'你的胃在說\n拜託善待我',tip:'聽身體的話'},
   {luck:'小吉',poem:'今天的你\n看起來需要\n被溫柔對待',tip:'對自己好不需要理由'},
   {luck:'小吉',poem:'便利商店也有\n深夜裡的小確幸',tip:'關東煮也是一種溫柔'},
-  {luck:'小吉',poem:'你上次笑得很開心\n是什麼時候\n想不起來就今晚補回來',tip:'笑一個'},
+  {luck:'小吉',poem:'天空灰灰的\n但空氣裡有炸物的香',tip:'灰天有灰天的好'},
   {luck:'小吉',poem:'今晚沒靈感\n但胃有自己的想法',tip:'讓胃帶路'},
   {luck:'小吉',poem:'吃不完的打包\n是對食物的尊重',tip:'打包不丟臉'},
-  {luck:'小吉',poem:'一個人走在路上\n突然被晚風吹得\n有點想哭又有點開心',tip:'這就是活著的感覺'},
+  {luck:'小吉',poem:'路邊的積水\n映著天空的顏色',tip:'低頭也能看見美'},
   {luck:'小吉',poem:'找不到想吃的\n代表你不夠餓',tip:'再等半小時'},
   {luck:'小吉',poem:'路邊攤的塑膠椅\n坐起來特別踏實',tip:'不用裝 放鬆吃'},
-  {luck:'小吉',poem:'有些話\n吞回去比說出來\n更需要勇氣',tip:'但今晚可以勇敢一次'},
+  {luck:'小吉',poem:'悶熱的午後\n終於下了一場雨\n涼了',tip:'等待總有結果'},
   {luck:'小吉',poem:'冰箱空了\n是宇宙叫你出門',tip:'出去走走吧'},
   // ── 末吉 (8) ──
   {luck:'末吉',poem:'如果你正在煩惱\n那就吃辣的',tip:'辣椒素帶走一切不開心'},
-  {luck:'末吉',poem:'想見一個人\n不需要理由\n你的腿會自己出發',tip:'走吧'},
+  {luck:'末吉',poem:'烏雲蓋住了月亮\n但你知道它還在',tip:'明天會放晴'},
   {luck:'末吉',poem:'今晚可能踩雷\n但踩雷也是一種故事',tip:'至少有東西能抱怨'},
   {luck:'末吉',poem:'吃完這頓\n明天再重新做人',tip:'今晚放過自己'},
   {luck:'末吉',poem:'你看起來\n需要一份雞排',tip:'有時候垃圾食物才是真愛'},
-  {luck:'末吉',poem:'今晚的寂寞\n適合用一通電話解決',tip:'打給那個你想到的人'},
+  {luck:'末吉',poem:'颱風天什麼都關了\n只有泡麵不會缺席',tip:'有時候簡單就好'},
   {luck:'末吉',poem:'想吃的那間沒開\n代表你要探索新的',tip:'也許會有驚喜'},
   {luck:'末吉',poem:'胃口不好的時候\n喝碗粥就好',tip:'不用勉強'},
 ];
