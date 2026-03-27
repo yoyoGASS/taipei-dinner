@@ -1845,10 +1845,26 @@ bgmAudio.loop = true;
 bgmAudio.volume = 0.6;
 
 function startMusic() {
-  bgmAudio.play();
+  bgmAudio.volume = 0.6;
+  bgmAudio.muted = false;
+  bgmAudio.play().then(() => {
+    musicOn = true;
+    musicBtn.classList.add('on');
+  }).catch(() => { musicOn = false; });
+}
+
+/* Try autoplay on page load: muted first (allowed by browsers), then unmute on first click */
+bgmAudio.muted = true;
+bgmAudio.play().then(() => {
   musicOn = true;
   musicBtn.classList.add('on');
-}
+  /* Unmute on first user interaction */
+  document.addEventListener('click', function _unmute() {
+    bgmAudio.muted = false;
+    bgmAudio.volume = 0.6;
+    document.removeEventListener('click', _unmute);
+  }, { once: true });
+}).catch(() => {});
 
 function stopMusic() {
   bgmAudio.pause();
@@ -1866,7 +1882,7 @@ function enterApp() {
   const entry = document.getElementById('entry');
   entry.classList.add('gone');
   document.getElementById('app').classList.add('entered');
-  /* ★ playVideo() inside onclick = user gesture → mobile browsers allow it ★ */
+  /* ★ onclick = user gesture → browsers allow audio play ★ */
   startMusic();
 }
 
