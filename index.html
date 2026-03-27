@@ -224,37 +224,106 @@ canvas{width:100%;height:100%;display:block}
 .hist-item+.hist-item::before{content:'\00B7';position:absolute;left:-10px;opacity:.3}
 
 /* ══ Neko Agent — 比特幣 ══ */
+/* ══ Neko — CSS Animated Cat ══ */
 .neko{position:fixed;top:0;left:0;z-index:60;cursor:pointer;
   user-select:none;-webkit-user-select:none;will-change:transform;pointer-events:auto}
 .neko-body{position:relative;pointer-events:auto;transition:transform .1s}
-.neko-sprite{width:clamp(56px,10vw,72px);height:clamp(56px,10vw,72px);border-radius:46% 46% 40% 40%;
-  overflow:hidden;position:relative;
-  box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 40px rgba(200,168,124,.06);
-  transition:box-shadow .3s,transform .2s}
-.neko:hover .neko-sprite{box-shadow:0 4px 24px rgba(0,0,0,.6),0 0 50px rgba(200,168,124,.12)}
-.neko-sprite img{width:115%;height:115%;object-fit:cover;object-position:center 18%;
-  margin:-4% 0 0 -7.5%;pointer-events:none;display:block;
-  filter:brightness(.95) contrast(1.05) saturate(1.1)}
-/* eyelids */
-.neko-eyelids{position:absolute;top:28%;left:15%;right:15%;height:18%;z-index:2;
-  pointer-events:none;display:flex;gap:24%;opacity:0;transition:opacity .06s}
-.neko-eyelid{flex:1;background:rgba(170,160,148,.88);border-radius:0 0 50% 50%}
-/* tail */
-.neko-tail{position:absolute;bottom:2px;right:-16px;width:26px;height:16px;pointer-events:none;
-  opacity:0;transition:opacity .5s ease}
-.neko-tail::before{content:'';position:absolute;bottom:0;right:0;width:22px;height:12px;
-  border:2.5px solid rgba(175,165,155,.55);border-top:none;border-left:none;
-  border-radius:0 0 60% 0;transform-origin:left bottom;animation:tailWag 1.8s ease-in-out infinite}
-@keyframes tailWag{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(18deg)}}
+.neko:hover .neko-cat{filter:brightness(1.12) drop-shadow(0 0 10px rgba(200,168,124,.25))}
+/* Cat character */
+.neko-cat{width:56px;height:66px;position:relative;transition:filter .3s}
+/* Head */
+.cat-head{width:40px;height:34px;
+  background:radial-gradient(ellipse at 50% 55%,#f0c070 0%,#e8a550 75%);
+  border-radius:50% 50% 46% 46%;position:absolute;top:0;left:50%;
+  transform:translateX(-50%);z-index:3}
+/* Forehead stripes */
+.cat-head::before{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
+  width:3px;height:7px;background:rgba(180,120,50,.22);border-radius:2px;
+  box-shadow:-6px 2px 0 rgba(180,120,50,.18),6px 2px 0 rgba(180,120,50,.18)}
+/* Ears */
+.cat-ear{position:absolute;top:-8px;width:13px;height:14px;background:#e8a550;
+  clip-path:polygon(50% 0%,5% 100%,95% 100%);z-index:2}
+.cat-ear::after{content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);
+  width:7px;height:8px;background:#f0b8a0;clip-path:polygon(50% 0%,5% 100%,95% 100%)}
+.cat-ear-l{left:1px;transform:rotate(-6deg);animation:earTwitchL 5s ease-in-out infinite}
+.cat-ear-r{right:1px;transform:rotate(6deg);animation:earTwitchR 5.3s ease-in-out infinite}
+@keyframes earTwitchL{0%,92%,100%{transform:rotate(-6deg)}96%{transform:rotate(-16deg)}}
+@keyframes earTwitchR{0%,88%,96%,100%{transform:rotate(6deg)}92%{transform:rotate(15deg)}}
+/* Eyes */
+.cat-eye{width:7px;height:8px;background:#3a3a3a;border-radius:50%;position:absolute;top:14px;
+  transition:all .08s}
+.cat-eye::after{content:'';position:absolute;top:1px;left:1.5px;width:2.5px;height:2.5px;
+  background:rgba(255,255,255,.8);border-radius:50%;transition:opacity .08s}
+.cat-eye-l{left:9px}.cat-eye-r{right:9px}
+.neko-cat.blink .cat-eye{height:2px;top:17px;border-radius:1px}
+.neko-cat.blink .cat-eye::after{opacity:0}
+.neko-cat.sleep .cat-eye{height:2px;top:17px;border-radius:1px}
+.neko-cat.sleep .cat-eye::after{opacity:0}
+/* Nose */
+.cat-nose{position:absolute;top:21px;left:50%;transform:translateX(-50%);
+  width:5px;height:3.5px;background:#6b4930;border-radius:50% 50% 50% 50%/30% 30% 70% 70%}
+/* Mouth ω */
+.cat-mouth{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:10px;height:4px}
+.cat-mouth::before,.cat-mouth::after{content:'';position:absolute;top:0;width:6px;height:3px;
+  border:1.5px solid rgba(107,73,48,.4);border-top:none;border-radius:0 0 50% 50%}
+.cat-mouth::before{left:-1px}.cat-mouth::after{right:-1px}
+/* Cheeks */
+.cat-cheek{position:absolute;top:18px;width:7px;height:4px;
+  background:rgba(245,160,130,.22);border-radius:50%}
+.cat-cheek-l{left:3px}.cat-cheek-r{right:3px}
+/* Torso */
+.cat-torso{width:32px;height:22px;
+  background:radial-gradient(ellipse at 50% 30%,#f0c070 0%,#e8a550 80%);
+  border-radius:38% 38% 48% 48%;position:absolute;bottom:8px;left:50%;
+  transform:translateX(-50%);z-index:2;transition:transform .15s}
+.cat-torso::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:18px;height:12px;background:radial-gradient(ellipse,#f8e4c0 0%,transparent 70%);border-radius:50%}
+/* Feet */
+.cat-foot{width:10px;height:8px;background:#e8a550;border-radius:35% 35% 50% 50%;
+  position:absolute;bottom:0;z-index:1;transform-origin:top center;transition:transform .12s}
+.cat-foot::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:7px;height:2.5px;background:rgba(240,200,170,.25);border-radius:50%}
+.cat-foot-l{left:11px}.cat-foot-r{right:11px}
+/* Walk */
+.neko-cat.walk .cat-foot-l{animation:stepL .35s ease-in-out infinite}
+.neko-cat.walk .cat-foot-r{animation:stepR .35s ease-in-out infinite}
+@keyframes stepL{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px) rotate(-8deg)}}
+@keyframes stepR{0%,100%{transform:translateY(-5px) rotate(8deg)}50%{transform:translateY(0)}}
+.neko-cat.walk .cat-head{animation:walkBob .35s ease-in-out infinite}
+@keyframes walkBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-2px)}}
+/* Idle */
+.neko-cat.idle .cat-head{animation:catBreathe 3s ease-in-out infinite}
+@keyframes catBreathe{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-1.5px)}}
+/* Sit */
+.neko-cat.sit .cat-torso{transform:translateX(-50%) scaleY(.88)}
+.neko-cat.sit .cat-foot-l{transform:translateX(-2px)}
+.neko-cat.sit .cat-foot-r{transform:translateX(2px)}
+.neko-cat.sit .cat-head{animation:catBreathe 3.5s ease-in-out infinite}
+/* Sleep */
+.neko-cat.sleep .cat-torso{transform:translateX(-50%) scaleY(.82)}
+.neko-cat.sleep .cat-head{animation:sleepBreathe 2.8s ease-in-out infinite}
+@keyframes sleepBreathe{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) translateY(1px) scale(1.015)}}
+/* Jump */
+.neko-cat.jump .cat-torso{transform:translateX(-50%) scaleY(1.1) scaleX(.93)}
+.neko-cat.jump .cat-foot-l,.neko-cat.jump .cat-foot-r{transform:translateY(3px)}
+/* Tail */
+.cat-tail{position:absolute;bottom:8px;right:-12px;width:18px;height:14px;z-index:1}
+.cat-tail::before{content:'';position:absolute;bottom:0;right:0;width:16px;height:10px;
+  border:2.5px solid #d4903a;border-top:none;border-left:none;border-radius:0 0 60% 0;
+  transform-origin:left bottom;animation:tailWag 1.8s ease-in-out infinite}
+@keyframes tailWag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(20deg)}}
+.neko-cat.sit .cat-tail{right:auto;left:-10px;bottom:6px;transform:scaleX(-1)}
+.neko-cat.sleep .cat-tail{right:auto;left:-8px;bottom:3px;transform:scaleX(-1) rotate(10deg)}
+/* Shadow */
 .neko-shadow{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
   width:60%;height:8px;background:radial-gradient(ellipse,rgba(0,0,0,.35) 0%,transparent 70%);
   border-radius:50%;pointer-events:none;transition:all .2s}
-/* paw prints */
+/* Paw prints */
 .neko-paw{position:fixed;width:8px;height:8px;border-radius:50%;
   background:rgba(200,168,124,.08);pointer-events:none;z-index:59;
   animation:pawFade 1.5s ease-out forwards}
 @keyframes pawFade{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(.3)}}
-/* zzz */
+/* ZZZ */
 .neko-zzz{position:absolute;top:-8px;right:-4px;font-size:10px;color:var(--accent-dim);
   opacity:0;pointer-events:none;letter-spacing:2px;animation:zzzFloat 2s ease-in-out infinite}
 @keyframes zzzFloat{0%,100%{opacity:0;transform:translateY(0)}30%{opacity:.6}70%{opacity:.4}100%{opacity:0;transform:translateY(-14px)}}
@@ -413,7 +482,7 @@ canvas{width:100%;height:100%;display:block}
   .history{bottom:10px}
   .hist-label{font-size:12px}
   .hist-item{font-size:14px}
-  .neko-sprite{width:52px;height:52px}
+  .neko-cat{width:48px;height:58px}
   .neko-bubble{font-size:13px;padding:8px 12px;max-width:160px}
   .pointer{border-left-width:8px;border-right-width:8px;border-top-width:20px;top:-4px}
 }
@@ -755,14 +824,22 @@ canvas{width:100%;height:100%;display:block}
     <span id="nekoText"></span>
   </div>
   <div class="neko-body">
-    <div class="neko-sprite">
-      <img src="bitcoin.png" alt="比特幣" draggable="false">
-      <div class="neko-eyelids" id="nekoEyelids">
-        <div class="neko-eyelid"></div>
-        <div class="neko-eyelid"></div>
+    <div class="neko-cat" id="nekoCat">
+      <div class="cat-head">
+        <div class="cat-ear cat-ear-l"></div>
+        <div class="cat-ear cat-ear-r"></div>
+        <div class="cat-eye cat-eye-l"></div>
+        <div class="cat-eye cat-eye-r"></div>
+        <div class="cat-nose"></div>
+        <div class="cat-mouth"></div>
+        <div class="cat-cheek cat-cheek-l"></div>
+        <div class="cat-cheek cat-cheek-r"></div>
       </div>
+      <div class="cat-torso"></div>
+      <div class="cat-foot cat-foot-l"></div>
+      <div class="cat-foot cat-foot-r"></div>
+      <div class="cat-tail"></div>
     </div>
-    <div class="neko-tail" id="nekoTail"></div>
     <div class="neko-shadow"></div>
   </div>
 </div>
@@ -1244,12 +1321,10 @@ function renderHistory() {
 (function NekoEngine() {
   const el = document.getElementById('neko');
   const body = el.querySelector('.neko-body');
-  const sprite = el.querySelector('.neko-sprite');
+  const nekoCat = document.getElementById('nekoCat');
   const shadow = el.querySelector('.neko-shadow');
   const bubble = document.getElementById('nekoBubble');
   const textEl = document.getElementById('nekoText');
-  const tail = document.getElementById('nekoTail');
-  const eyelids = document.getElementById('nekoEyelids');
 
   const NAME = '比特幣';
   const OWNER = '悠悠';
@@ -1259,13 +1334,9 @@ function renderHistory() {
   /* ── Physics state ── */
   let x = Math.random() * (window.innerWidth - 80);
   let y = window.innerHeight - 80;
-  let targetX = x;
-  let targetY = y;
-  let vx = 0;
-  let vy = 0;
-  let rot = 0;
-  let sc = 1;
-  let state = 'idle'; // idle | walk | sleep | jump | sit
+  let targetX = x, targetY = y;
+  let vx = 0, vy = 0, rot = 0, sc = 1;
+  let state = 'idle';
   let stateTime = 0;
   let nextSwitch = 4 + Math.random() * 4;
   let frame = 0;
@@ -1273,8 +1344,8 @@ function renderHistory() {
   let jumpVy = 0;
   let bubbleTimer = null;
   let pawTimer = 0;
-  let blinkTime = 0;
-  let lastBlink = 0;
+  let blinkTime = 0, lastBlink = 0;
+  let facingLeft = false;
 
   const W = () => window.innerWidth - 80;
   const H = () => window.innerHeight - 80;
@@ -1342,28 +1413,25 @@ function renderHistory() {
     setTimeout(() => p.remove(), 1500);
   }
 
+  /* ── State class helper ── */
+  function setNekoCls(s) { nekoCat.className = 'neko-cat ' + s; }
+
   /* ── Eye blink ── */
   function updateBlink(dt) {
     blinkTime += dt;
+    if (state === 'sleep') return;
     if (blinkTime - lastBlink > 3 + Math.random() * 5) {
       lastBlink = blinkTime;
-      eyelids.style.opacity = '1';
-      setTimeout(() => { eyelids.style.opacity = '0'; }, 120 + Math.random() * 80);
+      nekoCat.classList.add('blink');
+      setTimeout(() => nekoCat.classList.remove('blink'), 120 + Math.random() * 80);
     }
-    // Slow blink in sleep
-    if (state === 'sleep') eyelids.style.opacity = '1';
-  }
-
-  /* ── Tail ── */
-  function updateTail() {
-    tail.style.opacity = (state === 'sit' || state === 'sleep') ? '1' : '0';
   }
 
   /* ── State transitions ── */
   function enterState(s) {
     state = s;
     stateTime = 0;
-    updateTail();
+    setNekoCls(s);
     if (s === 'walk') {
       targetX = Math.random() * W();
       targetY = H() * (0.35 + Math.random() * 0.65);
@@ -1401,7 +1469,8 @@ function renderHistory() {
         y += vy * dt;
         rot = Math.sin(frame * 9) * 2.5 * Math.sign(vx);
         sc = 1 + Math.sin(frame * 18) * 0.015;
-        sprite.style.transform = vx < -5 ? 'scaleX(-1)' : '';
+        if (vx < -5) facingLeft = true;
+        else if (vx > 5) facingLeft = false;
         if (pawTimer > 0.4) { pawTimer = 0; spawnPaw(x, y); }
         break;
       }
@@ -1414,7 +1483,7 @@ function renderHistory() {
           if (r < 0.35) enterState('walk');
           else if (r < 0.5) enterState('sit');
           else if (r < 0.62 && isLate) enterState('sleep');
-          else if (r < 0.7) { state = 'jump'; stateTime = 0; jumpVy = -300 - Math.random() * 120; vx = (Math.random() - 0.5) * 100; }
+          else if (r < 0.7) { state = 'jump'; stateTime = 0; setNekoCls('jump'); jumpVy = -300 - Math.random() * 120; vx = (Math.random() - 0.5) * 100; }
           else enterState('idle');
         }
         break;
@@ -1447,11 +1516,11 @@ function renderHistory() {
   /* ── Render ── */
   function render() {
     el.style.transform = `translate3d(${x}px,${y}px,0)`;
-    body.style.transform = `rotate(${rot}deg) scale(${sc})`;
+    const flip = facingLeft ? ' scaleX(-1)' : '';
+    body.style.transform = `rotate(${rot}deg) scale(${sc})${flip}`;
     const sStr = state === 'walk' ? 1.2 : (state === 'sleep' ? 0.8 : (state === 'sit' ? 0.9 : 1));
     shadow.style.transform = `translateX(-50%) scaleX(${sStr})`;
     shadow.style.opacity = state === 'sleep' ? '0.15' : '0.3';
-    sprite.style.opacity = state === 'sleep' ? '0.55' : '1';
   }
 
   /* ── Main loop ── */
@@ -1466,13 +1535,12 @@ function renderHistory() {
   /* ── Click ── */
   el.addEventListener('click', e => {
     e.stopPropagation();
-    // 20% chance to suggest gomoku
     if (Math.random() < 0.2 && typeof openGomoku === 'function') {
       say('來下棋！', 3000);
     } else {
       say(pick(CLICK), 3000);
     }
-    if (state !== 'jump') { state = 'jump'; stateTime = 0; jumpVy = -260; vx = (Math.random() - 0.5) * 80; }
+    if (state !== 'jump') { state = 'jump'; stateTime = 0; setNekoCls('jump'); jumpVy = -260; vx = (Math.random() - 0.5) * 80; }
     if (typeof _track === 'function') _track('neko_click');
   });
 
@@ -1488,6 +1556,7 @@ function renderHistory() {
 
   /* ── Init ── */
   y = H();
+  setNekoCls('idle');
   el.style.transform = `translate3d(${x}px,${y}px,0)`;
   requestAnimationFrame(loop);
   setTimeout(() => say(pick(GREETS), 4500), 2200);
