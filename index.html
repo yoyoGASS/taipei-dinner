@@ -1561,11 +1561,10 @@ function renderFortuneCard(step, f) {
     </div>
     <div class="fortune-tip">— ${f.tip}</div>
     <div class="fortune-actions">
-      ${step < 2
-        ? `<button class="fortune-act fortune-act-go" id="fNext">下一籤</button>
+      ${step === 2
+        ? `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
            <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
-        : `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
-           <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
+        : `<button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
       }
     </div>
     <div class="fortune-deco-bot"></div>`;
@@ -1574,7 +1573,8 @@ function renderFortuneCard(step, f) {
   document.getElementById('fClose').onclick = () => fortuneOverlay.classList.remove('open');
 
   if (step < 2) {
-    document.getElementById('fNext').onclick = () => {
+    // Auto-advance to next draw after a pause
+    setTimeout(() => {
       if (typeof _track === 'function') _track('fortune_next', { step: step + 2 });
       fortuneOverlay.classList.remove('open');
       void fortuneCard.offsetWidth;
@@ -1584,7 +1584,7 @@ function renderFortuneCard(step, f) {
         fortuneCard.classList.remove('shake');
         doDrawFortune();
       }, 450);
-    };
+    }, 2500);
   } else {
     document.getElementById('fShowAll').onclick = () => showFortuneSummary();
   }
