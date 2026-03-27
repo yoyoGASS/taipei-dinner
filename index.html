@@ -1958,7 +1958,7 @@ async function fetchWeather() {
 }
 
 /* ══════════════════════════════════════
-   Fortune — 美食天命三連抽
+   Fortune — 今晚好運三連抽
    ══════════════════════════════════════ */
 const FORTUNES = [
   // ── 大吉 (30) ──
@@ -2164,7 +2164,7 @@ function renderFortuneCard(step, f) {
       ${step < 2
         ? `<button class="fortune-act fortune-act-go" id="fNext">下一籤</button>
            <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
-        : `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
+        : `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道好運</button>
            <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
       }
     </div>
@@ -2268,7 +2268,7 @@ function showFortuneLimit(type) {
       <div class="fortune-limit-msg">${m.msg}</div>
       <div class="fortune-limit-sub">${m.sub}</div>
       ${m.btn ? `<button class="fortune-limit-btn" id="${m.btnId}">${m.btn}</button>` : ''}
-      ${fortuneDraws.length >= FORTUNE_MAX ? `<button class="fortune-limit-btn" id="fReviewAll" style="margin-top:10px;color:var(--text3);border-color:rgba(255,255,255,.1)">查看今天的天命</button>` : ''}
+      ${fortuneDraws.length >= FORTUNE_MAX ? `<button class="fortune-limit-btn" id="fReviewAll" style="margin-top:10px;color:var(--text3);border-color:rgba(255,255,255,.1)">查看今天的好運</button>` : ''}
     </div>
     <div class="fortune-deco-bot"></div>`;
 
