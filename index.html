@@ -401,6 +401,96 @@ canvas{width:100%;height:100%;display:block}
   .cat{font-size:12px;padding:6px 12px}
   .spin-btn{font-size:14px;padding:13px 56px}
 }
+
+/* ══ Weather Widget ══ */
+.weather{display:flex;align-items:center;gap:8px;margin-top:2px;
+  opacity:0;transition:opacity 1s ease 1s}
+.weather.loaded{opacity:1}
+.weather-icon{font-size:16px;line-height:1}
+.weather-temp{font-size:clamp(10px,1.3vw,12px);font-weight:300;color:var(--accent-dim);letter-spacing:.08em}
+.weather-mood{font-size:clamp(9px,1.1vw,10px);font-weight:200;color:var(--text3);letter-spacing:.06em;
+  padding-left:8px;border-left:1px solid rgba(200,168,124,.1)}
+@media(max-width:480px){
+  .weather-temp{font-size:11px}
+  .weather-mood{font-size:10px}
+}
+
+/* ══ Fortune Button ══ */
+.fortune-btn{position:fixed;bottom:clamp(14px,2.5vh,28px);left:clamp(14px,3vw,28px);z-index:10;
+  font-family:var(--serif);font-size:10px;font-weight:400;letter-spacing:.2em;
+  color:rgba(255,255,255,.55);background:none;border:1px solid rgba(255,255,255,.12);
+  padding:6px 14px;cursor:pointer;transition:all .4s;
+  text-transform:uppercase;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.fortune-btn:hover{color:var(--accent);border-color:rgba(200,168,124,.25)}
+@media(max-width:480px){
+  .fortune-btn{font-size:13px;padding:10px 18px}
+}
+
+/* ══ Fortune Panel ══ */
+.fortune-overlay{position:fixed;inset:0;z-index:200;
+  background:rgba(7,7,12,.92);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .6s var(--ease)}
+.fortune-overlay.open{opacity:1;pointer-events:auto}
+
+.fortune-card{width:min(320px,80vw);padding:clamp(32px,5vh,48px) clamp(28px,4vw,40px);
+  text-align:center;position:relative;
+  border:1px solid rgba(200,168,124,.12);
+  background:linear-gradient(180deg,rgba(18,18,28,.6) 0%,rgba(12,12,20,.8) 100%);
+  transform:scale(.85) rotateY(90deg);opacity:0;
+  transition:all .7s var(--ease) .1s}
+.fortune-overlay.open .fortune-card{transform:scale(1) rotateY(0);opacity:1}
+
+.fortune-deco-top,.fortune-deco-bot{position:absolute;left:50%;transform:translateX(-50%);
+  width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3}
+.fortune-deco-top{top:12px}
+.fortune-deco-bot{bottom:12px}
+
+.fortune-label{font-size:clamp(9px,1.1vw,10px);font-weight:200;letter-spacing:.6em;
+  color:var(--accent-dim);text-transform:uppercase;margin-bottom:clamp(16px,2.5vh,24px);
+  opacity:0;animation:none}
+.fortune-overlay.open .fortune-label{animation:ffu .6s var(--ease) .4s forwards}
+
+.fortune-luck{display:inline-block;font-size:clamp(28px,7vw,40px);font-weight:200;
+  color:var(--accent);letter-spacing:.15em;margin-bottom:clamp(16px,2.5vh,24px);
+  opacity:0;text-shadow:0 0 40px rgba(200,168,124,.2)}
+.fortune-overlay.open .fortune-luck{animation:ffu .6s var(--ease) .6s forwards}
+
+.fortune-poem{font-size:clamp(16px,4vw,22px);font-weight:200;color:var(--text);
+  letter-spacing:.08em;line-height:2;margin-bottom:clamp(20px,3vh,32px);
+  opacity:0;white-space:pre-line}
+.fortune-overlay.open .fortune-poem{animation:ffu .6s var(--ease) .8s forwards}
+
+.fortune-line{width:24px;height:1px;background:var(--accent);opacity:.3;margin:0 auto clamp(14px,2vh,20px)}
+
+.fortune-tip{font-size:clamp(10px,1.3vw,12px);font-weight:300;color:var(--accent-dim);
+  letter-spacing:.08em;line-height:1.6;opacity:0}
+.fortune-overlay.open .fortune-tip{animation:ffu .5s var(--ease) 1.1s forwards}
+
+.fortune-actions{display:flex;gap:12px;justify-content:center;margin-top:clamp(24px,3.5vh,36px);
+  opacity:0}
+.fortune-overlay.open .fortune-actions{animation:ffu .5s var(--ease) 1.3s forwards}
+
+.fortune-again{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  color:var(--accent);background:none;border:1px solid rgba(200,168,124,.2);
+  padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
+.fortune-again:hover{border-color:rgba(200,168,124,.4);background:rgba(200,168,124,.05)}
+.fortune-close-btn{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  color:rgba(255,255,255,.35);background:none;border:1px solid rgba(255,255,255,.08);
+  padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
+.fortune-close-btn:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)}
+
+@keyframes ffu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* fortune shake */
+.fortune-card.shake{animation:fortuneShake .5s ease}
+@keyframes fortuneShake{
+  0%,100%{transform:scale(1) rotate(0)}
+  15%{transform:scale(1.02) rotate(-2deg)}
+  30%{transform:scale(1) rotate(2deg)}
+  45%{transform:scale(1.01) rotate(-1.5deg)}
+  60%{transform:scale(1) rotate(1deg)}
+  80%{transform:scale(1.005) rotate(-.5deg)}}
 </style>
 </head>
 <body>
@@ -430,7 +520,14 @@ canvas{width:100%;height:100%;display:block}
 <!-- ══ App ══ -->
 <div id="app">
   <header>
-    <span class="title">台北晚餐</span>
+    <div>
+      <span class="title">台北晚餐</span>
+      <div class="weather" id="weather">
+        <span class="weather-icon" id="weatherIcon"></span>
+        <span class="weather-temp" id="weatherTemp"></span>
+        <span class="weather-mood" id="weatherMood"></span>
+      </div>
+    </div>
     <button class="music-btn" id="musicBtn">音樂</button>
   </header>
   <div class="cats" id="cats"></div>
@@ -453,6 +550,24 @@ canvas{width:100%;height:100%;display:block}
   <div class="hist-items" id="histItems"></div>
 </div>
 <button class="edit-btn" id="editBtn">編輯菜單</button>
+<button class="fortune-btn" id="fortuneBtn">抽食籤</button>
+
+<!-- ══ Fortune Panel ══ -->
+<div class="fortune-overlay" id="fortuneOverlay">
+  <div class="fortune-card" id="fortuneCard">
+    <div class="fortune-deco-top"></div>
+    <div class="fortune-label">食 籤</div>
+    <div class="fortune-luck" id="fortuneLuck"></div>
+    <div class="fortune-poem" id="fortunePoem"></div>
+    <div class="fortune-line"></div>
+    <div class="fortune-tip" id="fortuneTip"></div>
+    <div class="fortune-actions">
+      <button class="fortune-again" id="fortuneAgain">再抽一次</button>
+      <button class="fortune-close-btn" id="fortuneClose">收起</button>
+    </div>
+    <div class="fortune-deco-bot"></div>
+  </div>
+</div>
 
 <div class="music-bar" id="musicBar">
   <div class="music-bar-inner">
@@ -1216,6 +1331,134 @@ window.addEventListener('resize', () => { setupCanvas(); setupParticleCanvas(); 
    Init
    ══════════════════════════════════════ */
 /* ══════════════════════════════════════
+   Weather Widget (Open-Meteo, free, no API key)
+   ══════════════════════════════════════ */
+function getWeatherIcon(code) {
+  if (code === 0) return '☀';
+  if ([1,2].includes(code)) return '⛅';
+  if (code === 3) return '☁';
+  if ([45,48].includes(code)) return '🌫';
+  if ([51,53,55].includes(code)) return '🌦';
+  if ([61,63,65,80,81,82].includes(code)) return '🌧';
+  if ([71,73,75,77,85,86].includes(code)) return '❄';
+  if ([95,96,99].includes(code)) return '⛈';
+  return '🌙';
+}
+function getWeatherName(code) {
+  if (code === 0) return '晴';
+  if ([1,2].includes(code)) return '多雲';
+  if (code === 3) return '陰';
+  if ([45,48].includes(code)) return '霧';
+  if ([51,53,55].includes(code)) return '小雨';
+  if ([61,63,65,80,81,82].includes(code)) return '雨';
+  if ([95,96,99].includes(code)) return '雷雨';
+  return '';
+}
+function getWeatherMoodText(code, temp) {
+  const rain = [51,53,55,61,63,65,80,81,82].includes(code);
+  const thunder = [95,96,99].includes(code);
+  if (thunder) return '雷雨夜，窩進小店最浪漫';
+  if (rain && temp < 20) return '雨天微涼，需要一碗熱湯';
+  if (rain) return '下雨天，找間溫暖的店躲雨';
+  if (temp < 12) return '冷冷的夜，吃點暖心的吧';
+  if (temp < 18) return '微涼的風，適合散步覓食';
+  if (temp < 24) return '舒服的溫度，慢慢享受';
+  if (temp < 28) return '暖暖的夜，適合坐戶外';
+  return '熱熱的，來點冰涼的吧';
+}
+async function fetchWeather() {
+  try {
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.033&longitude=121.565&current_weather=true&timezone=Asia%2FTaipei');
+    const data = await res.json();
+    const cw = data.current_weather;
+    const temp = Math.round(cw.temperature);
+    const code = cw.weathercode;
+    document.getElementById('weatherIcon').textContent = getWeatherIcon(code);
+    document.getElementById('weatherTemp').textContent = `台北 ${temp}°C ${getWeatherName(code)}`;
+    document.getElementById('weatherMood').textContent = getWeatherMoodText(code, temp);
+    document.getElementById('weather').classList.add('loaded');
+  } catch(e) { /* silent fail */ }
+}
+
+/* ══════════════════════════════════════
+   Fortune — 抽食籤
+   ══════════════════════════════════════ */
+const FORTUNES = [
+  {luck:'大吉',poem:'今晚的你\n值得一碗好湯',tip:'閉上眼喝第一口，感受幸福'},
+  {luck:'吉',poem:'吃飽了\n才有力氣想念一個人',tip:'多點一份，說不定會遇見誰'},
+  {luck:'大吉',poem:'人生苦短\n甜的先吃',tip:'今晚別看熱量表'},
+  {luck:'中吉',poem:'胃暖了\n心也就暖了',tip:'選有湯的那道準沒錯'},
+  {luck:'吉',poem:'有些事急不來\n但外送可以',tip:'想吃就吃，別猶豫太久'},
+  {luck:'大吉',poem:'你跟這碗麵\n是命中注定的相遇',tip:'今晚的麵會特別好吃'},
+  {luck:'中吉',poem:'深夜吃的東西\n零卡路里',tip:'這是宇宙的規則'},
+  {luck:'末吉',poem:'如果你正在煩惱\n那就吃辣的',tip:'辣椒素會帶走一切不開心'},
+  {luck:'大吉',poem:'最浪漫的事\n是陪你吃宵夜',tip:'找個人一起吃吧'},
+  {luck:'吉',poem:'今天的你閃閃發光\n值得加點小菜',tip:'加個蛋，運氣更好'},
+  {luck:'大吉',poem:'筷子拿起來\n煩惱放下去',tip:'專心享受每一口'},
+  {luck:'小吉',poem:'沒有什麼事\n是一頓飯解決不了的',tip:'如果有，那就吃兩頓'},
+  {luck:'吉',poem:'食物是最溫柔的\n擁抱',tip:'選那個你最想念的味道'},
+  {luck:'大吉',poem:'遇見對的食物\n跟遇見對的人一樣幸運',tip:'今晚勇敢試新的'},
+  {luck:'中吉',poem:'深夜的冰箱\n藏著宇宙的秘密',tip:'但出門吃比較浪漫'},
+  {luck:'末吉',poem:'減肥是明天的事\n今天先好好吃',tip:'明天的你會感謝今天的你'},
+  {luck:'吉',poem:'用一頓好飯\n跟今天和解',tip:'對自己好一點'},
+  {luck:'大吉',poem:'有些路要自己走\n但晚餐可以一起吃',tip:'揪人一起更好吃'},
+  {luck:'小吉',poem:'你的胃在說：\n拜託，善待我',tip:'聽身體的話'},
+  {luck:'大吉',poem:'世界上最短的情詩：\n好吃。',tip:'簡單就是幸福'},
+  {luck:'吉',poem:'一個人吃飯不孤單\n那叫品味',tip:'享受獨處的美食時光'},
+  {luck:'中吉',poem:'今晚的月色\n配這頓飯剛好',tip:'記得抬頭看看天空'},
+  {luck:'大吉',poem:'會吃的人\n運氣都不會太差',tip:'你已經很會選了'},
+  {luck:'吉',poem:'別問我瘦了沒\n問我吃了什麼',tip:'答案永遠是好吃的'},
+];
+
+const fortuneOverlay = document.getElementById('fortuneOverlay');
+const fortuneCard = document.getElementById('fortuneCard');
+const fortuneLuck = document.getElementById('fortuneLuck');
+const fortunePoem = document.getElementById('fortunePoem');
+const fortuneTip = document.getElementById('fortuneTip');
+let lastFortuneIdx = -1;
+
+function drawFortune() {
+  // Pick a random fortune (avoid repeat)
+  let idx;
+  do { idx = Math.floor(Math.random() * FORTUNES.length); } while (idx === lastFortuneIdx && FORTUNES.length > 1);
+  lastFortuneIdx = idx;
+  const f = FORTUNES[idx];
+
+  // Reset animations by toggling class
+  fortuneOverlay.classList.remove('open');
+  fortuneCard.classList.remove('shake');
+  // Force reflow
+  void fortuneCard.offsetWidth;
+
+  // Set content
+  fortuneLuck.textContent = f.luck;
+  fortunePoem.textContent = f.poem;
+  fortuneTip.textContent = f.tip;
+
+  // Open with card flip
+  fortuneOverlay.classList.add('open');
+  // Haptic
+  if (navigator.vibrate) navigator.vibrate(30);
+}
+
+function redrawFortune() {
+  // Shake animation then redraw
+  fortuneOverlay.classList.remove('open');
+  void fortuneCard.offsetWidth;
+  fortuneCard.classList.add('shake');
+  if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+  setTimeout(() => {
+    fortuneCard.classList.remove('shake');
+    drawFortune();
+  }, 500);
+}
+
+document.getElementById('fortuneBtn').onclick = drawFortune;
+document.getElementById('fortuneAgain').onclick = redrawFortune;
+document.getElementById('fortuneClose').onclick = () => fortuneOverlay.classList.remove('open');
+fortuneOverlay.onclick = e => { if (e.target === fortuneOverlay) fortuneOverlay.classList.remove('open'); };
+
+/* ══════════════════════════════════════
    Romantic Atmosphere — Bokeh + Cursor Glow + Smart Greeting
    ══════════════════════════════════════ */
 
@@ -1288,6 +1531,8 @@ document.fonts.ready.then(() => {
   const greeting = getSmartGreeting();
   centerMain.textContent = greeting.main;
   document.querySelector('.entry-sub').textContent = greeting.sub;
+  // Fetch weather
+  fetchWeather();
 });
 </script>
 </body>
