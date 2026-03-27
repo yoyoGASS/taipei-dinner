@@ -1496,30 +1496,111 @@ async function fetchWeather() {
    Fortune — 美食天命三連抽
    ══════════════════════════════════════ */
 const FORTUNES = [
-  {luck:'大吉',poem:'今晚的你\n值得一碗好湯',tip:'閉上眼喝第一口，感受幸福'},
-  {luck:'吉',poem:'吃飽了\n才有力氣想念一個人',tip:'多點一份，說不定會遇見誰'},
+  // ── 大吉 (30) ──
+  {luck:'大吉',poem:'今晚的你\n值得一碗好湯',tip:'閉上眼喝第一口'},
   {luck:'大吉',poem:'人生苦短\n甜的先吃',tip:'今晚別看熱量表'},
-  {luck:'中吉',poem:'胃暖了\n心也就暖了',tip:'選有湯的那道準沒錯'},
-  {luck:'吉',poem:'有些事急不來\n但外送可以',tip:'想吃就吃，別猶豫太久'},
-  {luck:'大吉',poem:'你跟這碗麵\n是命中注定的相遇',tip:'今晚的麵會特別好吃'},
-  {luck:'中吉',poem:'深夜吃的東西\n零卡路里',tip:'這是宇宙的規則'},
-  {luck:'末吉',poem:'如果你正在煩惱\n那就吃辣的',tip:'辣椒素會帶走一切不開心'},
-  {luck:'大吉',poem:'最浪漫的事\n是陪你吃宵夜',tip:'找個人一起吃吧'},
-  {luck:'吉',poem:'今天的你閃閃發光\n值得加點小菜',tip:'加個蛋，運氣更好'},
+  {luck:'大吉',poem:'你跟這碗麵\n是命中注定',tip:'今晚的麵會特別香'},
+  {luck:'大吉',poem:'最好的夜晚\n從一道好菜開始',tip:'選你第一個想到的'},
   {luck:'大吉',poem:'筷子拿起來\n煩惱放下去',tip:'專心享受每一口'},
-  {luck:'小吉',poem:'沒有什麼事\n是一頓飯解決不了的',tip:'如果有，那就吃兩頓'},
-  {luck:'吉',poem:'食物是最溫柔的\n擁抱',tip:'選那個你最想念的味道'},
   {luck:'大吉',poem:'遇見對的食物\n跟遇見對的人一樣幸運',tip:'今晚勇敢試新的'},
-  {luck:'中吉',poem:'深夜的冰箱\n藏著宇宙的秘密',tip:'但出門吃比較浪漫'},
-  {luck:'末吉',poem:'減肥是明天的事\n今天先好好吃',tip:'明天的你會感謝今天的你'},
-  {luck:'吉',poem:'用一頓好飯\n跟今天和解',tip:'對自己好一點'},
-  {luck:'大吉',poem:'有些路要自己走\n但晚餐可以一起吃',tip:'揪人一起更好吃'},
-  {luck:'小吉',poem:'你的胃在說：\n拜託，善待我',tip:'聽身體的話'},
-  {luck:'大吉',poem:'世界上最短的情詩：\n好吃。',tip:'簡單就是幸福'},
-  {luck:'吉',poem:'一個人吃飯不孤單\n那叫品味',tip:'享受獨處的美食時光'},
-  {luck:'中吉',poem:'今晚的月色\n配這頓飯剛好',tip:'記得抬頭看看天空'},
+  {luck:'大吉',poem:'有些路要自己走\n但晚餐可以一起',tip:'揪人更好吃'},
+  {luck:'大吉',poem:'世界上最短的情詩\n好吃',tip:'簡單就是幸福'},
   {luck:'大吉',poem:'會吃的人\n運氣都不會太差',tip:'你已經很會選了'},
+  {luck:'大吉',poem:'燈光昏黃\n碗裡冒著熱氣\n這就夠了',tip:'氛圍到了什麼都好吃'},
+  {luck:'大吉',poem:'城市再忙\n總有一盞燈\n為你的胃亮著',tip:'那間店在等你'},
+  {luck:'大吉',poem:'味蕾是最誠實的\n它從不騙你',tip:'相信第一口的感覺'},
+  {luck:'大吉',poem:'今晚的風\n帶著炭火的香氣',tip:'跟著鼻子走'},
+  {luck:'大吉',poem:'好的食物不解釋\n入口就懂',tip:'點那道你猶豫最久的'},
+  {luck:'大吉',poem:'深巷裡的小店\n藏著最大的幸福',tip:'別怕繞路'},
+  {luck:'大吉',poem:'一口咬下\n整個世界安靜了',tip:'那就是對的選擇'},
+  {luck:'大吉',poem:'廚房裡的火光\n是夜裡最溫暖的星',tip:'去有煙火氣的地方'},
+  {luck:'大吉',poem:'飢餓是最好的調味\n而你剛好餓了',tip:'現在出發剛剛好'},
+  {luck:'大吉',poem:'木桌上的熱湯\n比任何道理都有用',tip:'先喝湯再說'},
+  {luck:'大吉',poem:'今晚你值得\n那張等了很久的訂位',tip:'對自己大方一次'},
+  {luck:'大吉',poem:'街角的香氣\n是城市寫給你的情書',tip:'走慢一點就聞到了'},
+  {luck:'大吉',poem:'最浪漫的事\n是陪你吃到打烊',tip:'時間不重要 味道才是'},
+  {luck:'大吉',poem:'鑄鐵鍋裡\n滾著今晚的答案',tip:'熱的東西要趁熱吃'},
+  {luck:'大吉',poem:'醬汁收乾的瞬間\n就是完美',tip:'耐心等候的人有福了'},
+  {luck:'大吉',poem:'有些幸福\n聞得到卻看不見',tip:'那是後廚飄來的香'},
+  {luck:'大吉',poem:'月光下的露天座位\n今晚是你的',tip:'挑靠窗的位子'},
+  {luck:'大吉',poem:'碗底見空\n是對廚師最好的讚美',tip:'吃乾淨就對了'},
+  {luck:'大吉',poem:'舌尖上的記憶\n比照片更持久',tip:'認真品嚐不看手機'},
+  {luck:'大吉',poem:'今晚的星空\n配一杯微醺剛好',tip:'小酌怡情'},
+  {luck:'大吉',poem:'食物的溫度\n就是生活的溫度',tip:'趁熱才是王道'},
+  // ── 吉 (30) ──
+  {luck:'吉',poem:'吃飽了\n才有力氣想念',tip:'多點一份吧'},
+  {luck:'吉',poem:'有些事急不來\n但外送可以',tip:'想吃就吃'},
+  {luck:'吉',poem:'今天的你閃閃發光\n值得加點小菜',tip:'加個蛋運氣更好'},
+  {luck:'吉',poem:'食物是最溫柔的\n擁抱',tip:'選那個最想念的味道'},
   {luck:'吉',poem:'別問我瘦了沒\n問我吃了什麼',tip:'答案永遠是好吃的'},
+  {luck:'吉',poem:'一個人吃飯不孤單\n那叫品味',tip:'享受獨處的美食時光'},
+  {luck:'吉',poem:'用一頓好飯\n跟今天和解',tip:'對自己好一點'},
+  {luck:'吉',poem:'等紅燈的時候\n想好要吃什麼了嗎',tip:'綠燈亮了就出發'},
+  {luck:'吉',poem:'外面在下雨\n裡面在冒煙\n剛剛好',tip:'雨天配熱食最對'},
+  {luck:'吉',poem:'那些排隊的人\n都知道值得',tip:'好東西不怕等'},
+  {luck:'吉',poem:'菜單翻了三遍\n其實第一眼就決定了',tip:'相信直覺'},
+  {luck:'吉',poem:'吃到好吃的\n眼睛會自己笑',tip:'今晚會笑很多次'},
+  {luck:'吉',poem:'巷口那盞燈\n亮了二十年\n一定有原因',tip:'老店通常不會錯'},
+  {luck:'吉',poem:'熱鍋裡的油\n滋的一聲\n是夜的序曲',tip:'聽覺也是味覺的一部分'},
+  {luck:'吉',poem:'碗裡的蔥花\n是最後的溫柔',tip:'細節決定一切'},
+  {luck:'吉',poem:'冒著熱氣的那碗\n不用濾鏡就很美',tip:'先吃再拍'},
+  {luck:'吉',poem:'每座城市\n都有一道忘不了的味道',tip:'台北的在等你發現'},
+  {luck:'吉',poem:'燈火闌珊處\n有人正在翻炒你的幸福',tip:'走過去就對了'},
+  {luck:'吉',poem:'白飯配什麼都對\n就像你配什麼都好看',tip:'自信地點餐'},
+  {luck:'吉',poem:'鹽巴放對了\n整個世界就對了',tip:'簡單的最難'},
+  {luck:'吉',poem:'蒸籠掀開的瞬間\n幸福都是白色的',tip:'熱騰騰最迷人'},
+  {luck:'吉',poem:'筷子交錯的聲音\n是最好的背景音樂',tip:'跟對的人什麼都好吃'},
+  {luck:'吉',poem:'胡椒的香氣\n能叫醒任何疲憊',tip:'今晚需要一點刺激'},
+  {luck:'吉',poem:'好吃到想哭的時候\n就是選對了',tip:'相信你的舌頭'},
+  {luck:'吉',poem:'吧台最後一個座位\n留給今晚的你',tip:'一個人也很好'},
+  {luck:'吉',poem:'醬油膏的光澤\n比鑽石更讓人心動',tip:'台式美學'},
+  {luck:'吉',poem:'晚風配啤酒\n是大人的浪漫',tip:'微醺就好'},
+  {luck:'吉',poem:'吃到一半抬頭\n發現夜景很美',tip:'別忘了享受過程'},
+  {luck:'吉',poem:'外帶的路上\n是最幸福的一段路',tip:'因為知道等等要吃什麼'},
+  {luck:'吉',poem:'打開便當的瞬間\n就像拆禮物',tip:'每餐都是驚喜'},
+  // ── 中吉 (20) ──
+  {luck:'中吉',poem:'胃暖了\n心也就暖了',tip:'選有湯的那道'},
+  {luck:'中吉',poem:'深夜吃的東西\n零卡路里',tip:'這是宇宙的規則'},
+  {luck:'中吉',poem:'深夜的冰箱\n藏著宇宙的秘密',tip:'但出門吃比較浪漫'},
+  {luck:'中吉',poem:'今晚的月色\n配這頓飯剛好',tip:'記得抬頭看天空'},
+  {luck:'中吉',poem:'選擇困難的時候\n閉眼隨便指一道',tip:'命運會幫你選'},
+  {luck:'中吉',poem:'不確定的時候\n就選熱的',tip:'溫暖永遠不會錯'},
+  {luck:'中吉',poem:'辣度就像人生\n中辣最剛好',tip:'太辣會後悔'},
+  {luck:'中吉',poem:'等餐的時間\n是最好的放空',tip:'放下手機看看四周'},
+  {luck:'中吉',poem:'隔壁桌點的\n看起來比較好吃',tip:'下次再來點那道'},
+  {luck:'中吉',poem:'料理是一種語言\n今晚聽聽廚師說什麼',tip:'點主廚推薦'},
+  {luck:'中吉',poem:'蒜頭爆香的聲音\n讓人瞬間清醒',tip:'有蒜的通常不錯'},
+  {luck:'中吉',poem:'沒什麼問題\n是一碗麻辣燙解決不了的',tip:'加麻加辣'},
+  {luck:'中吉',poem:'今晚不趕時間\n慢慢吃',tip:'細嚼慢嚥是奢侈'},
+  {luck:'中吉',poem:'味噌湯的鹹\n是日常的安慰',tip:'從湯開始'},
+  {luck:'中吉',poem:'鍋子裡咕嘟咕嘟\n聽著就開心',tip:'火鍋永遠是答案'},
+  {luck:'中吉',poem:'小菜比主菜厲害\n這種店最可怕',tip:'先看小菜判斷水準'},
+  {luck:'中吉',poem:'油亮的滷汁\n是台灣的液態黃金',tip:'淋在飯上不用客氣'},
+  {luck:'中吉',poem:'冬天的關東煮\n夏天的刨冰\n都是正確答案',tip:'跟著季節吃'},
+  {luck:'中吉',poem:'微微冒泡的湯底\n是耐心的證明',tip:'好湯值得等'},
+  {luck:'中吉',poem:'甜點是另一個胃\n這是科學',tip:'永遠有甜點的空間'},
+  // ── 小吉 (12) ──
+  {luck:'小吉',poem:'沒有什麼事\n是一頓飯解決不了的',tip:'如果有就吃兩頓'},
+  {luck:'小吉',poem:'你的胃在說\n拜託善待我',tip:'聽身體的話'},
+  {luck:'小吉',poem:'今天走了很多路\n腳知道\n胃也知道',tip:'坐下來好好吃'},
+  {luck:'小吉',poem:'便利商店也有\n深夜裡的小確幸',tip:'關東煮也是一種溫柔'},
+  {luck:'小吉',poem:'翻了十分鐘外送\n最後點了常吃的',tip:'習慣也是一種品味'},
+  {luck:'小吉',poem:'今晚沒靈感\n但胃有自己的想法',tip:'讓胃帶路'},
+  {luck:'小吉',poem:'吃不完的打包\n是對食物的尊重',tip:'打包不丟臉'},
+  {luck:'小吉',poem:'泡麵加蛋\n也是一種生活態度',tip:'簡單但要認真'},
+  {luck:'小吉',poem:'找不到想吃的\n代表你不夠餓',tip:'再等半小時'},
+  {luck:'小吉',poem:'路邊攤的塑膠椅\n坐起來特別踏實',tip:'不用裝 放鬆吃'},
+  {luck:'小吉',poem:'忙了一天\n至少晚餐要對得起自己',tip:'你值得'},
+  {luck:'小吉',poem:'冰箱空了\n是宇宙叫你出門',tip:'出去走走吧'},
+  // ── 末吉 (8) ──
+  {luck:'末吉',poem:'如果你正在煩惱\n那就吃辣的',tip:'辣椒素帶走一切不開心'},
+  {luck:'末吉',poem:'減肥是明天的事\n今天先好好吃',tip:'明天的你會感謝你'},
+  {luck:'末吉',poem:'今晚可能踩雷\n但踩雷也是一種故事',tip:'至少有東西能抱怨'},
+  {luck:'末吉',poem:'吃完這頓\n明天再重新做人',tip:'今晚放過自己'},
+  {luck:'末吉',poem:'你看起來\n需要一份雞排',tip:'有時候垃圾食物才是真愛'},
+  {luck:'末吉',poem:'外送費比餐還貴\n但你值得',tip:'懶惰稅照付'},
+  {luck:'末吉',poem:'想吃的那間沒開\n代表你要探索新的',tip:'也許會有驚喜'},
+  {luck:'末吉',poem:'胃口不好的時候\n喝碗粥就好',tip:'不用勉強'},
 ];
 
 const CAT_REASONS = {
@@ -1615,10 +1696,11 @@ function renderFortuneCard(step, f) {
     </div>
     <div class="fortune-tip">— ${f.tip}</div>
     <div class="fortune-actions">
-      ${step === 2
-        ? `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
+      ${step < 2
+        ? `<button class="fortune-act fortune-act-go" id="fNext">下一籤</button>
            <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
-        : `<button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
+        : `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
+           <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
       }
     </div>
     <div class="fortune-deco-bot"></div>`;
@@ -1627,8 +1709,7 @@ function renderFortuneCard(step, f) {
   document.getElementById('fClose').onclick = () => fortuneOverlay.classList.remove('open');
 
   if (step < 2) {
-    // Auto-advance to next draw after a pause
-    setTimeout(() => {
+    document.getElementById('fNext').onclick = () => {
       if (typeof _track === 'function') _track('fortune_next', { step: step + 2 });
       fortuneOverlay.classList.remove('open');
       void fortuneCard.offsetWidth;
@@ -1638,7 +1719,7 @@ function renderFortuneCard(step, f) {
         fortuneCard.classList.remove('shake');
         doDrawFortune();
       }, 450);
-    }, 2500);
+    };
   } else {
     document.getElementById('fShowAll').onclick = () => showFortuneSummary();
   }
