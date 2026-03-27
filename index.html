@@ -1980,7 +1980,7 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
 
     // Clear button
     html += `<div style="text-align:center;margin-top:24px">
-      <button onclick="localStorage.removeItem('${_AK}');document.getElementById('_ap').remove()"
+      <button onclick="localStorage.removeItem('${_AK}');localStorage.removeItem(getFortuneDateKey());fortuneDraws=[];usedCats=[];fortuneBonusUsed=false;updateFortuneBtn();document.getElementById('_ap').remove()"
         style="background:none;border:1px solid #333;color:#555;padding:6px 20px;cursor:pointer;font-family:monospace">清除所有資料</button>
     </div>`;
 
