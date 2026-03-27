@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>台北晚餐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070c;--surface:#0e0e16;--card:#14141f;--card2:#1c1c2a;
+  --accent:#c8a87c;--accent-dim:#8b7355;--accent-glow:rgba(200,168,124,0.12);
+  --text:#e8e0d4;--text2:#6b6560;--text3:#3d3935;
+  --border:rgba(200,168,124,0.1);
+  --serif:'Noto Serif TC','PMingLiU',Georgia,serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:var(--serif);-webkit-font-smoothing:antialiased}
+
+/* ── Ambient BG ── */
+.amb{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:0;animation:orbF 24s ease-in-out infinite}
+.orb:nth-child(1){width:500px;height:500px;background:radial-gradient(circle,rgba(200,168,124,.05)0%,transparent 70%);top:-10%;right:-5%;animation-duration:26s}
+.orb:nth-child(2){width:400px;height:400px;background:radial-gradient(circle,rgba(100,80,140,.04)0%,transparent 70%);bottom:-15%;left:-10%;animation-delay:-9s;animation-duration:30s}
+.orb:nth-child(3){width:300px;height:300px;background:radial-gradient(circle,rgba(200,168,124,.03)0%,transparent 70%);top:40%;left:50%;animation-delay:-16s;animation-duration:22s}
+@keyframes orbF{0%,100%{opacity:0;transform:translate(0,0) scale(1)}25%{opacity:1;transform:translate(30px,-20px) scale(1.1)}50%{opacity:.5;transform:translate(-20px,30px) scale(.9)}75%{opacity:1;transform:translate(10px,-10px) scale(1.05)}}
+
+/* ── Grain ── */
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px}
+
+/* ── Layout ── */
+#app{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:0 20px;overflow:hidden}
+
+/* ── Header ── */
+header{width:100%;max-width:600px;display:flex;justify-content:space-between;align-items:baseline;
+  padding:clamp(20px,4vh,40px) 0 0;flex-shrink:0}
+.title{font-size:13px;font-weight:300;letter-spacing:.25em;color:var(--accent-dim);opacity:.7}
+.music-btn{font-family:var(--serif);font-size:11px;font-weight:300;letter-spacing:.15em;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .5s}
+.music-btn:hover,.music-btn.on{color:var(--accent-dim)}
+.music-btn.on::after{content:'';display:inline-block;width:4px;height:4px;background:var(--accent);
+  border-radius:50%;margin-left:6px;vertical-align:middle;animation:pls 2s ease-in-out infinite}
+@keyframes pls{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ── Categories ── */
+.cats{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 8px;
+  margin:clamp(12px,2vh,20px) 0 clamp(10px,2vh,18px);opacity:0;animation:fu .8s var(--ease) .3s forwards}
+.cat{font-family:var(--serif);font-size:clamp(11px,1.4vw,12px);font-weight:400;letter-spacing:.1em;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:5px 12px;
+  transition:color .4s;position:relative;white-space:nowrap}
+.cat::after{content:'';position:absolute;bottom:1px;left:12px;right:12px;height:1px;
+  background:var(--accent);transform:scaleX(0);transition:transform .4s var(--ease)}
+.cat:hover{color:var(--text2)}
+.cat.on{color:var(--accent)}
+.cat.on::after{transform:scaleX(1)}
+
+/* ── Wheel Container ── */
+.wheel-wrap{position:relative;width:min(420px,72vw,50vh);height:min(420px,72vw,50vh);
+  margin:0 auto;flex-shrink:0;opacity:0;animation:fu .8s var(--ease) .5s forwards}
+canvas{width:100%;height:100%;display:block}
+
+/* ── Pointer ── */
+.pointer{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:5;
+  width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
+  border-top:22px solid var(--accent);filter:drop-shadow(0 2px 8px rgba(200,168,124,.3))}
+
+/* ── Center Circle (HTML overlay) ── */
+.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:38%;height:38%;border-radius:50%;
+  background:radial-gradient(circle,var(--bg) 50%,rgba(7,7,12,.95));
+  border:1px solid var(--border);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:4;pointer-events:none;
+  transition:border-color .6s}
+.center.glow{border-color:rgba(200,168,124,.3);
+  box-shadow:0 0 40px rgba(200,168,124,.06)}
+.center-main{font-size:clamp(16px,4vw,26px);font-weight:600;letter-spacing:.06em;
+  color:var(--text);text-align:center;line-height:1.3;transition:all .4s}
+.center-sub{font-size:clamp(10px,1.4vw,11px);font-weight:300;letter-spacing:.18em;
+  color:var(--accent-dim);margin-top:4px;opacity:0;transition:opacity .6s .3s}
+.center-sub.show{opacity:.8}
+
+/* ── Spin Button ── */
+.spin-area{margin-top:clamp(14px,3vh,28px);opacity:0;animation:fu .8s var(--ease) .7s forwards}
+.spin-btn{font-family:var(--serif);font-size:clamp(13px,1.6vw,14px);font-weight:400;
+  letter-spacing:.3em;color:var(--accent);background:none;
+  border:1px solid rgba(200,168,124,.2);padding:12px 52px;cursor:pointer;
+  transition:all .5s var(--ease);position:relative;overflow:hidden}
+.spin-btn::before{content:'';position:absolute;inset:0;background:var(--accent-glow);
+  opacity:0;transition:opacity .5s}
+.spin-btn:hover{border-color:rgba(200,168,124,.4);color:var(--text)}
+.spin-btn:hover::before{opacity:1}
+.spin-btn:active{transform:scale(.97)}
+.spin-btn:disabled{pointer-events:none;border-color:rgba(200,168,124,.08);color:var(--text3)}
+
+/* ── History ── */
+.history{position:fixed;bottom:clamp(16px,3vh,32px);left:0;right:0;text-align:center;z-index:3;
+  transition:bottom .5s var(--ease)}
+.history.lifted{bottom:110px}
+.hist-label{font-size:10px;font-weight:300;letter-spacing:.2em;color:var(--text3);margin-bottom:6px;
+  opacity:0;transition:opacity .6s}
+.hist-label.show{opacity:.5}
+.hist-items{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:0 20px}
+.hist-item{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:var(--text3);letter-spacing:.06em;
+  opacity:0;animation:fu .5s var(--ease) forwards}
+.hist-item+.hist-item::before{content:'\00B7';position:absolute;left:-11px;opacity:.4}
+.hist-item{position:relative}
+
+/* ── Edit ── */
+.edit-btn{position:fixed;bottom:clamp(16px,3vh,32px);right:clamp(16px,4vw,32px);z-index:10;
+  font-family:var(--serif);font-size:10px;font-weight:300;letter-spacing:.15em;
+  color:var(--text3);background:none;border:none;cursor:pointer;transition:color .4s}
+.edit-btn:hover{color:var(--accent-dim)}
+
+/* ── Music Bar ── */
+.music-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
+  z-index:50;width:min(360px,92vw);transition:transform .5s var(--ease);pointer-events:none;opacity:0}
+.music-bar.show{transform:translateX(-50%) translateY(0);pointer-events:auto;opacity:1}
+.music-bar-inner{background:var(--card);border:1px solid var(--border);
+  border-bottom:none;border-radius:8px 8px 0 0;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;padding:10px 12px 6px}
+.music-bar-label{font-size:10px;font-weight:300;letter-spacing:.15em;color:var(--text3);margin-bottom:6px}
+.music-bar iframe{width:100%;height:60px;border:none;border-radius:4px;opacity:.85}
+.music-bar-close{font-family:var(--serif);font-size:10px;font-weight:300;letter-spacing:.12em;
+  color:var(--text3);background:none;border:none;cursor:pointer;margin-top:4px;
+  padding:4px 8px;transition:color .3s}
+.music-bar-close:hover{color:var(--text2)}
+
+/* ── Panel ── */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(7,7,12,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  opacity:0;pointer-events:none;transition:opacity .4s}
+.overlay.open{opacity:1;pointer-events:auto}
+.panel{position:absolute;top:50%;left:50%;transform:translate(-50%,-48%);
+  width:min(88vw,460px);max-height:72vh;padding:clamp(24px,4vw,36px);
+  transition:transform .5s var(--ease),opacity .4s;opacity:0}
+.overlay.open .panel{transform:translate(-50%,-50%);opacity:1}
+.panel-title{font-size:clamp(16px,2.5vw,20px);font-weight:300;letter-spacing:.15em;
+  color:var(--accent);margin-bottom:20px;text-align:center}
+.panel-row{display:flex;gap:10px;margin-bottom:16px}
+.panel-input{flex:1;font-family:var(--serif);font-size:13px;font-weight:300;
+  color:var(--text);background:rgba(255,255,255,.03);border:1px solid var(--border);
+  padding:9px 14px;outline:none;letter-spacing:.04em;transition:border-color .3s}
+.panel-input::placeholder{color:var(--text3)}
+.panel-input:focus{border-color:rgba(200,168,124,.3)}
+.panel-add{font-family:var(--serif);font-size:12px;color:var(--accent);background:none;
+  border:1px solid rgba(200,168,124,.2);padding:9px 16px;cursor:pointer;
+  letter-spacing:.12em;transition:all .3s;white-space:nowrap}
+.panel-add:hover{border-color:rgba(200,168,124,.4)}
+.panel-list{max-height:35vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--text3) transparent}
+.panel-item{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;
+  border-bottom:1px solid var(--border);font-size:12px;font-weight:300;letter-spacing:.05em}
+.panel-item .cl{color:var(--accent-dim);font-size:10px;margin-left:8px;letter-spacing:.1em}
+.panel-rm{font-family:var(--serif);font-size:10px;color:var(--text3);background:none;
+  border:none;cursor:pointer;padding:3px 6px;transition:color .3s}
+.panel-rm:hover{color:#c47a7a}
+.panel-close{display:block;margin:20px auto 0;font-family:var(--serif);font-size:11px;
+  font-weight:300;color:var(--text2);background:none;border:none;cursor:pointer;
+  letter-spacing:.2em;transition:color .3s}
+.panel-close:hover{color:var(--text)}
+
+@keyframes fu{to{opacity:1;transform:translateY(0)}}
+.cats,.wheel-wrap,.spin-area{transform:translateY(10px)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--text3);border-radius:2px}
+
+@media(max-width:480px){
+  .cats{gap:2px 4px}
+  .cat{padding:4px 8px}
+  .spin-btn{padding:10px 40px}
+}
+</style>
+</head>
+<body>
+
+<div class="amb"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+<div class="grain"></div>
+
+<div id="app">
+  <header>
+    <span class="title">台北晚餐</span>
+    <button class="music-btn on" id="musicBtn">音樂</button>
+  </header>
+
+  <div class="cats" id="cats"></div>
+
+  <div class="wheel-wrap" id="wheelWrap">
+    <canvas id="wheel"></canvas>
+    <div class="pointer"></div>
+    <div class="center" id="centerCircle">
+      <div class="center-main" id="centerMain">今晚吃什麼</div>
+      <div class="center-sub" id="centerSub"></div>
+    </div>
+  </div>
+
+  <div class="spin-area">
+    <button class="spin-btn" id="spinBtn">轉</button>
+  </div>
+</div>
+
+<div class="history">
+  <div class="hist-label" id="histLabel">今晚的軌跡</div>
+  <div class="hist-items" id="histItems"></div>
+</div>
+
+<button class="edit-btn" id="editBtn">編輯菜單</button>
+
+<div class="music-bar show" id="musicBar">
+  <div class="music-bar-inner">
+    <span class="music-bar-label">氛圍音樂</span>
+    <iframe id="ytFrame" allow="autoplay; encrypted-media" allowfullscreen
+  src="https://www.youtube.com/embed/SmpbY2VIbj0?autoplay=1&loop=1&playlist=SmpbY2VIbj0&rel=0&modestbranding=1"></iframe>
+    <button class="music-bar-close" id="musicBarClose">收起</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-title">編輯菜單</div>
+    <div class="panel-row">
+      <input class="panel-input" id="pInput" type="text" placeholder="菜色名稱">
+      <select class="panel-input" id="pCat" style="flex:.55"></select>
+      <button class="panel-add" id="pAdd">加入</button>
+    </div>
+    <div class="panel-list" id="pList"></div>
+    <button class="panel-close" id="pClose">關閉</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   Menu Data
+   ══════════════════════════════════════ */
+const DEFAULT_MENU = {
+  '台式':['滷肉飯','三杯雞','蚵仔煎','牛肉麵','鹽酥雞','排骨飯','控肉飯','滷味','雞肉飯','蛤蜊湯'],
+  '日式':['拉麵','壽司','丼飯','居酒屋','烏龍麵','定食','串燒','天婦羅','鰻魚飯','咖哩飯'],
+  '韓式':['韓式烤肉','部隊鍋','石鍋拌飯','辣炒年糕','炸雞啤酒','豆腐鍋','冷麵','海鮮煎餅'],
+  '火鍋':['麻辣鍋','酸菜白肉鍋','壽喜燒','涮涮鍋','藥膳鍋','番茄鍋','牛奶鍋','薑母鴨'],
+  '西式':['義大利麵','牛排','漢堡','披薩','燉飯','焗烤','法式料理','早午餐'],
+  '熱炒':['三杯中卷','蒜炒水蓮','宮保雞丁','糖醋排骨','海鮮熱炒','炒飯','蔥爆牛肉','鐵板豆腐'],
+  '麵食':['乾麵','餛飩麵','刀削麵','炸醬麵','陽春麵','擔擔麵','酸辣麵','麻醬麵'],
+  '東南亞':['泰式酸辣','越南河粉','綠咖哩','叻沙','海南雞飯','打拋豬','椒麻雞','月亮蝦餅'],
+};
+const STORAGE_KEY = 'taipei-dinner-menu';
+let menuData = {};
+
+function loadMenu() {
+  try { const s = localStorage.getItem(STORAGE_KEY); menuData = s ? JSON.parse(s) : structuredClone(DEFAULT_MENU); }
+  catch { menuData = structuredClone(DEFAULT_MENU); }
+}
+function saveMenu() { localStorage.setItem(STORAGE_KEY, JSON.stringify(menuData)); }
+loadMenu();
+
+/* ══════════════════════════════════════
+   State
+   ══════════════════════════════════════ */
+let activeCats = new Set();
+let history = [];
+let spinning = false;
+let currentRotation = 0;
+let wheelItems = [];
+
+/* ══════════════════════════════════════
+   DOM
+   ══════════════════════════════════════ */
+const catsEl = document.getElementById('cats');
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const wheelWrap = document.getElementById('wheelWrap');
+const centerCircle = document.getElementById('centerCircle');
+const centerMain = document.getElementById('centerMain');
+const centerSub = document.getElementById('centerSub');
+const spinBtn = document.getElementById('spinBtn');
+const musicBtn = document.getElementById('musicBtn');
+const histLabel = document.getElementById('histLabel');
+const histItems = document.getElementById('histItems');
+const editBtn = document.getElementById('editBtn');
+const overlay = document.getElementById('overlay');
+const pList = document.getElementById('pList');
+const pInput = document.getElementById('pInput');
+const pCat = document.getElementById('pCat');
+const pAdd = document.getElementById('pAdd');
+const pClose = document.getElementById('pClose');
+
+/* ══════════════════════════════════════
+   Categories
+   ══════════════════════════════════════ */
+function renderCats() {
+  catsEl.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'cat' + (activeCats.size === 0 ? ' on' : '');
+  all.textContent = '全部';
+  all.onclick = () => { activeCats.clear(); renderCats(); refreshWheel(); };
+  catsEl.appendChild(all);
+  Object.keys(menuData).forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'cat' + (activeCats.has(c) ? ' on' : '');
+    b.textContent = c;
+    b.onclick = () => { activeCats.has(c) ? activeCats.delete(c) : activeCats.add(c); renderCats(); refreshWheel(); };
+    catsEl.appendChild(b);
+  });
+}
+
+/* ══════════════════════════════════════
+   Get Filtered Items
+   ══════════════════════════════════════ */
+function getPool() {
+  const cats = activeCats.size > 0 ? [...activeCats] : Object.keys(menuData);
+  const pool = [];
+  cats.forEach(c => (menuData[c]||[]).forEach(item => pool.push({ name: item, cat: c })));
+  return pool;
+}
+
+function pickWheelItems() {
+  const pool = getPool();
+  if (pool.length <= 12) return shuffle([...pool]);
+  // Random sample 12
+  const shuffled = shuffle([...pool]);
+  return shuffled.slice(0, 12);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ══════════════════════════════════════
+   Canvas Setup
+   ══════════════════════════════════════ */
+let dpr = window.devicePixelRatio || 1;
+let wheelSize = 0;
+
+function setupCanvas() {
+  dpr = window.devicePixelRatio || 1;
+  const rect = wheelWrap.getBoundingClientRect();
+  wheelSize = rect.width;
+  canvas.width = wheelSize * dpr;
+  canvas.height = wheelSize * dpr;
+  canvas.style.width = wheelSize + 'px';
+  canvas.style.height = wheelSize + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function refreshWheel() {
+  wheelItems = pickWheelItems();
+  drawWheel(currentRotation);
+}
+
+/* ══════════════════════════════════════
+   Draw Wheel
+   ══════════════════════════════════════ */
+function drawWheel(rotation) {
+  const cx = wheelSize / 2;
+  const cy = wheelSize / 2;
+  const r = cx - 6;
+  const items = wheelItems;
+  const n = items.length;
+  if (n === 0) return;
+  const arc = (2 * Math.PI) / n;
+
+  ctx.clearRect(0, 0, wheelSize, wheelSize);
+
+  // Outer subtle ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 2, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(200,168,124,0.08)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  items.forEach((item, i) => {
+    const start = rotation + i * arc - Math.PI / 2;
+    const end = start + arc;
+
+    // Segment fill
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    const grad = ctx.createRadialGradient(cx, cy, r * 0.38, cx, cy, r);
+    if (i % 2 === 0) {
+      grad.addColorStop(0, '#111119');
+      grad.addColorStop(1, '#151520');
+    } else {
+      grad.addColorStop(0, '#0f0f17');
+      grad.addColorStop(1, '#121220');
+    }
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Segment border
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(200,168,124,0.06)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    const fontSize = Math.max(11, Math.min(15, wheelSize / 28));
+    ctx.font = `400 ${fontSize}px "Noto Serif TC", serif`;
+    ctx.fillStyle = 'rgba(200,168,124,0.75)';
+    ctx.fillText(item.name, r - 18, 0);
+    ctx.restore();
+  });
+
+  // Inner circle shadow (gradient to cover segment joins at center)
+  const innerR = r * 0.34;
+  const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR + 20);
+  innerGrad.addColorStop(0, 'rgba(7,7,12,1)');
+  innerGrad.addColorStop(0.7, 'rgba(7,7,12,0.95)');
+  innerGrad.addColorStop(1, 'rgba(7,7,12,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR + 20, 0, 2 * Math.PI);
+  ctx.fillStyle = innerGrad;
+  ctx.fill();
+}
+
+/* ══════════════════════════════════════
+   Highlight Winner Segment
+   ══════════════════════════════════════ */
+function drawWheelHighlight(rotation, winnerIdx) {
+  drawWheel(rotation);
+  const cx = wheelSize / 2;
+  const cy = wheelSize / 2;
+  const r = cx - 6;
+  const n = wheelItems.length;
+  const arc = (2 * Math.PI) / n;
+  const start = rotation + winnerIdx * arc - Math.PI / 2;
+  const end = start + arc;
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, r, start, end);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(200,168,124,0.07)';
+  ctx.fill();
+
+  // Re-draw text brighter for winner
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(start + arc / 2);
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  const fontSize = Math.max(11, Math.min(15, wheelSize / 28));
+  ctx.font = `600 ${fontSize}px "Noto Serif TC", serif`;
+  ctx.fillStyle = 'rgba(200,168,124,1)';
+  ctx.fillText(wheelItems[winnerIdx].name, r - 18, 0);
+  ctx.restore();
+
+  // Re-draw inner shadow
+  const innerR = r * 0.34;
+  const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR + 20);
+  innerGrad.addColorStop(0, 'rgba(7,7,12,1)');
+  innerGrad.addColorStop(0.7, 'rgba(7,7,12,0.95)');
+  innerGrad.addColorStop(1, 'rgba(7,7,12,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR + 20, 0, 2 * Math.PI);
+  ctx.fillStyle = innerGrad;
+  ctx.fill();
+}
+
+/* ══════════════════════════════════════
+   Spin Logic
+   ══════════════════════════════════════ */
+function getWinnerIndex(rotation) {
+  const n = wheelItems.length;
+  const arc = (2 * Math.PI) / n;
+  const offset = (((-rotation) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  return Math.floor(offset / arc) % n;
+}
+
+function spin() {
+  if (spinning || wheelItems.length < 2) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  spinBtn.textContent = '...';
+  centerCircle.classList.remove('glow');
+  centerSub.classList.remove('show');
+  centerMain.textContent = '';
+  centerSub.textContent = '';
+
+  // Re-shuffle items for variety
+  wheelItems = pickWheelItems();
+  drawWheel(currentRotation);
+
+  const spinDuration = 4500;
+  const totalRotation = Math.PI * 10 + Math.random() * Math.PI * 6;
+  const startRotation = currentRotation;
+  const startTime = performance.now();
+
+  let prevSegment = -1;
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / spinDuration, 1);
+    // Quartic ease-out for dramatic slowdown
+    const eased = 1 - Math.pow(1 - progress, 4);
+
+    currentRotation = startRotation + totalRotation * eased;
+    drawWheel(currentRotation);
+
+    // Tick sound at segment boundaries
+    const n = wheelItems.length;
+    const arc = (2 * Math.PI) / n;
+    const seg = Math.floor(((currentRotation % (2 * Math.PI)) + 10 * Math.PI) / arc) % n;
+    if (seg !== prevSegment && prevSegment !== -1) {
+      playTick(0.02 + progress * 0.03); // ticks get slightly louder as it slows
+    }
+    prevSegment = seg;
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // Done
+      const winner = getWinnerIndex(currentRotation);
+      drawWheelHighlight(currentRotation, winner);
+      revealResult(wheelItems[winner]);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function revealResult(item) {
+  centerMain.textContent = item.name;
+  centerMain.style.opacity = '0';
+  centerMain.style.transform = 'scale(0.9)';
+  centerCircle.classList.add('glow');
+
+  requestAnimationFrame(() => {
+    centerMain.style.transition = 'all 0.6s cubic-bezier(.22,1,.36,1)';
+    centerMain.style.opacity = '1';
+    centerMain.style.transform = 'scale(1)';
+  });
+
+  setTimeout(() => {
+    centerSub.textContent = item.cat;
+    centerSub.classList.add('show');
+  }, 400);
+
+  addHistory(item.name);
+
+  setTimeout(() => {
+    spinning = false;
+    spinBtn.disabled = false;
+    spinBtn.textContent = '再轉';
+    centerMain.style.transition = '';
+  }, 1000);
+}
+
+/* ══════════════════════════════════════
+   History
+   ══════════════════════════════════════ */
+function addHistory(name) {
+  history.unshift(name);
+  if (history.length > 5) history.pop();
+  renderHistory();
+}
+function renderHistory() {
+  histLabel.classList.toggle('show', history.length > 0);
+  histItems.innerHTML = '';
+  history.forEach((item, i) => {
+    const s = document.createElement('span');
+    s.className = 'hist-item';
+    s.textContent = item;
+    s.style.animationDelay = `${i * .08}s`;
+    s.style.opacity = String(1 - i * .15);
+    histItems.appendChild(s);
+  });
+}
+
+/* ══════════════════════════════════════
+   Edit Panel
+   ══════════════════════════════════════ */
+function renderPanel() {
+  pCat.innerHTML = '';
+  Object.keys(menuData).forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    pCat.appendChild(o);
+  });
+  pList.innerHTML = '';
+  Object.entries(menuData).forEach(([cat, items]) => {
+    items.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'panel-item';
+      d.innerHTML = `<span>${item}<span class="cl">${cat}</span></span>
+        <button class="panel-rm" data-c="${cat}" data-i="${item}">移除</button>`;
+      pList.appendChild(d);
+    });
+  });
+  pList.querySelectorAll('.panel-rm').forEach(b => {
+    b.onclick = () => {
+      menuData[b.dataset.c] = (menuData[b.dataset.c]||[]).filter(x => x !== b.dataset.i);
+      if (!menuData[b.dataset.c]?.length) delete menuData[b.dataset.c];
+      saveMenu(); renderPanel(); renderCats(); refreshWheel();
+    };
+  });
+}
+function addItem() {
+  const name = pInput.value.trim();
+  const cat = pCat.value;
+  if (!name || !cat) return;
+  if (!menuData[cat]) menuData[cat] = [];
+  if (!menuData[cat].includes(name)) { menuData[cat].push(name); saveMenu(); renderPanel(); renderCats(); refreshWheel(); }
+  pInput.value = '';
+}
+editBtn.onclick = () => { renderPanel(); overlay.classList.add('open'); };
+pClose.onclick = () => overlay.classList.remove('open');
+overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove('open'); };
+pAdd.onclick = addItem;
+pInput.onkeydown = e => { if (e.key === 'Enter') addItem(); };
+
+/* ══════════════════════════════════════
+   Audio — YouTube Embed (direct iframe, no API needed)
+   ══════════════════════════════════════ */
+let musicOn = true;
+const musicBar = document.getElementById('musicBar');
+const ytFrame = document.getElementById('ytFrame');
+const musicBarClose = document.getElementById('musicBarClose');
+
+const YT_VIDEO_ID = 'SmpbY2VIbj0';
+const YT_EMBED_URL = `https://www.youtube.com/embed/${YT_VIDEO_ID}?autoplay=1&loop=1&playlist=${YT_VIDEO_ID}&rel=0&modestbranding=1`;
+
+const historyEl = document.querySelector('.history');
+
+function toggleMusic() {
+  if (!musicOn) {
+    // Set src on user click → browser allows autoplay
+    ytFrame.src = YT_EMBED_URL;
+    musicBar.classList.add('show');
+    historyEl.classList.add('lifted');
+    musicOn = true;
+    musicBtn.classList.add('on');
+  } else {
+    // Stop: clear src
+    ytFrame.src = 'about:blank';
+    musicBar.classList.remove('show');
+    historyEl.classList.remove('lifted');
+    musicOn = false;
+    musicBtn.classList.remove('on');
+  }
+}
+
+musicBarClose.onclick = () => {
+  // Hide bar but keep music playing (iframe stays loaded, audio continues)
+  musicBar.classList.remove('show');
+  historyEl.classList.remove('lifted');
+};
+
+/* ── Tick sound (soft, short sine blip) ── */
+let tickCtx = null;
+function playTick(vol) {
+  if (!tickCtx) tickCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (tickCtx.state === 'suspended') tickCtx.resume();
+  const osc = tickCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 660;
+  const g = tickCtx.createGain();
+  g.gain.setValueAtTime(vol || 0.025, tickCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, tickCtx.currentTime + 0.06);
+  osc.connect(g);
+  g.connect(tickCtx.destination);
+  osc.start();
+  osc.stop(tickCtx.currentTime + 0.06);
+}
+
+/* ══════════════════════════════════════
+   Events
+   ══════════════════════════════════════ */
+spinBtn.onclick = spin;
+musicBtn.onclick = toggleMusic;
+
+document.addEventListener('keydown', e => {
+  if (overlay.classList.contains('open')) {
+    if (e.key === 'Escape') overlay.classList.remove('open');
+    return;
+  }
+  if (e.key === ' ') { e.preventDefault(); spin(); }
+  if (e.key === 'm' || e.key === 'M') toggleMusic();
+});
+
+window.addEventListener('resize', () => {
+  setupCanvas();
+  drawWheel(currentRotation);
+});
+
+/* ══════════════════════════════════════
+   Init — wait for font then draw
+   ══════════════════════════════════════ */
+document.fonts.ready.then(() => {
+  renderCats();
+  setupCanvas();
+  refreshWheel();
+});
+</script>
+</body>
+</html>
