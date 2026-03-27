@@ -38,9 +38,38 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
 /* ══ Ambient Orbs ══ */
 .amb{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0;animation:orbF 24s ease-in-out infinite}
-.orb:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,rgba(200,168,124,.06) 0%,transparent 70%);top:-15%;right:-10%;animation-duration:28s}
-.orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,rgba(100,80,140,.04) 0%,transparent 70%);bottom:-20%;left:-15%;animation-delay:-10s;animation-duration:32s}
-@keyframes orbF{0%,100%{opacity:0;transform:scale(1)}30%{opacity:1;transform:scale(1.1)}60%{opacity:.4;transform:scale(.9)}80%{opacity:1;transform:scale(1.05)}}
+.orb:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,rgba(200,168,124,.08) 0%,transparent 70%);top:-15%;right:-10%;animation-duration:28s}
+.orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,rgba(100,80,140,.05) 0%,transparent 70%);bottom:-20%;left:-15%;animation-delay:-10s;animation-duration:32s}
+.orb:nth-child(3){width:450px;height:450px;background:radial-gradient(circle,rgba(180,100,120,.04) 0%,transparent 70%);top:40%;left:50%;animation-delay:-18s;animation-duration:36s}
+@keyframes orbF{0%,100%{opacity:0;transform:scale(1) translate(0,0)}
+  20%{opacity:1;transform:scale(1.15) translate(15px,-10px)}
+  50%{opacity:.5;transform:scale(.9) translate(-10px,15px)}
+  80%{opacity:1;transform:scale(1.05) translate(8px,-5px)}}
+
+/* ══ Floating Bokeh ══ */
+.bokeh{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.bokeh-dot{position:absolute;border-radius:50%;opacity:0;animation:bokehFloat linear infinite}
+@keyframes bokehFloat{
+  0%{opacity:0;transform:translateY(0) scale(0.5)}
+  10%{opacity:var(--bok-a)}
+  90%{opacity:var(--bok-a)}
+  100%{opacity:0;transform:translateY(calc(-100vh - 40px)) scale(1)}}
+
+/* ══ Cursor Glow ══ */
+.cursor-glow{position:fixed;z-index:1;pointer-events:none;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,168,124,.06) 0%,rgba(200,168,124,.02) 30%,transparent 70%);
+  transform:translate(-50%,-50%);transition:left .4s ease-out,top .4s ease-out,opacity .8s;
+  opacity:0;will-change:left,top}
+.cursor-glow.active{opacity:1}
+
+/* ══ Wheel Breathing Glow ══ */
+.wheel-wrap::after{content:'';position:absolute;inset:-20px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,168,124,.03) 0%,transparent 60%);
+  pointer-events:none;z-index:0;animation:wheelBreathe 6s ease-in-out infinite}
+@keyframes wheelBreathe{
+  0%,100%{opacity:.3;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.03)}}
 
 /* ══ App Layout ══ */
 #app{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column;
@@ -394,7 +423,9 @@ canvas{width:100%;height:100%;display:block}
 <div class="bg-overlay"></div>
 <div class="bg-vignette"></div>
 <div class="grain"></div>
-<div class="amb"><div class="orb"></div><div class="orb"></div></div>
+<div class="amb"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+<div class="bokeh" id="bokeh"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
 
 <!-- ══ App ══ -->
 <div id="app">
@@ -1184,11 +1215,79 @@ window.addEventListener('resize', () => { setupCanvas(); setupParticleCanvas(); 
 /* ══════════════════════════════════════
    Init
    ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   Romantic Atmosphere — Bokeh + Cursor Glow + Smart Greeting
+   ══════════════════════════════════════ */
+
+// ── Floating Bokeh ──
+(function initBokeh() {
+  const container = document.getElementById('bokeh');
+  const colors = [
+    'rgba(200,168,124,',  // gold
+    'rgba(220,190,150,',  // warm gold
+    'rgba(180,140,110,',  // bronze
+    'rgba(160,120,140,',  // rose
+    'rgba(255,255,255,',  // white
+  ];
+  function spawnDot() {
+    const dot = document.createElement('div');
+    dot.className = 'bokeh-dot';
+    const size = 2 + Math.random() * 5;
+    const alpha = 0.08 + Math.random() * 0.12;
+    const dur = 18 + Math.random() * 28;
+    const x = Math.random() * 100;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    dot.style.cssText = `
+      width:${size}px;height:${size}px;left:${x}%;bottom:-10px;
+      background:${color}${alpha + 0.1});
+      box-shadow:0 0 ${size * 3}px ${color}${alpha});
+      animation-duration:${dur}s;animation-delay:${Math.random() * dur}s;
+      --bok-a:${alpha}`;
+    container.appendChild(dot);
+    // Remove after animation to prevent DOM bloat
+    setTimeout(() => dot.remove(), (dur + dur * Math.random()) * 1000);
+  }
+  // Spawn initial batch
+  for (let i = 0; i < 15; i++) setTimeout(() => spawnDot(), i * 600);
+  // Keep spawning slowly
+  setInterval(spawnDot, 3000);
+})();
+
+// ── Cursor/Touch Glow ──
+const cursorGlow = document.getElementById('cursorGlow');
+let glowActive = false;
+function moveCursorGlow(x, y) {
+  cursorGlow.style.left = x + 'px';
+  cursorGlow.style.top = y + 'px';
+  if (!glowActive) { cursorGlow.classList.add('active'); glowActive = true; }
+}
+document.addEventListener('mousemove', e => moveCursorGlow(e.clientX, e.clientY));
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  if (t) moveCursorGlow(t.clientX, t.clientY);
+}, { passive: true });
+document.addEventListener('mouseleave', () => { cursorGlow.classList.remove('active'); glowActive = false; });
+
+// ── Time-Aware Smart Greeting ──
+function getSmartGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 11) return { main: '早安，來點早午餐？', sub: 'GOOD MORNING' };
+  if (h >= 11 && h < 14) return { main: '午餐時間到了', sub: 'LUNCH TIME' };
+  if (h >= 14 && h < 17) return { main: '下午茶的靈感', sub: 'AFTERNOON CRAVINGS' };
+  if (h >= 17 && h < 20) return { main: '今晚，想吃什麼？', sub: 'DINNER AWAITS' };
+  if (h >= 20 && h < 23) return { main: '夜晚的味覺漫步', sub: 'LATE NIGHT VIBES' };
+  return { main: '深夜的口腹之慾', sub: 'MIDNIGHT CRAVINGS' };
+}
+
 document.fonts.ready.then(() => {
   renderCats();
   setupCanvas();
   refreshWheel();
   initBgSlideshow();
+  // Apply smart greeting
+  const greeting = getSmartGreeting();
+  centerMain.textContent = greeting.main;
+  document.querySelector('.entry-sub').textContent = greeting.sub;
 });
 </script>
 </body>
