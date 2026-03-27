@@ -1561,21 +1561,16 @@ function renderFortuneCard(step, f) {
     </div>
     <div class="fortune-tip">— ${f.tip}</div>
     <div class="fortune-actions">
-      <button class="fortune-act fortune-act-go" id="fGoRecs">去看餐廳</button>
       ${step < 2
-        ? `<button class="fortune-act fortune-act-primary" id="fNext">下一籤</button>`
-        : `<button class="fortune-act fortune-act-primary" id="fShowAll">三道天命</button>`
+        ? `<button class="fortune-act fortune-act-go" id="fNext">下一籤</button>
+           <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
+        : `<button class="fortune-act fortune-act-go" id="fShowAll">揭曉三道天命</button>
+           <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>`
       }
-      <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>
     </div>
     <div class="fortune-deco-bot"></div>`;
 
   // Bind
-  document.getElementById('fGoRecs').onclick = () => {
-    fortuneOverlay.classList.remove('open');
-    if (typeof _track === 'function') _track('fortune_go_recs', { cat: f.cat });
-    setTimeout(() => showRecs(f.cat), 300);
-  };
   document.getElementById('fClose').onclick = () => fortuneOverlay.classList.remove('open');
 
   if (step < 2) {
