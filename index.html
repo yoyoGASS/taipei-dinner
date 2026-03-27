@@ -1514,12 +1514,10 @@ document.addEventListener('mouseleave', () => { cursorGlow.classList.remove('act
 // ── Time-Aware Smart Greeting ──
 function getSmartGreeting() {
   const h = new Date().getHours();
-  if (h >= 5 && h < 11) return { main: '早安，來點早午餐？', sub: 'GOOD MORNING' };
-  if (h >= 11 && h < 14) return { main: '午餐時間到了', sub: 'LUNCH TIME' };
-  if (h >= 14 && h < 17) return { main: '下午茶的靈感', sub: 'AFTERNOON CRAVINGS' };
-  if (h >= 17 && h < 20) return { main: '今晚，想吃什麼？', sub: 'DINNER AWAITS' };
-  if (h >= 20 && h < 23) return { main: '夜晚的味覺漫步', sub: 'LATE NIGHT VIBES' };
-  return { main: '深夜的口腹之慾', sub: 'MIDNIGHT CRAVINGS' };
+  if (h >= 17 && h < 19) return { main: '晚餐吃什麼', sub: 'DINNER TIME' };
+  if (h >= 19 && h < 21) return { main: '今晚吃好點', sub: 'TREAT YOURSELF' };
+  if (h >= 21 && h < 24) return { main: '宵夜時間', sub: 'LATE NIGHT' };
+  return { main: '想吃什麼', sub: 'TAIPEI DINNER' };
 }
 
 document.fonts.ready.then(() => {
