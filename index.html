@@ -1719,6 +1719,26 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
   panel.style.cssText = `position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.95);
     color:#c8a87c;font-family:monospace;font-size:12px;overflow:auto;padding:20px;line-height:1.6`;
 
+  const _actionNames = {
+    page_load:'開啟頁面', spin:'轉盤抽選', fortune_draw:'抽食籤',
+    fortune_redraw:'再抽一次', fortune_bonus:'使用額外機會',
+    filter:'篩選價位', recs_open:'查看推薦餐廳', history_click:'點擊歷史紀錄',
+    center_click:'點擊中心結果', entry_dismiss:'進入主畫面'
+  };
+  function _aName(a) { return _actionNames[a] || a; }
+
+  function _metaText(a, m) {
+    if (!m) return '';
+    if (a === 'spin') return `（${m.items} 個分類）`;
+    if (a === 'filter') return `（${m.tier === 'low' ? '低價' : m.tier === 'mid' ? '平價' : m.tier === 'high' ? '高價' : '全部'}）`;
+    if (a === 'recs_open') return `（${m.cat}）`;
+    if (a === 'history_click') return `（${m.name}）`;
+    if (a === 'center_click') return `（${m.cat}）`;
+    if (a === 'fortune_draw' || a === 'fortune_redraw') return `（第 ${m.attempt} 次）`;
+    if (a === 'page_load') return `（${m.screen}）`;
+    return '';
+  }
+
   function render() {
     const store = _getStore();
     const sessions = store.sessions || {};
@@ -1740,26 +1760,26 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     });
 
     let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <h2 style="margin:0;font-size:16px;color:#ece6dc">🔒 Analytics Dashboard</h2>
+      <h2 style="margin:0;font-size:16px;color:#ece6dc">🔒 用戶行為分析</h2>
       <button onclick="document.getElementById('_ap').remove()" style="background:none;border:1px solid #444;color:#888;padding:4px 12px;cursor:pointer;font-family:monospace">✕ 關閉</button>
     </div>`;
 
     // Summary cards
     html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px">
       <div style="background:#111;padding:12px;border:1px solid #222">
-        <div style="color:#666;font-size:10px">UNIQUE IPs</div>
+        <div style="color:#666;font-size:10px">不重複訪客數</div>
         <div style="font-size:22px;color:#ece6dc">${Object.keys(ipMap).length}</div>
       </div>
       <div style="background:#111;padding:12px;border:1px solid #222">
-        <div style="color:#666;font-size:10px">TOTAL EVENTS</div>
+        <div style="color:#666;font-size:10px">總操作次數</div>
         <div style="font-size:22px;color:#ece6dc">${totalEvents}</div>
       </div>
       <div style="background:#111;padding:12px;border:1px solid #222">
-        <div style="color:#666;font-size:10px">DAYS TRACKED</div>
+        <div style="color:#666;font-size:10px">追蹤天數</div>
         <div style="font-size:22px;color:#ece6dc">${days.length}</div>
       </div>
       <div style="background:#111;padding:12px;border:1px solid #222">
-        <div style="color:#666;font-size:10px">PEAK HOUR</div>
+        <div style="color:#666;font-size:10px">最熱門時段</div>
         <div style="font-size:22px;color:#ece6dc">${Object.entries(hourMap).sort((a,b)=>b[1]-a[1])[0]?.[0] || '-'}:00</div>
       </div>
     </div>`;
@@ -1769,9 +1789,9 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     <div style="background:#111;padding:12px;border:1px solid #222;margin-bottom:16px">`;
     Object.entries(actionMap).sort((a,b)=>b[1]-a[1]).forEach(([a,c]) => {
       const pct = Math.round(c / totalEvents * 100);
-      html += `<div style="margin-bottom:4px"><span style="color:#ece6dc">${a}</span>
+      html += `<div style="margin-bottom:4px"><span style="color:#ece6dc">${_aName(a)}</span>
         <span style="color:#555;margin:0 6px">—</span>
-        <span style="color:#c8a87c">${c}</span>
+        <span style="color:#c8a87c">${c} 次</span>
         <span style="color:#333;margin-left:6px">(${pct}%)</span>
         <div style="height:2px;background:#1a1a1a;margin-top:2px">
           <div style="height:2px;background:linear-gradient(90deg,#c8a87c,#8b7355);width:${pct}%"></div>
@@ -1780,10 +1800,10 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     html += `</div>`;
 
     // IP list
-    html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ IP 列表</h3>
+    html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ 訪客 IP 列表</h3>
     <div style="background:#111;padding:12px;border:1px solid #222;margin-bottom:16px">`;
     Object.entries(ipMap).sort((a,b)=>b[1]-a[1]).forEach(([ip,c]) => {
-      html += `<div><span style="color:#ece6dc">${ip}</span> <span style="color:#555">— ${c} events</span></div>`;
+      html += `<div><span style="color:#ece6dc">${ip}</span> <span style="color:#555">— ${c} 次操作</span></div>`;
     });
     html += `</div>`;
 
@@ -1791,15 +1811,15 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ 詳細事件記錄</h3>`;
     days.forEach(day => {
       const evts = sessions[day];
-      html += `<details style="margin-bottom:8px"><summary style="cursor:pointer;color:#ece6dc;padding:6px;background:#111;border:1px solid #222">${day} <span style="color:#555">(${evts.length} events)</span></summary>
+      html += `<details style="margin-bottom:8px"><summary style="cursor:pointer;color:#ece6dc;padding:6px;background:#111;border:1px solid #222">${day} <span style="color:#555">（${evts.length} 筆操作）</span></summary>
       <div style="background:#0a0a0a;padding:8px;border:1px solid #1a1a1a;max-height:300px;overflow:auto">`;
       evts.forEach(ev => {
         const time = ev.ts ? ev.ts.slice(11, 19) : new Date(ev.t).toTimeString().slice(0,8);
         html += `<div style="border-bottom:1px solid #111;padding:3px 0">
           <span style="color:#555">${time}</span>
-          <span style="color:#c8a87c;margin:0 8px">${ev.a}</span>
+          <span style="color:#c8a87c;margin:0 8px">${_aName(ev.a)}</span>
           <span style="color:#444">${ev.ip}</span>
-          ${ev.m ? `<span style="color:#333;margin-left:8px">${JSON.stringify(ev.m)}</span>` : ''}
+          <span style="color:#555;margin-left:6px">${_metaText(ev.a, ev.m)}</span>
         </div>`;
       });
       html += `</div></details>`;
@@ -1811,8 +1831,7 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     const maxH = Math.max(...Object.values(hourMap), 1);
     for (let i = 0; i < 24; i++) {
       const v = hourMap[i] || 0;
-      const intensity = Math.round(v / maxH * 255);
-      html += `<div style="flex:1;text-align:center" title="${i}:00 → ${v} events">
+      html += `<div style="flex:1;text-align:center" title="${i}:00 → ${v} 次操作">
         <div style="height:40px;background:rgba(200,168,124,${v/maxH*.8});border-radius:2px"></div>
         <div style="font-size:8px;color:#444;margin-top:2px">${i}</div>
       </div>`;
@@ -1822,7 +1841,7 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     // Clear button
     html += `<div style="text-align:center;margin-top:24px">
       <button onclick="localStorage.removeItem('${_AK}');document.getElementById('_ap').remove()"
-        style="background:none;border:1px solid #333;color:#555;padding:6px 20px;cursor:pointer;font-family:monospace">清除資料</button>
+        style="background:none;border:1px solid #333;color:#555;padding:6px 20px;cursor:pointer;font-family:monospace">清除所有資料</button>
     </div>`;
 
     panel.innerHTML = html;
