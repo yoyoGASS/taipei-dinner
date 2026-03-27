@@ -1612,6 +1612,7 @@ function showFortuneSummary() {
       <div class="fortune-sum-title">今 晚 的 三 道 天 命</div>
       ${itemsHTML}
       <div class="fortune-actions" style="opacity:1;margin-top:20px">
+        <button class="fortune-act fortune-act-go" id="fSpinWheel">轉輪盤</button>
         <button class="fortune-act fortune-act-secondary" id="fCloseAll">收起</button>
       </div>
     </div>
@@ -1620,6 +1621,17 @@ function showFortuneSummary() {
   fortuneOverlay.classList.add('open');
 
   document.getElementById('fCloseAll').onclick = () => fortuneOverlay.classList.remove('open');
+  document.getElementById('fSpinWheel').onclick = () => {
+    // Set wheel to fortune-recommended categories then spin
+    const cats = fortuneDraws.map(d => d.cat);
+    activeCats.clear();
+    cats.forEach(c => activeCats.add(c));
+    renderCats();
+    refreshWheel();
+    fortuneOverlay.classList.remove('open');
+    if (typeof _track === 'function') _track('fortune_spin', { cats });
+    setTimeout(() => spin(), 400);
+  };
   fortuneCard.querySelectorAll('.fortune-sum-go').forEach(btn => {
     btn.onclick = () => {
       const cat = btn.dataset.cat;
