@@ -279,6 +279,11 @@ canvas{width:100%;height:100%;display:block}
 @keyframes starPop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
 .rec-reviews{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:var(--text3);
   letter-spacing:.06em;margin-left:8px}
+.rec-info{display:flex;gap:8px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.rec-price{font-size:clamp(11px,1.3vw,12px);font-weight:400;color:var(--accent);
+  letter-spacing:.02em}
+.rec-area{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:rgba(255,255,255,.4);
+  letter-spacing:.06em;padding-left:8px;border-left:1px solid rgba(255,255,255,.1)}
 .rec-desc{font-size:clamp(12px,1.5vw,13px);font-weight:300;color:var(--text2);
   letter-spacing:.03em;line-height:1.5}
 .recs-close{display:block;margin:clamp(16px,2.5vh,24px) auto 0;font-family:var(--serif);
@@ -862,49 +867,49 @@ pInput.onkeydown = e => { if (e.key === 'Enter') addItem(); };
    ══════════════════════════════════════ */
 const RESTAURANTS = {
   '台式':[
-    {name:'茂園餐廳',stars:4.3,desc:'米其林必比登・50年老字號台菜',reviews:'3000+'},
-    {name:'雙月食品社',stars:4.5,desc:'連續多年米其林必比登推薦',reviews:'2000+'},
-    {name:'駱記小炒',stars:4.4,desc:'米其林必比登・道地台式熱炒',reviews:'1500+'},
-    {name:'金山大碗螃蟹',stars:4.5,desc:'海鮮粥・霸氣份量',reviews:'800+'},
+    {name:'茂園餐廳',stars:4.3,desc:'米其林必比登・50年老字號台菜',reviews:'3000+',price:'$400–800',area:'中正區'},
+    {name:'雙月食品社',stars:4.5,desc:'連續多年米其林必比登推薦',reviews:'2000+',price:'$300–600',area:'大安區'},
+    {name:'駱記小炒',stars:4.4,desc:'米其林必比登・道地台式熱炒',reviews:'1500+',price:'$200–500',area:'中山區'},
+    {name:'金山大碗螃蟹',stars:4.5,desc:'海鮮粥・霸氣份量',reviews:'800+',price:'$300–700',area:'萬里區'},
   ],
   '日式':[
-    {name:'大村武串燒居酒屋',stars:4.8,desc:'西門百年老屋・居酒屋傳奇',reviews:'9000+'},
-    {name:'鮨荻 sushi ogi',stars:4.8,desc:'全預約制・日本空運頂級漁獲',reviews:'500+'},
-    {name:'忻鮨壽司割烹',stars:4.7,desc:'萬華無菜單日料 17道 $1480',reviews:'600+'},
-    {name:'麵屋武藏神山',stars:4.3,desc:'六條通・大塊叉燒濃郁豚骨',reviews:'2000+'},
+    {name:'大村武串燒居酒屋',stars:4.8,desc:'百年老屋・居酒屋傳奇',reviews:'9000+',price:'$400–800',area:'萬華區'},
+    {name:'鮨荻 sushi ogi',stars:4.8,desc:'全預約制・日本空運頂級漁獲',reviews:'500+',price:'$2000–4000',area:'中山區'},
+    {name:'忻鮨壽司割烹',stars:4.7,desc:'無菜單日料 17道 $1480',reviews:'600+',price:'$1480–2500',area:'萬華區'},
+    {name:'麵屋武藏神山',stars:4.3,desc:'大塊叉燒濃郁豚骨拉麵',reviews:'2000+',price:'$250–400',area:'中山區'},
   ],
   '韓式':[
-    {name:'梨谷韓式料理烤肉',stars:4.9,desc:'ATT店・頂級韓式烤肉體驗',reviews:'3200+'},
-    {name:'梨泰院',stars:4.7,desc:'道地韓式料理・隱藏名店',reviews:'1000+'},
-    {name:'新村站著吃烤肉',stars:4.5,desc:'信義區・首爾60年老店海外首店',reviews:'6300+'},
-    {name:'GG季吉韓國美食',stars:4.5,desc:'部隊鍋・馬鈴薯排骨湯必點',reviews:'2000+'},
+    {name:'梨谷韓式料理烤肉',stars:4.9,desc:'ATT店・頂級韓式烤肉體驗',reviews:'3200+',price:'$600–1200',area:'信義區'},
+    {name:'梨泰院',stars:4.7,desc:'道地韓式料理・隱藏名店',reviews:'1000+',price:'$300–600',area:'大安區'},
+    {name:'新村站著吃烤肉',stars:4.5,desc:'首爾60年老店海外首店',reviews:'6300+',price:'$500–900',area:'信義區'},
+    {name:'GG季吉韓國美食',stars:4.5,desc:'部隊鍋・馬鈴薯排骨湯必點',reviews:'2000+',price:'$300–600',area:'松山區'},
   ],
   '火鍋':[
-    {name:'武鶴和牛火鍋',stars:4.6,desc:'行天宮・A5和牛吃到飽 $1380起',reviews:'1500+'},
-    {name:'巴適經典麻辣鍋',stars:4.5,desc:'林口・麻辣鍋吃到飽霸主',reviews:'3000+'},
-    {name:'橋山壽喜燒',stars:4.5,desc:'宮崎A5和牛壽喜燒・精品桌邊服務',reviews:'1200+'},
-    {name:'辛殿麻辣鍋',stars:4.3,desc:'鴨血豆腐必點・平日午餐 $568起',reviews:'4000+'},
+    {name:'武鶴和牛火鍋',stars:4.6,desc:'A5和牛吃到飽',reviews:'1500+',price:'$1380–2000',area:'中山區'},
+    {name:'巴適經典麻辣鍋',stars:4.5,desc:'麻辣鍋吃到飽霸主',reviews:'3000+',price:'$600–900',area:'林口區'},
+    {name:'橋山壽喜燒',stars:4.5,desc:'宮崎A5和牛壽喜燒・精品桌邊服務',reviews:'1200+',price:'$1200–2500',area:'大安區'},
+    {name:'辛殿麻辣鍋',stars:4.3,desc:'鴨血豆腐必點',reviews:'4000+',price:'$568–800',area:'多店'},
   ],
   '西式':[
-    {name:'Range餐酒館',stars:4.8,desc:'Prime肋眼牛排・氛圍滿分',reviews:'3000+'},
-    {name:'Leone Restaurant',stars:4.7,desc:'中西融合創意料理',reviews:'1200+'},
-    {name:'茱莉金牛排餐酒館',stars:4.5,desc:'師大商圈・松露蕈菇燉飯',reviews:'1400+'},
-    {name:'GMT義大利餐廳',stars:4.4,desc:'美福大飯店・義籍主廚坐鎮',reviews:'1000+'},
+    {name:'Range餐酒館',stars:4.8,desc:'Prime肋眼牛排・氛圍滿分',reviews:'3000+',price:'$800–1800',area:'大安區'},
+    {name:'Leone Restaurant',stars:4.7,desc:'中西融合創意料理',reviews:'1200+',price:'$600–1500',area:'中山區'},
+    {name:'茱莉金牛排餐酒館',stars:4.5,desc:'松露蕈菇燉飯・約會首選',reviews:'1400+',price:'$500–1200',area:'大安區'},
+    {name:'GMT義大利餐廳',stars:4.4,desc:'美福大飯店・義籍主廚坐鎮',reviews:'1000+',price:'$1500–3000',area:'中山區'},
   ],
   '熱炒':[
-    {name:'駱記小炒',stars:4.4,desc:'米其林必比登推薦熱炒',reviews:'1500+'},
-    {name:'阿才的店',stars:4.2,desc:'大安區・台味十足老字號',reviews:'800+'},
-    {name:'松竹園',stars:4.3,desc:'米其林必比登・土雞野菜',reviews:'900+'},
+    {name:'駱記小炒',stars:4.4,desc:'米其林必比登推薦熱炒',reviews:'1500+',price:'$200–500',area:'中山區'},
+    {name:'阿才的店',stars:4.2,desc:'台味十足老字號',reviews:'800+',price:'$200–400',area:'大安區'},
+    {name:'松竹園',stars:4.3,desc:'米其林必比登・土雞野菜',reviews:'900+',price:'$300–700',area:'士林區'},
   ],
   '麵食':[
-    {name:'林東芳牛肉麵',stars:4.3,desc:'米其林推薦・清燉牛肉麵經典',reviews:'5000+'},
-    {name:'永康牛肉麵',stars:4.0,desc:'經典紅燒半筋半肉',reviews:'8000+'},
-    {name:'老王記牛肉麵',stars:4.2,desc:'金華街・濃郁紅燒湯頭',reviews:'1500+'},
+    {name:'林東芳牛肉麵',stars:4.3,desc:'米其林推薦・清燉牛肉麵經典',reviews:'5000+',price:'$200–350',area:'中山區'},
+    {name:'永康牛肉麵',stars:4.0,desc:'經典紅燒半筋半肉',reviews:'8000+',price:'$220–350',area:'大安區'},
+    {name:'老王記牛肉麵',stars:4.2,desc:'金華街・濃郁紅燒湯頭',reviews:'1500+',price:'$180–300',area:'大安區'},
   ],
   '東南亞':[
-    {name:'ABV南洋餐酒館',stars:4.5,desc:'東南亞九國多元料理',reviews:'2000+'},
-    {name:'心泰原創泰國料理',stars:4.4,desc:'大安區・正宗泰北風味',reviews:'1200+'},
-    {name:'雲南小鎮泰緬料理',stars:4.1,desc:'忠孝復興・泰緬吃到飽',reviews:'800+'},
+    {name:'ABV南洋餐酒館',stars:4.5,desc:'東南亞九國多元料理',reviews:'2000+',price:'$400–800',area:'大安區'},
+    {name:'心泰原創泰國料理',stars:4.4,desc:'正宗泰北風味',reviews:'1200+',price:'$300–600',area:'大安區'},
+    {name:'雲南小鎮泰緬料理',stars:4.1,desc:'泰緬吃到飽',reviews:'800+',price:'$450–650',area:'大安區'},
   ],
 };
 
@@ -940,6 +945,10 @@ function showRecs(cat) {
         <span class="rec-score-badge">${r.stars}</span>
       </div>
       <div class="rec-stars">${renderStarsSvg(r.stars)}<span class="rec-reviews">${r.reviews} 則評論</span></div>
+      <div class="rec-info">
+        <span class="rec-price">${r.price}</span>
+        <span class="rec-area">${r.area}</span>
+      </div>
       <div class="rec-desc">${r.desc}</div>`;
     recsList.appendChild(card);
     // Staggered entrance
