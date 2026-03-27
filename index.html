@@ -165,9 +165,9 @@ canvas{width:100%;height:100%;display:block}
   0%,100%{transform:scale(.85);opacity:.4}
   50%{transform:scale(1.1);opacity:1}}
 
-.center-spin-text{position:absolute;font-size:clamp(10px,1.3vw,12px);font-weight:200;
-  letter-spacing:.3em;color:var(--accent);opacity:0;transition:opacity .4s;
-  text-align:center;pointer-events:none}
+.center-spin-text{position:absolute;font-size:clamp(12px,2vw,14px);font-weight:300;
+  letter-spacing:.25em;color:var(--accent);opacity:0;transition:opacity .3s;
+  text-align:center;pointer-events:none;white-space:nowrap}
 .center.spinning .center-spin-text{opacity:1;animation:spinTextCycle 2.4s ease-in-out infinite}
 @keyframes spinTextCycle{
   0%,100%{opacity:.3;transform:scale(.96)}
@@ -184,11 +184,12 @@ canvas{width:100%;height:100%;display:block}
   width:4px;height:4px;border-radius:50%;background:var(--accent);
   transform:translateX(-50%);box-shadow:0 0 6px rgba(200,168,124,.4)}
 
-.center-main{font-size:clamp(15px,3.8vw,24px);font-weight:600;letter-spacing:.06em;
-  color:var(--text);text-align:center;line-height:1.3;transition:all .4s;
-  text-shadow:0 2px 12px rgba(0,0,0,.5)}
-.center-sub{font-size:clamp(9px,1.2vw,10px);font-weight:300;letter-spacing:.22em;
-  color:var(--accent-dim);margin-top:3px;opacity:0;transition:opacity .8s .4s;
+.center-main{font-size:clamp(14px,3.5vw,22px);font-weight:500;letter-spacing:.08em;
+  color:var(--text);text-align:center;line-height:1.4;transition:all .4s;
+  text-shadow:0 2px 12px rgba(0,0,0,.5);
+  padding:0 8px;word-break:keep-all;max-width:90%}
+.center-sub{font-size:clamp(9px,1.2vw,10px);font-weight:300;letter-spacing:.2em;
+  color:var(--accent-dim);margin-top:4px;opacity:0;transition:opacity .8s .4s;
   text-transform:uppercase}
 .center-sub.show{opacity:.7}
 
@@ -931,21 +932,23 @@ function drawWheel(rotation) {
     ctx.stroke();
     ctx.restore();
 
-    // Text with shadow
+    // Text with shadow — centered in segment
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(start + arc / 2);
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
     const isMobile = window.innerWidth <= 480;
-    const fontSize = isMobile ? Math.max(13, Math.min(17, wheelSize / 22)) : Math.max(11, Math.min(15, wheelSize / 28));
+    const fontSize = isMobile ? Math.max(14, Math.min(18, wheelSize / 20)) : Math.max(12, Math.min(16, wheelSize / 26));
     ctx.font = `${isWinner ? 600 : 400} ${fontSize}px "Noto Serif TC", serif`;
-    // Shadow
-    ctx.shadowColor = 'rgba(0,0,0,0.7)';
-    ctx.shadowBlur = 6;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // Shadow for readability
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 8;
     ctx.shadowOffsetY = 1;
-    ctx.fillStyle = isWinner ? '#ece6dc' : 'rgba(200,168,124,0.8)';
-    ctx.fillText(item.name, r - 20, 0);
+    ctx.fillStyle = isWinner ? '#ece6dc' : 'rgba(200,168,124,0.85)';
+    // Position text at 62% radius — nicely centered in the segment band
+    const textR = r * 0.62;
+    ctx.fillText(item.name, textR, 0);
     ctx.restore();
   });
 
