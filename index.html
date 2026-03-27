@@ -433,68 +433,110 @@ canvas{width:100%;height:100%;display:block}
   opacity:0;pointer-events:none;transition:opacity .6s var(--ease)}
 .fortune-overlay.open{opacity:1;pointer-events:auto}
 
-.fortune-card{width:min(320px,80vw);padding:clamp(32px,5vh,48px) clamp(28px,4vw,40px);
+.fortune-card{width:min(340px,84vw);padding:clamp(28px,4.5vh,40px) clamp(24px,3.5vw,36px);
   text-align:center;position:relative;
   border:1px solid rgba(200,168,124,.12);
   background:linear-gradient(180deg,rgba(18,18,28,.6) 0%,rgba(12,12,20,.8) 100%);
   transform:scale(.85) rotateY(90deg);opacity:0;
   transition:all .7s var(--ease) .1s}
 .fortune-overlay.open .fortune-card{transform:scale(1) rotateY(0);opacity:1}
+.fortune-card.golden{border-color:rgba(200,168,124,.3);
+  box-shadow:0 0 80px rgba(200,168,124,.08),0 0 30px rgba(200,168,124,.04)}
 
 .fortune-deco-top,.fortune-deco-bot{position:absolute;left:50%;transform:translateX(-50%);
   width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3}
 .fortune-deco-top{top:12px}
 .fortune-deco-bot{bottom:12px}
 
-.fortune-label{font-size:clamp(9px,1.1vw,10px);font-weight:200;letter-spacing:.6em;
-  color:var(--accent-dim);text-transform:uppercase;margin-bottom:clamp(16px,2.5vh,24px);
+/* progress dots */
+.fortune-dots{display:flex;gap:10px;justify-content:center;margin-bottom:clamp(14px,2vh,20px);
   opacity:0;animation:none}
-.fortune-overlay.open .fortune-label{animation:ffu .6s var(--ease) .4s forwards}
+.fortune-overlay.open .fortune-dots{animation:ffu .5s var(--ease) .3s forwards}
+.fortune-dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(200,168,124,.25);
+  background:transparent;transition:all .4s}
+.fortune-dot.filled{background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 8px rgba(200,168,124,.3)}
+.fortune-dot.current{border-color:var(--accent);animation:dotPulse 1.5s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(200,168,124,.2)}50%{box-shadow:0 0 0 6px rgba(200,168,124,0)}}
+
+.fortune-step{font-size:clamp(9px,1.1vw,10px);font-weight:200;letter-spacing:.5em;
+  color:var(--accent-dim);margin-bottom:clamp(12px,2vh,18px);opacity:0}
+.fortune-overlay.open .fortune-step{animation:ffu .5s var(--ease) .4s forwards}
+.fortune-card.golden .fortune-step{color:var(--accent);letter-spacing:.6em}
 
 .fortune-luck{display:inline-block;font-size:clamp(28px,7vw,40px);font-weight:200;
-  color:var(--accent);letter-spacing:.15em;margin-bottom:clamp(16px,2.5vh,24px);
+  color:var(--accent);letter-spacing:.15em;margin-bottom:clamp(12px,2vh,18px);
   opacity:0;text-shadow:0 0 40px rgba(200,168,124,.2)}
-.fortune-overlay.open .fortune-luck{animation:ffu .6s var(--ease) .6s forwards}
+.fortune-overlay.open .fortune-luck{animation:ffu .6s var(--ease) .55s forwards}
+.fortune-card.golden .fortune-luck{text-shadow:0 0 60px rgba(200,168,124,.4)}
 
-.fortune-poem{font-size:clamp(16px,4vw,22px);font-weight:200;color:var(--text);
-  letter-spacing:.08em;line-height:2;margin-bottom:clamp(20px,3vh,32px);
+.fortune-poem{font-size:clamp(15px,3.8vw,20px);font-weight:200;color:var(--text);
+  letter-spacing:.08em;line-height:2;margin-bottom:clamp(16px,2.5vh,24px);
   opacity:0;white-space:pre-line}
-.fortune-overlay.open .fortune-poem{animation:ffu .6s var(--ease) .8s forwards}
+.fortune-overlay.open .fortune-poem{animation:ffu .6s var(--ease) .7s forwards}
 
-.fortune-line{width:24px;height:1px;background:var(--accent);opacity:.3;margin:0 auto clamp(14px,2vh,20px)}
+.fortune-line{width:24px;height:1px;background:var(--accent);opacity:.3;margin:0 auto clamp(10px,1.5vh,16px)}
 
-.fortune-tip{font-size:clamp(10px,1.3vw,12px);font-weight:300;color:var(--accent-dim);
-  letter-spacing:.08em;line-height:1.6;opacity:0}
-.fortune-overlay.open .fortune-tip{animation:ffu .5s var(--ease) 1.1s forwards}
+/* recommended category */
+.fortune-rec{opacity:0;margin-bottom:clamp(8px,1.2vh,12px)}
+.fortune-overlay.open .fortune-rec{animation:ffu .5s var(--ease) .9s forwards}
+.fortune-rec-label{font-size:clamp(9px,1.1vw,10px);font-weight:200;letter-spacing:.3em;
+  color:var(--text3);margin-bottom:6px}
+.fortune-rec-cat{font-size:clamp(18px,4.5vw,26px);font-weight:300;color:var(--accent);
+  letter-spacing:.2em;margin-bottom:4px}
+.fortune-card.golden .fortune-rec-cat{text-shadow:0 0 30px rgba(200,168,124,.3)}
+.fortune-rec-reason{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:var(--accent-dim);
+  letter-spacing:.06em;line-height:1.5}
 
-.fortune-actions{display:flex;gap:12px;justify-content:center;margin-top:clamp(24px,3.5vh,36px);
+.fortune-tip{font-size:clamp(10px,1.3vw,12px);font-weight:300;color:var(--text3);
+  letter-spacing:.08em;line-height:1.6;opacity:0;margin-top:clamp(8px,1vh,12px)}
+.fortune-overlay.open .fortune-tip{animation:ffu .5s var(--ease) 1.05s forwards}
+
+.fortune-actions{display:flex;gap:10px;justify-content:center;margin-top:clamp(20px,3vh,30px);
   opacity:0}
-.fortune-overlay.open .fortune-actions{animation:ffu .5s var(--ease) 1.3s forwards}
+.fortune-overlay.open .fortune-actions{animation:ffu .5s var(--ease) 1.2s forwards}
 
-.fortune-again{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
-  color:var(--accent);background:none;border:1px solid rgba(200,168,124,.2);
-  padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
-.fortune-again:hover{border-color:rgba(200,168,124,.4);background:rgba(200,168,124,.05)}
-.fortune-close-btn{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
-  color:rgba(255,255,255,.35);background:none;border:1px solid rgba(255,255,255,.08);
-  padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
-.fortune-close-btn:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)}
+.fortune-act{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  padding:10px 24px;cursor:pointer;letter-spacing:.18em;transition:all .3s;border:1px solid}
+.fortune-act-primary{color:var(--accent);border-color:rgba(200,168,124,.25);background:none}
+.fortune-act-primary:hover{border-color:rgba(200,168,124,.5);background:rgba(200,168,124,.06)}
+.fortune-act-secondary{color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.1);background:none}
+.fortune-act-secondary:hover{color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.2)}
+.fortune-act-go{color:#07070c;background:var(--accent);border-color:var(--accent)}
+.fortune-act-go:hover{background:#d4b88e;border-color:#d4b88e}
 
-@keyframes ffu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* fortune summary after 3 draws */
+.fortune-summary{opacity:0}
+.fortune-overlay.open .fortune-summary{animation:ffu .6s var(--ease) .5s forwards}
+.fortune-sum-title{font-size:clamp(9px,1.1vw,10px);font-weight:200;letter-spacing:.5em;
+  color:var(--accent-dim);margin-bottom:clamp(16px,2.5vh,24px)}
+.fortune-sum-item{display:flex;align-items:center;gap:14px;padding:12px 0;
+  border-bottom:1px solid rgba(200,168,124,.06);text-align:left}
+.fortune-sum-item:last-child{border-bottom:none}
+.fortune-sum-num{font-size:clamp(9px,1vw,10px);font-weight:200;color:var(--text3);
+  letter-spacing:.15em;white-space:nowrap;min-width:36px}
+.fortune-sum-cat{font-size:clamp(16px,4vw,20px);font-weight:300;color:var(--accent);
+  letter-spacing:.12em;flex:1}
+.fortune-sum-luck{font-size:clamp(10px,1.2vw,11px);font-weight:200;color:var(--text2);
+  letter-spacing:.08em}
+.fortune-sum-go{font-family:var(--serif);font-size:clamp(9px,1vw,10px);font-weight:300;
+  color:var(--accent-dim);background:none;border:1px solid rgba(200,168,124,.15);
+  padding:5px 14px;cursor:pointer;letter-spacing:.15em;transition:all .3s;white-space:nowrap}
+.fortune-sum-go:hover{color:var(--accent);border-color:rgba(200,168,124,.35)}
 
 /* fortune limit message */
-.fortune-limit{text-align:center;padding:clamp(40px,6vh,60px) clamp(28px,4vw,40px)}
+.fortune-limit{text-align:center;padding:clamp(30px,5vh,50px) clamp(24px,3.5vw,36px)}
 .fortune-limit-icon{font-size:clamp(32px,8vw,48px);margin-bottom:20px;display:block}
 .fortune-limit-msg{font-size:clamp(16px,4vw,22px);font-weight:200;color:var(--text);
   letter-spacing:.08em;line-height:1.8;margin-bottom:12px}
 .fortune-limit-sub{font-size:clamp(11px,1.4vw,13px);font-weight:300;color:var(--accent-dim);
-  letter-spacing:.06em;line-height:1.6;margin-bottom:clamp(24px,3vh,36px)}
+  letter-spacing:.06em;line-height:1.6;margin-bottom:clamp(24px,3vh,36px);white-space:pre-line}
 .fortune-limit-btn{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
   color:var(--accent);background:none;border:1px solid rgba(200,168,124,.2);
   padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
 .fortune-limit-btn:hover{border-color:rgba(200,168,124,.4);background:rgba(200,168,124,.05)}
-.fortune-count{font-size:clamp(9px,1.1vw,10px);font-weight:200;color:var(--text3);
-  letter-spacing:.15em;margin-top:clamp(16px,2vh,24px)}
+
+@keyframes ffu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* fortune shake */
 .fortune-card.shake{animation:fortuneShake .5s ease}
@@ -568,19 +610,7 @@ canvas{width:100%;height:100%;display:block}
 
 <!-- ══ Fortune Panel ══ -->
 <div class="fortune-overlay" id="fortuneOverlay">
-  <div class="fortune-card" id="fortuneCard">
-    <div class="fortune-deco-top"></div>
-    <div class="fortune-label">食 籤</div>
-    <div class="fortune-luck" id="fortuneLuck"></div>
-    <div class="fortune-poem" id="fortunePoem"></div>
-    <div class="fortune-line"></div>
-    <div class="fortune-tip" id="fortuneTip"></div>
-    <div class="fortune-actions">
-      <button class="fortune-again" id="fortuneAgain">再抽一次</button>
-      <button class="fortune-close-btn" id="fortuneClose">收起</button>
-    </div>
-    <div class="fortune-deco-bot"></div>
-  </div>
+  <div class="fortune-card" id="fortuneCard"></div>
 </div>
 
 <div class="music-bar" id="musicBar">
@@ -1388,7 +1418,7 @@ async function fetchWeather() {
 }
 
 /* ══════════════════════════════════════
-   Fortune — 抽食籤
+   Fortune — 美食天命三連抽
    ══════════════════════════════════════ */
 const FORTUNES = [
   {luck:'大吉',poem:'今晚的你\n值得一碗好湯',tip:'閉上眼喝第一口，感受幸福'},
@@ -1417,57 +1447,179 @@ const FORTUNES = [
   {luck:'吉',poem:'別問我瘦了沒\n問我吃了什麼',tip:'答案永遠是好吃的'},
 ];
 
-const fortuneOverlay = document.getElementById('fortuneOverlay');
-const fortuneCard = document.getElementById('fortuneCard');
-const fortuneLuck = document.getElementById('fortuneLuck');
-const fortunePoem = document.getElementById('fortunePoem');
-const fortuneTip = document.getElementById('fortuneTip');
-let lastFortuneIdx = -1;
+const CAT_REASONS = {
+  '台式':['古早味最懂你今晚的心情','滷肉飯的香氣在呼喚你','巷口那碗湯，是今晚的解藥'],
+  '日式':['今晚值得一場職人料理的儀式','壽司之神說：就是你了','一碗拉麵能治癒所有的疲憊'],
+  '韓式':['辣味能喚醒今晚的靈魂','烤肉配燒酒，今晚就該放肆','一口泡菜鍋，瞬間到首爾'],
+  '火鍋':['咕嘟咕嘟的聲音就是幸福','涮一片肉，忘掉所有煩惱','今晚適合圍著火鍋慢慢聊'],
+  '西式':['今晚值得一塊好牛排犒賞自己','紅酒微醺的夜晚最浪漫','用刀叉切開的是一天的忙碌'],
+  '熱炒':['大火快炒配啤酒才是人生','鑊氣逼人的豪邁，今晚需要','三五好友一桌熱炒最痛快'],
+  '麵食':['一碗入魂，今晚的麵特別香','湯頭是今晚最好的陪伴','吸一口麵的時候什麼都能放下'],
+  '東南亞':['酸辣交織就是今晚的節奏','香料的異國風情帶你逃離日常','微辣中帶著甜，像今晚的你'],
+};
 
-/* ── Fortune Daily Limit ── */
+const STEP_LABELS = ['第一籤 · 直覺','第二籤 · 命運','第三籤 · 天選 ✦'];
 const FORTUNE_MAX = 3;
 const FORTUNE_BONUS = 1;
+
+const fortuneOverlay = document.getElementById('fortuneOverlay');
+const fortuneCard = document.getElementById('fortuneCard');
+let lastFortuneIdx = -1;
+let fortuneDraws = []; // [{luck, poem, tip, cat, reason}, ...]
+let usedCats = [];
 
 function getFortuneDateKey() {
   const d = new Date();
   return `fortune_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
+function getFortuneState() {
+  try { return JSON.parse(localStorage.getItem(getFortuneDateKey()) || 'null'); } catch(e) { return null; }
+}
+function saveFortuneState() {
+  localStorage.setItem(getFortuneDateKey(), JSON.stringify({ count: fortuneDraws.length, draws: fortuneDraws, bonus: fortuneBonusUsed }));
+}
+let fortuneBonusUsed = false;
 
-function getFortuneCount() {
-  const key = getFortuneDateKey();
-  return parseInt(localStorage.getItem(key) || '0', 10);
+// Restore state on load
+(function restoreFortuneState() {
+  const s = getFortuneState();
+  if (s && s.draws) {
+    fortuneDraws = s.draws;
+    fortuneBonusUsed = !!s.bonus;
+    usedCats = s.draws.map(d => d.cat);
+  }
+})();
+
+function pickRandomCat() {
+  const allCats = Object.keys(CAT_REASONS);
+  const available = allCats.filter(c => !usedCats.includes(c));
+  const pool = available.length > 0 ? available : allCats;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function incrementFortuneCount() {
-  const key = getFortuneDateKey();
-  const c = getFortuneCount() + 1;
-  localStorage.setItem(key, c);
-  return c;
+function buildDotsHTML(current) {
+  // current = 0-indexed step about to show (0,1,2)
+  let html = '<div class="fortune-dots">';
+  for (let i = 0; i < FORTUNE_MAX; i++) {
+    const cls = i < current ? 'fortune-dot filled' : i === current ? 'fortune-dot current' : 'fortune-dot';
+    html += `<div class="${cls}"></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderFortuneCard(step, f) {
+  const isGolden = step === 2;
+  const remainText = step < 2 ? `還剩 ${2 - step} 籤` : '';
+
+  fortuneCard.className = 'fortune-card' + (isGolden ? ' golden' : '');
+  fortuneCard.innerHTML = `
+    <div class="fortune-deco-top"></div>
+    ${buildDotsHTML(step)}
+    <div class="fortune-step">${STEP_LABELS[step]}</div>
+    <div class="fortune-luck">${f.luck}</div>
+    <div class="fortune-poem">${f.poem}</div>
+    <div class="fortune-line"></div>
+    <div class="fortune-rec">
+      <div class="fortune-rec-label">今晚推薦你吃</div>
+      <div class="fortune-rec-cat">${f.cat}</div>
+      <div class="fortune-rec-reason">${f.reason}</div>
+    </div>
+    <div class="fortune-tip">${f.tip}</div>
+    <div class="fortune-actions">
+      <button class="fortune-act fortune-act-go" id="fGoRecs">去看餐廳</button>
+      ${step < 2
+        ? `<button class="fortune-act fortune-act-primary" id="fNext">下一籤 <span style="opacity:.4;font-size:.85em">${remainText}</span></button>`
+        : `<button class="fortune-act fortune-act-primary" id="fShowAll">查看三道天命</button>`
+      }
+      <button class="fortune-act fortune-act-secondary" id="fClose">收起</button>
+    </div>
+    <div class="fortune-deco-bot"></div>`;
+
+  // Bind
+  document.getElementById('fGoRecs').onclick = () => {
+    fortuneOverlay.classList.remove('open');
+    if (typeof _track === 'function') _track('fortune_go_recs', { cat: f.cat });
+    setTimeout(() => showRecs(f.cat), 300);
+  };
+  document.getElementById('fClose').onclick = () => fortuneOverlay.classList.remove('open');
+
+  if (step < 2) {
+    document.getElementById('fNext').onclick = () => {
+      if (typeof _track === 'function') _track('fortune_next', { step: step + 2 });
+      fortuneOverlay.classList.remove('open');
+      void fortuneCard.offsetWidth;
+      fortuneCard.classList.add('shake');
+      if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+      setTimeout(() => {
+        fortuneCard.classList.remove('shake');
+        doDrawFortune();
+      }, 450);
+    };
+  } else {
+    document.getElementById('fShowAll').onclick = () => showFortuneSummary();
+  }
+}
+
+function showFortuneSummary() {
+  fortuneOverlay.classList.remove('open');
+  void fortuneCard.offsetWidth;
+
+  fortuneCard.className = 'fortune-card golden';
+  let itemsHTML = '';
+  fortuneDraws.forEach((d, i) => {
+    itemsHTML += `
+      <div class="fortune-sum-item">
+        <div class="fortune-sum-num">${STEP_LABELS[i].split('·')[0].trim()}</div>
+        <div class="fortune-sum-cat">${d.cat}</div>
+        <div class="fortune-sum-luck">${d.luck}</div>
+        <button class="fortune-sum-go" data-cat="${d.cat}">去看餐廳</button>
+      </div>`;
+  });
+
+  fortuneCard.innerHTML = `
+    <div class="fortune-deco-top"></div>
+    <div class="fortune-summary">
+      <div class="fortune-sum-title">今 晚 的 三 道 天 命</div>
+      ${itemsHTML}
+      <div class="fortune-actions" style="opacity:1;margin-top:20px">
+        <button class="fortune-act fortune-act-secondary" id="fCloseAll">收起</button>
+      </div>
+    </div>
+    <div class="fortune-deco-bot"></div>`;
+
+  fortuneOverlay.classList.add('open');
+
+  document.getElementById('fCloseAll').onclick = () => fortuneOverlay.classList.remove('open');
+  fortuneCard.querySelectorAll('.fortune-sum-go').forEach(btn => {
+    btn.onclick = () => {
+      const cat = btn.dataset.cat;
+      fortuneOverlay.classList.remove('open');
+      if (typeof _track === 'function') _track('fortune_summary_go', { cat });
+      setTimeout(() => showRecs(cat), 300);
+    };
+  });
 }
 
 function showFortuneLimit(type) {
-  // type: 'greedy' = 4th attempt (bonus available), 'locked' = 5th+ (done for today)
   fortuneOverlay.classList.remove('open');
   void fortuneCard.offsetWidth;
 
   const msgs = {
     greedy: {
-      icon: '🍰',
-      msg: '太貪心囉～',
+      icon: '🍰', msg: '太貪心囉～',
       sub: '好啦好啦，看你這麼可愛\n再給你最後一次機會',
-      btn: '謝謝！我要抽',
-      btnId: 'bonusDraw'
+      btn: '謝謝！我要抽', btnId: 'bonusDraw'
     },
     locked: {
-      icon: '🌙',
-      msg: '今天的緣分用完了',
+      icon: '🌙', msg: '今天的緣分用完了',
       sub: '美好的事值得等待\n午夜 12:00 再來抽吧',
-      btn: null,
-      btnId: null
+      btn: null, btnId: null
     }
   };
   const m = msgs[type];
 
+  fortuneCard.className = 'fortune-card';
   fortuneCard.innerHTML = `
     <div class="fortune-deco-top"></div>
     <div class="fortune-limit">
@@ -1475,6 +1627,7 @@ function showFortuneLimit(type) {
       <div class="fortune-limit-msg">${m.msg}</div>
       <div class="fortune-limit-sub">${m.sub}</div>
       ${m.btn ? `<button class="fortune-limit-btn" id="${m.btnId}">${m.btn}</button>` : ''}
+      ${fortuneDraws.length >= FORTUNE_MAX ? `<button class="fortune-limit-btn" id="fReviewAll" style="margin-top:10px;color:var(--text3);border-color:rgba(255,255,255,.1)">查看今天的天命</button>` : ''}
     </div>
     <div class="fortune-deco-bot"></div>`;
 
@@ -1482,104 +1635,65 @@ function showFortuneLimit(type) {
 
   if (m.btnId) {
     document.getElementById(m.btnId).onclick = () => {
-      incrementFortuneCount(); // now count = 4 (used bonus)
-      _track('fortune_bonus');
-      restoreFortuneCard();
-      actualDrawFortune();
+      fortuneBonusUsed = true;
+      if (typeof _track === 'function') _track('fortune_bonus');
+      fortuneOverlay.classList.remove('open');
+      void fortuneCard.offsetWidth;
+      doDrawFortune();
     };
   }
+  const reviewBtn = document.getElementById('fReviewAll');
+  if (reviewBtn) reviewBtn.onclick = () => showFortuneSummary();
 }
 
-function restoreFortuneCard() {
-  fortuneCard.innerHTML = `
-    <div class="fortune-deco-top"></div>
-    <div class="fortune-label">食 籤</div>
-    <div class="fortune-luck" id="fortuneLuck"></div>
-    <div class="fortune-poem" id="fortunePoem"></div>
-    <div class="fortune-line"></div>
-    <div class="fortune-tip" id="fortuneTip"></div>
-    <div class="fortune-actions">
-      <button class="fortune-again" id="fortuneAgain">再抽一次</button>
-      <button class="fortune-close-btn" id="fortuneClose">收起</button>
-    </div>
-    <div class="fortune-deco-bot"></div>`;
-  // Re-bind
-  document.getElementById('fortuneAgain').onclick = redrawFortune;
-  document.getElementById('fortuneClose').onclick = () => fortuneOverlay.classList.remove('open');
-}
-
-function actualDrawFortune() {
+function doDrawFortune() {
+  // Pick fortune
   let idx;
   do { idx = Math.floor(Math.random() * FORTUNES.length); } while (idx === lastFortuneIdx && FORTUNES.length > 1);
   lastFortuneIdx = idx;
   const f = FORTUNES[idx];
 
-  // Ensure card structure is normal
-  const luckEl = document.getElementById('fortuneLuck');
-  const poemEl = document.getElementById('fortunePoem');
-  const tipEl = document.getElementById('fortuneTip');
-  if (!luckEl) { restoreFortuneCard(); }
-  const fl = document.getElementById('fortuneLuck');
-  const fp = document.getElementById('fortunePoem');
-  const ft = document.getElementById('fortuneTip');
+  // Pick category
+  const cat = pickRandomCat();
+  usedCats.push(cat);
+  const reasons = CAT_REASONS[cat];
+  const reason = reasons[Math.floor(Math.random() * reasons.length)];
+
+  const draw = { luck: f.luck, poem: f.poem, tip: f.tip, cat, reason };
+  fortuneDraws.push(draw);
+  saveFortuneState();
+
+  const step = fortuneDraws.length - 1; // 0, 1, 2, or 3 (bonus)
 
   fortuneOverlay.classList.remove('open');
-  fortuneCard.classList.remove('shake');
   void fortuneCard.offsetWidth;
 
-  fl.textContent = f.luck;
-  fp.textContent = f.poem;
-  ft.textContent = f.tip;
-
+  renderFortuneCard(Math.min(step, 2), draw);
   fortuneOverlay.classList.add('open');
-  if (navigator.vibrate) navigator.vibrate(30);
+  if (navigator.vibrate) navigator.vibrate(step === 2 ? [30, 40, 30] : 30);
 }
 
 function drawFortune() {
-  const count = getFortuneCount();
-  _track('fortune_draw', { attempt: count + 1 });
+  const totalUsed = fortuneDraws.length;
+  if (typeof _track === 'function') _track('fortune_draw', { attempt: totalUsed + 1 });
 
-  if (count >= FORTUNE_MAX + FORTUNE_BONUS) {
-    // Already used bonus — locked
+  if (fortuneBonusUsed && totalUsed > FORTUNE_MAX) {
     showFortuneLimit('locked');
     return;
   }
-  if (count >= FORTUNE_MAX) {
-    // Show greedy message with bonus
+  if (totalUsed >= FORTUNE_MAX && !fortuneBonusUsed) {
     showFortuneLimit('greedy');
     return;
   }
-
-  incrementFortuneCount();
-  actualDrawFortune();
-}
-
-function redrawFortune() {
-  const count = getFortuneCount();
-  if (count >= FORTUNE_MAX + FORTUNE_BONUS) {
+  if (totalUsed >= FORTUNE_MAX + FORTUNE_BONUS) {
     showFortuneLimit('locked');
     return;
   }
-  if (count >= FORTUNE_MAX) {
-    showFortuneLimit('greedy');
-    return;
-  }
 
-  fortuneOverlay.classList.remove('open');
-  void fortuneCard.offsetWidth;
-  fortuneCard.classList.add('shake');
-  if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
-  setTimeout(() => {
-    fortuneCard.classList.remove('shake');
-    incrementFortuneCount();
-    _track('fortune_redraw', { attempt: count + 1 });
-    actualDrawFortune();
-  }, 500);
+  doDrawFortune();
 }
 
 document.getElementById('fortuneBtn').onclick = drawFortune;
-document.getElementById('fortuneAgain').onclick = redrawFortune;
-document.getElementById('fortuneClose').onclick = () => fortuneOverlay.classList.remove('open');
 fortuneOverlay.onclick = e => { if (e.target === fortuneOverlay) fortuneOverlay.classList.remove('open'); };
 
 /* ══════════════════════════════════════
