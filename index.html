@@ -1278,21 +1278,13 @@ const YT_URL = 'https://www.youtube.com/embed/SmpbY2VIbj0?autoplay=1&loop=1&play
 function enterApp() {
   const entry = document.getElementById('entry');
   entry.classList.add('gone');
-  // Start music — user gesture satisfies autoplay policy
+  // Start music silently — bar stays hidden
   ytFrame.src = YT_URL;
-  musicBar.classList.add('show');
-  historyEl.classList.add('lifted');
   musicOn = true;
   musicBtn.classList.add('on');
-  // Lower volume to 60% once iframe is ready
   ytFrame.onload = () => {
     try { ytFrame.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[40]}', '*'); } catch(e){}
   };
-  // Auto-minimize music bar after 2s
-  setTimeout(() => {
-    musicBar.classList.remove('show');
-    historyEl.classList.remove('lifted');
-  }, 2000);
 }
 
 function toggleMusic() {
