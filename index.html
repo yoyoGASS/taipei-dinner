@@ -997,6 +997,9 @@ function showRecs(cat) {
   recsHeroMoodSub.textContent = CAT_MOOD_SUBS[cat] || '';
   recsCatTag.textContent = cat;
   recsList.innerHTML = '';
+  // Scroll sheet to top
+  const sheet = recsOverlay.querySelector('.recs-sheet');
+  if (sheet) sheet.scrollTop = 0;
   list.forEach((r, i) => {
     const card = document.createElement('div');
     card.className = 'rec-card';
