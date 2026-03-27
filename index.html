@@ -246,8 +246,19 @@ canvas{width:100%;height:100%;display:block}
   transition:transform .6s var(--ease),opacity .5s;
   overflow-y:auto;-webkit-overflow-scrolling:touch}
 .recs-overlay.open .recs-sheet{transform:translateY(0);opacity:1}
+.recs-hero{position:relative;width:calc(100% + 40px);margin:-clamp(20px,3vh,32px) -20px 0;
+  height:clamp(160px,28vh,220px);overflow:hidden}
+.recs-hero img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:brightness(.7) saturate(1.3)}
+.recs-hero-overlay{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,7,12,.1) 0%,rgba(7,7,12,.5) 50%,rgba(7,7,12,.95) 85%,rgba(7,7,12,1) 100%)}
+.recs-hero-text{position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:1}
+.recs-hero-mood{font-size:clamp(20px,5vw,28px);font-weight:200;letter-spacing:.15em;
+  color:var(--text);text-shadow:0 2px 20px rgba(0,0,0,.6);line-height:1.4}
+.recs-hero-mood-sub{font-size:clamp(10px,1.3vw,11px);font-weight:300;letter-spacing:.4em;
+  color:var(--accent-dim);margin-top:4px;text-transform:uppercase}
 .recs-handle{width:32px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;
-  margin:0 auto 16px}
+  margin:16px auto 12px}
 .recs-header{text-align:center;margin-bottom:clamp(16px,2.5vh,24px)}
 .recs-cat-tag{display:inline-block;font-size:clamp(9px,1.2vw,10px);font-weight:300;letter-spacing:.4em;
   color:var(--accent);border:1px solid rgba(200,168,124,.18);padding:5px 18px;
@@ -397,6 +408,14 @@ canvas{width:100%;height:100%;display:block}
 <!-- ══ Recommendation Sheet ══ -->
 <div class="recs-overlay" id="recsOverlay">
   <div class="recs-sheet">
+    <div class="recs-hero" id="recsHero">
+      <img id="recsHeroImg" src="" alt="">
+      <div class="recs-hero-overlay"></div>
+      <div class="recs-hero-text">
+        <div class="recs-hero-mood" id="recsHeroMood"></div>
+        <div class="recs-hero-mood-sub" id="recsHeroMoodSub"></div>
+      </div>
+    </div>
     <div class="recs-handle"></div>
     <div class="recs-header">
       <span class="recs-cat-tag" id="recsCatTag"></span>
@@ -920,10 +939,40 @@ const RESTAURANTS = {
   ],
 };
 
+const CAT_MOODS = {
+  '台式':['古早味的溫暖','來碗熱騰騰的','巷口飄來的香氣'],
+  '日式':['職人的一期一會','今晚，讓味蕾去旅行','板前的專注'],
+  '韓式':['辣得剛剛好','一口烤肉一口燒酒','首爾的夜晚味道'],
+  '火鍋':['沸騰的幸福感','咕嘟咕嘟的療癒','涮一片，忘一天'],
+  '西式':['優雅地大口吃肉','紅酒與牛排的夜','慢慢享受的儀式感'],
+  '熱炒':['大火快炒的豪邁','啤酒配熱炒的夜','鑊氣逼人'],
+  '麵食':['一碗入魂','湯頭是靈魂','吸一口麵，嘆一口氣'],
+  '東南亞':['酸辣交織的誘惑','香料的異國情調','微辣中帶著甜'],
+};
+const CAT_MOOD_SUBS = {
+  '台式':'TAIWANESE SOUL FOOD','日式':'JAPANESE CUISINE','韓式':'KOREAN FLAVORS',
+  '火鍋':'HOTPOT PARADISE','西式':'WESTERN DINING','熱炒':'WOK & FIRE',
+  '麵食':'NOODLE THERAPY','東南亞':'SOUTHEAST ASIAN',
+};
+// Hero images (wider/taller crops for banner)
+const CAT_HERO_IMAGES = {
+  '台式':'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&h=400&fit=crop&q=80',
+  '日式':'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&h=400&fit=crop&q=80',
+  '韓式':'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800&h=400&fit=crop&q=80',
+  '火鍋':'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&h=400&fit=crop&q=80',
+  '西式':'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=400&fit=crop&q=80',
+  '熱炒':'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&h=400&fit=crop&q=80',
+  '麵食':'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=400&fit=crop&q=80',
+  '東南亞':'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=800&h=400&fit=crop&q=80',
+};
+
 const recsOverlay = document.getElementById('recsOverlay');
 const recsList = document.getElementById('recsList');
 const recsCatTag = document.getElementById('recsCatTag');
 const recsClose = document.getElementById('recsClose');
+const recsHeroImg = document.getElementById('recsHeroImg');
+const recsHeroMood = document.getElementById('recsHeroMood');
+const recsHeroMoodSub = document.getElementById('recsHeroMoodSub');
 
 function renderStarsSvg(rating) {
   const full = Math.floor(rating);
@@ -941,6 +990,11 @@ function renderStarsSvg(rating) {
 function showRecs(cat) {
   const list = RESTAURANTS[cat];
   if (!list || !list.length) return;
+  // Hero image & mood text
+  recsHeroImg.src = CAT_HERO_IMAGES[cat] || '';
+  const moods = CAT_MOODS[cat] || ['今晚吃這個'];
+  recsHeroMood.textContent = moods[Math.floor(Math.random() * moods.length)];
+  recsHeroMoodSub.textContent = CAT_MOOD_SUBS[cat] || '';
   recsCatTag.textContent = cat;
   recsList.innerHTML = '';
   list.forEach((r, i) => {
