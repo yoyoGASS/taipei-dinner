@@ -223,35 +223,47 @@ canvas{width:100%;height:100%;display:block}
 .hist-item:hover,.hist-item:active{color:var(--accent);border-bottom-color:rgba(200,168,124,.3)}
 .hist-item+.hist-item::before{content:'\00B7';position:absolute;left:-10px;opacity:.3}
 
-/* ══ Neko Agent — 芋泥 ══ */
-.neko{position:fixed;bottom:12px;z-index:60;cursor:pointer;
-  transition:left 3s var(--ease),right 3s var(--ease);user-select:none;-webkit-user-select:none;
-  filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
-.neko.walk-r{animation:nekoWalk .4s ease-in-out infinite}
-.neko.walk-l{animation:nekoWalk .4s ease-in-out infinite;transform:scaleX(-1)}
-.neko.idle{animation:nekoIdle 3s ease-in-out infinite}
-.neko.sleep{animation:nekoSleep 2s ease-in-out infinite;opacity:.7}
-@keyframes nekoWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes nekoIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(1deg)}}
-@keyframes nekoSleep{0%,100%{transform:scale(1)}50%{transform:scale(.97)}}
-.neko svg{width:56px;height:auto;display:block}
-.neko-blink .neko-eye-pupil{ry:0.5;transition:ry .15s}
-.neko-tail-wag{animation:tailWag 1s ease-in-out infinite}
-@keyframes tailWag{0%,100%{transform:rotate(0)}25%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}
+/* ══ Neko Agent — 比特幣 ══ */
+.neko{position:fixed;bottom:0;left:0;z-index:60;cursor:pointer;
+  user-select:none;-webkit-user-select:none;will-change:transform;pointer-events:auto}
+.neko-body{position:relative;pointer-events:auto}
+.neko-sprite{width:clamp(56px,10vw,72px);height:clamp(56px,10vw,72px);border-radius:46% 46% 40% 40%;
+  overflow:hidden;position:relative;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 40px rgba(200,168,124,.06);
+  transition:box-shadow .3s}
+.neko:hover .neko-sprite{box-shadow:0 4px 24px rgba(0,0,0,.6),0 0 50px rgba(200,168,124,.12)}
+.neko-sprite img{width:115%;height:115%;object-fit:cover;object-position:center 18%;
+  margin:-4% 0 0 -7.5%;pointer-events:none;display:block;
+  filter:brightness(.95) contrast(1.05) saturate(1.1)}
+.neko-shadow{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
+  width:60%;height:8px;background:radial-gradient(ellipse,rgba(0,0,0,.35) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;transition:all .2s}
+/* paw prints */
+.neko-paw{position:fixed;bottom:6px;width:8px;height:8px;border-radius:50%;
+  background:rgba(200,168,124,.08);pointer-events:none;z-index:59;
+  animation:pawFade 1.5s ease-out forwards}
+@keyframes pawFade{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(.3)}}
+/* zzz */
+.neko-zzz{position:absolute;top:-8px;right:-4px;font-size:10px;color:var(--accent-dim);
+  opacity:0;pointer-events:none;letter-spacing:2px;animation:zzzFloat 2s ease-in-out infinite}
+@keyframes zzzFloat{0%,100%{opacity:0;transform:translateY(0)}30%{opacity:.6}70%{opacity:.4}100%{opacity:0;transform:translateY(-14px)}}
 
 /* speech bubble */
-.neko-bubble{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
-  margin-bottom:8px;white-space:nowrap;
-  background:rgba(12,12,20,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:1px solid var(--border);border-radius:12px;
-  padding:8px 14px;font-family:var(--serif);font-size:clamp(11px,2.2vw,13px);
-  font-weight:300;color:var(--text);letter-spacing:.06em;
-  opacity:0;pointer-events:none;transition:opacity .4s,transform .4s var(--ease);
-  transform:translateX(-50%) translateY(6px);max-width:min(260px,70vw);white-space:normal;text-align:center;line-height:1.6}
-.neko-bubble.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-.neko-bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
-  border:6px solid transparent;border-top-color:rgba(12,12,20,.88)}
-.neko-name{color:var(--accent);font-size:clamp(9px,1.8vw,10px);letter-spacing:.15em;display:block;margin-bottom:3px;font-weight:400}
+.neko-bubble{position:absolute;bottom:calc(100% + 6px);left:50%;
+  background:rgba(12,12,20,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(200,168,124,.1);border-radius:14px;
+  padding:10px 16px;font-family:var(--serif);font-size:clamp(11px,2.2vw,13px);
+  font-weight:300;color:var(--text);letter-spacing:.05em;line-height:1.65;
+  text-align:center;max-width:min(240px,68vw);white-space:normal;
+  opacity:0;pointer-events:none;
+  transform:translateX(-50%) translateY(8px) scale(.95);
+  transition:opacity .35s,transform .4s var(--ease)}
+.neko-bubble.show{opacity:1;pointer-events:auto;
+  transform:translateX(-50%) translateY(0) scale(1)}
+.neko-bubble::after{content:'';position:absolute;top:100%;left:50%;
+  transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(12,12,20,.9)}
+.neko-name{color:var(--accent);font-size:clamp(9px,1.6vw,10px);letter-spacing:.18em;
+  display:block;margin-bottom:3px;font-weight:400;text-transform:uppercase}
 
 /* ══ Music Bar ══ */
 .music-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
@@ -403,8 +415,8 @@ canvas{width:100%;height:100%;display:block}
   .history{bottom:10px}
   .hist-label{font-size:12px}
   .hist-item{font-size:14px}
-  .neko svg{width:48px}
-  .neko-bubble{font-size:12px;padding:7px 12px}
+  .neko-sprite{width:52px;height:52px}
+  .neko-bubble{font-size:12px;padding:8px 13px;max-width:200px}
   .pointer{border-left-width:8px;border-right-width:8px;border-top-width:20px;top:-4px}
 }
 @media(max-width:380px){
@@ -646,54 +658,18 @@ canvas{width:100%;height:100%;display:block}
 </div>
 <button class="fortune-btn" id="fortuneBtn">抽食籤</button>
 
-<!-- ══ 芋泥 — Neko Agent ══ -->
-<div class="neko idle" id="neko" style="left:30px">
+<!-- ══ 比特幣 — Neko Agent ══ -->
+<div class="neko" id="neko">
   <div class="neko-bubble" id="nekoBubble">
-    <span class="neko-name">芋泥</span>
+    <span class="neko-name">比特幣</span>
     <span id="nekoText"></span>
   </div>
-  <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <!-- body -->
-    <ellipse cx="40" cy="60" rx="18" ry="14" fill="#c0b8b0"/>
-    <ellipse cx="40" cy="63" rx="12" ry="9" fill="#ddd8d4"/>
-    <!-- tail -->
-    <path d="M58 56 Q70 46 66 36" stroke="#c0b8b0" stroke-width="5" fill="none" stroke-linecap="round" class="neko-tail"/>
-    <!-- head -->
-    <circle cx="40" cy="30" r="20" fill="#ccc5bc"/>
-    <!-- cheek fluff -->
-    <circle cx="24" cy="36" r="6" fill="#d8d0c8" opacity=".5"/>
-    <circle cx="56" cy="36" r="6" fill="#d8d0c8" opacity=".5"/>
-    <!-- ear L (folded Scottish Fold) -->
-    <ellipse cx="25" cy="16" rx="7" ry="5.5" fill="#c0b8b0" transform="rotate(-15 25 16)"/>
-    <ellipse cx="25" cy="16" rx="4" ry="3" fill="#d4a0a0" transform="rotate(-15 25 16)"/>
-    <!-- ear R (folded) -->
-    <ellipse cx="55" cy="16" rx="7" ry="5.5" fill="#c0b8b0" transform="rotate(15 55 16)"/>
-    <ellipse cx="55" cy="16" rx="4" ry="3" fill="#d4a0a0" transform="rotate(15 55 16)"/>
-    <!-- eye L -->
-    <circle cx="32" cy="28" r="5.5" fill="#d4a84a"/>
-    <circle cx="32" cy="28" r="4" fill="#b88c30"/>
-    <ellipse class="neko-eye-pupil" cx="32" cy="28" rx="2.5" ry="2.5" fill="#1a1a1a"/>
-    <circle cx="30.5" cy="26.5" r="1.3" fill="#fff" opacity=".85"/>
-    <!-- eye R -->
-    <circle cx="48" cy="28" r="5.5" fill="#d4a84a"/>
-    <circle cx="48" cy="28" r="4" fill="#b88c30"/>
-    <ellipse class="neko-eye-pupil" cx="48" cy="28" rx="2.5" ry="2.5" fill="#1a1a1a"/>
-    <circle cx="46.5" cy="26.5" r="1.3" fill="#fff" opacity=".85"/>
-    <!-- nose -->
-    <ellipse cx="40" cy="35" rx="2.2" ry="1.6" fill="#e0a0a0"/>
-    <!-- mouth -->
-    <path d="M37 37.5 Q40 40 43 37.5" fill="none" stroke="#b8a8a0" stroke-width=".7"/>
-    <!-- whiskers -->
-    <g opacity=".35" stroke="#e0d8d0" stroke-width=".5">
-      <line x1="14" y1="33" x2="27" y2="34"/>
-      <line x1="14" y1="37" x2="27" y2="37"/>
-      <line x1="53" y1="34" x2="66" y2="33"/>
-      <line x1="53" y1="37" x2="66" y2="37"/>
-    </g>
-    <!-- front paws -->
-    <ellipse cx="32" cy="72" rx="6" ry="3.5" fill="#ccc5bc"/>
-    <ellipse cx="48" cy="72" rx="6" ry="3.5" fill="#ccc5bc"/>
-  </svg>
+  <div class="neko-body">
+    <div class="neko-sprite">
+      <img src="bitcoin.png" alt="比特幣" draggable="false">
+    </div>
+    <div class="neko-shadow"></div>
+  </div>
 </div>
 
 <!-- ══ Fortune Panel ══ -->
@@ -1176,182 +1152,245 @@ function renderHistory() {
 }
 
 /* ══════════════════════════════════════
-   芋泥 — Neko Agent 🐱
+   比特幣 — Neko Engine 🐱
+   requestAnimationFrame 動畫引擎
    ══════════════════════════════════════ */
-(function initNeko() {
-  const neko = document.getElementById('neko');
+(function NekoEngine() {
+  const el = document.getElementById('neko');
+  const body = el.querySelector('.neko-body');
+  const sprite = el.querySelector('.neko-sprite');
+  const shadow = el.querySelector('.neko-shadow');
   const bubble = document.getElementById('nekoBubble');
-  const nekoText = document.getElementById('nekoText');
-  const pupils = neko.querySelectorAll('.neko-eye-pupil');
-  const tail = neko.querySelector('.neko-tail');
+  const textEl = document.getElementById('nekoText');
 
+  const NAME = '比特幣';
   const OWNER = '悠悠';
-  const W = () => window.innerWidth - 70;
-  let nekoX = 30;
-  let state = 'idle';
-  let bubbleTimer = null;
-  let stateTimer = null;
-  let blinkInterval = null;
-
-  /* ── Dialogue ── */
   const hour = new Date().getHours();
   const isLate = hour >= 22 || hour < 5;
-  const isEvening = hour >= 17 && hour < 22;
 
-  const GREETINGS = [
+  /* ── Physics state ── */
+  let x = Math.random() * (window.innerWidth - 80);
+  let y = 0;
+  let targetX = x;
+  let vx = 0;
+  let rot = 0;
+  let sc = 1;
+  let state = 'idle'; // idle | walk | sleep | jump
+  let stateTime = 0;
+  let nextSwitch = 4 + Math.random() * 4;
+  let frame = 0;
+  let lastTime = performance.now();
+  let jumpVy = 0;
+  let bubbleTimer = null;
+  let pawTimer = 0;
+
+  /* ── Dialogue ── */
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+
+  const GREETS = [
     `${OWNER}～今晚想吃什麼呀？`,
     `喵！${OWNER}來啦～`,
-    `${OWNER}～芋泥等你好久了！`,
+    `${OWNER}～${NAME}等你好久了！`,
     `哼哼，${OWNER}終於想到要吃飯了`,
+    `嗨～${OWNER}！${NAME}肚子餓了`,
   ];
-  const IDLE_CHAT = [
+  const IDLE = [
     '（歪頭）…你在想什麼？',
     '（舔毛中）…不要看我',
     '（伸懶腰～）呼——',
     '肚子好餓…有小魚乾嗎',
-    '芋泥覺得…今晚適合吃鍋',
-    '你有沒有聞到？好像有東西很香',
+    `${NAME}覺得…今晚適合吃鍋`,
+    '你有沒有聞到？好像很香',
     '轉輪盤！讓命運幫你決定～',
-    '摺耳貓的第六感告訴我…今晚會很好吃',
+    '摺耳貓的第六感…今晚會很好吃',
     '（搖尾巴）嘿嘿',
     '不知道吃什麼的話…問我呀',
     '抽個食籤看看命運怎麼說～',
-    '（踏踏踏）芋泥在巡邏',
+    `（踏踏踏）${NAME}在巡邏`,
     '…我剛剛好像看到一隻老鼠',
     '要不要試試看新的餐廳？',
-    '（打呵欠）但是一聞到食物就精神了',
-    '芋泥推薦：跟著鼻子走就對了',
+    '（打呵欠）一聞到食物就精神了',
+    `${NAME}推薦：跟著鼻子走`,
     '（蹭蹭你的腳）…陪我玩',
+    '好無聊…快選餐廳帶我去吃',
+    '（踏踏踏）…地板涼涼的好舒服',
   ];
-  const FOOD_TIPS = [
+  const FOOD = [
     '今晚的氣溫適合吃火鍋喔！',
-    '日式料理的職人精神…芋泥很佩服',
-    '韓式烤肉配燒酒，芋泥也想要一口',
+    `日式料理的職人精神…${NAME}佩服`,
+    `韓式烤肉配燒酒，${NAME}也想要一口`,
     '台式小吃的靈魂在巷弄裡',
     '西式牛排配紅酒…好大人的感覺',
     '東南亞的酸辣，能把味蕾叫醒',
     '熱炒配啤酒才是台北的夜晚嘛',
     '麵食是療癒系食物第一名',
   ];
-  const LATE_NIGHT = [
+  const NIGHT = [
     `${OWNER}…這麼晚還不睡？`,
     '深夜的食物都是零卡路里的喵',
-    '（揉眼睛）芋泥有點睏了…',
+    `（揉眼睛）${NAME}有點睏了…`,
     '月亮出來了…適合吃宵夜',
+    `（打呵欠）…${NAME}要睡了…`,
   ];
-  const CLICK_REACT = [
+  const CLICK = [
     '喵！不要突然戳我啦',
     '（翻肚）…只有你可以摸',
     '嗯？叫我有什麼事？',
     '（咕嚕咕嚕）…好舒服',
-    '再戳一次試試看？',
-    '芋泥在呢～怎麼了？',
+    '再戳一次試試看？喵？',
+    `${NAME}在呢～怎麼了？`,
     '（瞇眼）…你的手好溫暖',
     `${OWNER}想我了嗎？`,
+    '喵嗚～（開心地蹭蹭）',
+    '你摸我的頭…我就告訴你吃什麼',
   ];
 
-  function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-  function say(text, duration) {
-    duration = duration || 4000;
-    nekoText.textContent = text;
+  /* ── Say ── */
+  function say(text, dur) {
+    dur = dur || 4000;
+    textEl.textContent = text;
     bubble.classList.add('show');
     clearTimeout(bubbleTimer);
-    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), duration);
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), dur);
   }
 
-  /* ── Blink ── */
-  function blink() {
-    pupils.forEach(p => { p.setAttribute('ry', '0.5'); });
-    setTimeout(() => { pupils.forEach(p => { p.setAttribute('ry', '2.5'); }); }, 150);
-  }
-  blinkInterval = setInterval(() => {
-    if (state !== 'sleep' && Math.random() < 0.4) blink();
-  }, 2800);
-
-  /* ── Tail wag ── */
-  function wagTail() {
-    tail.style.transformOrigin = '58px 56px';
-    tail.classList.add('neko-tail-wag');
-    setTimeout(() => tail.classList.remove('neko-tail-wag'), 2000);
+  /* ── Paw prints ── */
+  function spawnPaw(px) {
+    const p = document.createElement('div');
+    p.className = 'neko-paw';
+    p.style.left = (px + 30) + 'px';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
   }
 
-  /* ── Movement ── */
-  function walkTo(targetX, cb) {
-    const dir = targetX > nekoX ? 'walk-r' : 'walk-l';
-    neko.className = 'neko ' + dir;
-    neko.style.left = targetX + 'px';
-    nekoX = targetX;
-    const dist = Math.abs(targetX - nekoX);
-    const dur = Math.max(2000, Math.min(4000, dist * 8));
-    neko.style.transition = `left ${dur}ms var(--ease)`;
-    setTimeout(() => {
-      neko.className = 'neko idle';
-      neko.style.transition = 'left 3s var(--ease)';
-      if (cb) cb();
-    }, dur);
-  }
-
-  /* ── State machine ── */
-  function nextState() {
-    clearTimeout(stateTimer);
-    const r = Math.random();
-
-    if (r < 0.35) {
-      // walk to random position
-      const target = Math.floor(Math.random() * W());
-      walkTo(target, () => {
-        if (Math.random() < 0.3) {
-          say(pickRandom(IDLE_CHAT));
-          wagTail();
-        }
-        stateTimer = setTimeout(nextState, 3000 + Math.random() * 5000);
-      });
-    } else if (r < 0.6) {
-      // idle with occasional chat
-      neko.className = 'neko idle';
-      state = 'idle';
-      if (Math.random() < 0.35) {
-        const pool = isLate ? LATE_NIGHT : (Math.random() < 0.4 ? FOOD_TIPS : IDLE_CHAT);
-        say(pickRandom(pool));
-        wagTail();
+  /* ── State transitions ── */
+  function enterState(s) {
+    state = s;
+    stateTime = 0;
+    if (s === 'walk') {
+      const W = window.innerWidth - 80;
+      targetX = Math.random() * W;
+      nextSwitch = 999; // walk until arrival
+    } else if (s === 'idle') {
+      nextSwitch = 3 + Math.random() * 6;
+      if (Math.random() < 0.3) {
+        const pool = isLate ? NIGHT : (Math.random() < 0.35 ? FOOD : IDLE);
+        say(pick(pool));
       }
-      stateTimer = setTimeout(nextState, 5000 + Math.random() * 6000);
-    } else if (r < 0.8 && isLate) {
-      // sleep
-      neko.className = 'neko sleep';
-      state = 'sleep';
-      stateTimer = setTimeout(nextState, 8000 + Math.random() * 10000);
-    } else {
-      // just chill
-      neko.className = 'neko idle';
-      state = 'idle';
-      stateTimer = setTimeout(nextState, 4000 + Math.random() * 4000);
+    } else if (s === 'sleep') {
+      nextSwitch = 8 + Math.random() * 12;
     }
   }
 
-  /* ── Click interaction ── */
-  neko.addEventListener('click', (e) => {
+  /* ── Update (called every frame) ── */
+  function update(dt) {
+    frame += dt;
+    stateTime += dt;
+    pawTimer += dt;
+
+    switch (state) {
+      case 'walk': {
+        const dx = targetX - x;
+        if (Math.abs(dx) < 4) {
+          enterState('idle');
+          break;
+        }
+        // Smooth acceleration
+        const speed = Math.min(90, Math.abs(dx) * 1.5);
+        vx += (Math.sign(dx) * speed - vx) * 3 * dt;
+        x += vx * dt;
+        // Walking oscillation
+        y = Math.sin(frame * 9) * 3;
+        rot = Math.sin(frame * 9) * 2.5 * Math.sign(vx);
+        sc = 1 + Math.sin(frame * 18) * 0.015;
+        // Paw prints
+        if (pawTimer > 0.35) { pawTimer = 0; spawnPaw(x); }
+        break;
+      }
+      case 'idle': {
+        // Gentle breathing
+        vx *= 0.9;
+        y = Math.sin(frame * 1.8) * 1.5;
+        rot *= 0.92;
+        sc = 1 + Math.sin(frame * 1.8) * 0.008;
+        if (stateTime >= nextSwitch) {
+          const r = Math.random();
+          if (r < 0.45) enterState('walk');
+          else if (r < 0.65 && isLate) enterState('sleep');
+          else enterState('idle');
+        }
+        break;
+      }
+      case 'sleep': {
+        vx *= 0.9;
+        y = Math.sin(frame * 0.7) * 0.8;
+        rot = -4;
+        sc = 0.93 + Math.sin(frame * 0.7) * 0.015;
+        if (stateTime >= nextSwitch) enterState('idle');
+        break;
+      }
+      case 'jump': {
+        jumpVy += 600 * dt; // gravity
+        y += jumpVy * dt;
+        if (y >= 0) { y = 0; jumpVy = 0; enterState('idle'); }
+        break;
+      }
+    }
+
+    // Bounds
+    x = Math.max(5, Math.min(x, window.innerWidth - 80));
+  }
+
+  /* ── Render (called every frame) ── */
+  function render() {
+    el.style.transform = `translate3d(${x}px,${y}px,0)`;
+    body.style.transform = `rotate(${rot}deg) scale(${sc})`;
+    // Dynamic shadow
+    const shadowStretch = state === 'walk' ? 1.2 : (state === 'sleep' ? 0.8 : 1);
+    const shadowY = Math.max(0, -y * 0.08);
+    shadow.style.transform = `translateX(-50%) scaleX(${shadowStretch}) scaleY(${0.12 + shadowY})`;
+    shadow.style.opacity = state === 'sleep' ? 0.15 : 0.3;
+    // Sprite brightness on sleep
+    sprite.style.opacity = state === 'sleep' ? 0.55 : 1;
+  }
+
+  /* ── Main loop ── */
+  function loop(time) {
+    const dt = Math.min((time - lastTime) / 1000, 0.05);
+    lastTime = time;
+    update(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  /* ── Click ── */
+  el.addEventListener('click', e => {
     e.stopPropagation();
-    wagTail();
-    blink();
-    say(pickRandom(CLICK_REACT), 3500);
+    say(pick(CLICK), 3500);
+    // Cute jump
+    if (state !== 'jump') {
+      state = 'jump';
+      stateTime = 0;
+      jumpVy = -220;
+    }
     if (typeof _track === 'function') _track('neko_click');
   });
 
+  /* ── ZZZ indicator for sleep ── */
+  setInterval(() => {
+    if (state === 'sleep') {
+      const z = document.createElement('div');
+      z.className = 'neko-zzz';
+      z.textContent = 'z';
+      body.appendChild(z);
+      setTimeout(() => z.remove(), 2000);
+    }
+  }, 2200);
+
   /* ── Init ── */
-  // Greeting on first appear (delayed so entrance animation can play)
-  setTimeout(() => {
-    say(pickRandom(GREETINGS), 5000);
-    wagTail();
-  }, 2500);
-
-  // Start behavior loop
-  stateTimer = setTimeout(nextState, 8000);
-
-  // Position randomly on load
-  nekoX = Math.floor(Math.random() * W());
-  neko.style.left = nekoX + 'px';
+  el.style.transform = `translate3d(${x}px,0,0)`;
+  requestAnimationFrame(loop);
+  setTimeout(() => say(pick(GREETS), 5500), 2200);
 })();
 
 /* ══════════════════════════════════════
