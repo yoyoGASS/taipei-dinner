@@ -241,13 +241,13 @@ canvas{width:100%;height:100%;display:block}
   opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
 .recs-overlay.open{opacity:1;pointer-events:auto}
 .recs-sheet{position:absolute;bottom:0;left:0;right:0;
-  max-height:75vh;padding:clamp(20px,3vh,32px) 20px clamp(30px,5vh,48px);
+  max-height:80vh;padding:0 0 clamp(30px,5vh,48px);
   transform:translateY(40px);opacity:0;
   transition:transform .6s var(--ease),opacity .5s;
   overflow-y:auto;-webkit-overflow-scrolling:touch}
 .recs-overlay.open .recs-sheet{transform:translateY(0);opacity:1}
 /* ── Recs Hero (full fusion) ── */
-.recs-hero{position:relative;width:calc(100% + 40px);margin:-clamp(20px,3vh,32px) -20px 0;
+.recs-hero{position:relative;width:100%;
   height:clamp(240px,38vh,320px);overflow:hidden}
 .recs-hero img{width:100%;height:100%;object-fit:cover;display:block;
   filter:brightness(.55) saturate(1.4);transition:filter 1s ease}
@@ -270,7 +270,7 @@ canvas{width:100%;height:100%;display:block}
   color:rgba(255,255,255,.6)}
 .recs-hero-sub{font-size:clamp(9px,1.1vw,10px);font-weight:300;letter-spacing:.2em;
   color:rgba(255,255,255,.3);margin-top:2px}
-.recs-list{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
+.recs-list{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto;padding:0 20px}
 .rec-card{background:rgba(18,18,28,.5);border:1px solid rgba(200,168,124,.06);
   padding:0;display:flex;gap:0;
   transition:all .5s var(--ease);cursor:pointer;
@@ -307,7 +307,7 @@ canvas{width:100%;height:100%;display:block}
   letter-spacing:.06em;padding-left:8px;border-left:1px solid rgba(255,255,255,.1)}
 .rec-desc{font-size:clamp(12px,1.5vw,13px);font-weight:300;color:var(--text2);
   letter-spacing:.03em;line-height:1.5}
-.recs-close{display:block;margin:clamp(16px,2.5vh,24px) auto 0;font-family:var(--serif);
+.recs-close{display:block;margin:clamp(16px,2.5vh,24px) auto 0;padding-left:20px;padding-right:20px;font-family:var(--serif);
   font-size:clamp(12px,1.4vw,13px);font-weight:300;color:rgba(255,255,255,.5);
   background:none;border:1px solid rgba(255,255,255,.1);
   padding:12px 40px;cursor:pointer;letter-spacing:.25em;transition:all .4s}
