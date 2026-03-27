@@ -2095,110 +2095,86 @@ recsOverlay.onclick = e => { if (e.target === recsOverlay) hideRecs(); };
 /* ══════════════════════════════════════
    Music
    ══════════════════════════════════════ */
-/* ══ Ambient Music — Web Audio API (works on Safari / mobile) ══ */
+/* ══ Ambient Music — HTML5 Audio + WAV generator (iOS Safari compatible) ══ */
 let musicOn = false;
-let ambCtx = null;
-let ambMaster = null;
-let ambNodes = [];
+let ambAudio = null;
+let ambFadeTimer = null;
 
-function initAmbientMusic() {
-  if (ambCtx) return;
-  ambCtx = new (window.AudioContext || window.webkitAudioContext)();
-  ambMaster = ambCtx.createGain();
-  ambMaster.gain.value = 0;
-  ambMaster.connect(ambCtx.destination);
+/* Generate a warm ambient pad loop as a WAV Blob */
+function generateAmbientWav() {
+  const sr = 22050, dur = 16, n = sr * dur;
+  const buf = new ArrayBuffer(44 + n * 2);
+  const dv = new DataView(buf);
+  /* WAV header */
+  const ws = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+  ws(0,'RIFF'); dv.setUint32(4, 36 + n * 2, true);
+  ws(8,'WAVE'); ws(12,'fmt ');
+  dv.setUint32(16, 16, true); dv.setUint16(20, 1, true);
+  dv.setUint16(22, 1, true); dv.setUint32(24, sr, true);
+  dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+  ws(36,'data'); dv.setUint32(40, n * 2, true);
 
-  // ── Warm pad: Am chord with gentle detuning ──
-  const padFreqs = [220, 261.63, 329.63, 392];
-  padFreqs.forEach((freq, i) => {
-    const osc = ambCtx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    // Subtle vibrato
-    const lfo = ambCtx.createOscillator();
-    lfo.frequency.value = 0.3 + i * 0.15;
-    const lfoG = ambCtx.createGain();
-    lfoG.gain.value = 1.5;
-    lfo.connect(lfoG);
-    lfoG.connect(osc.frequency);
-    lfo.start();
-    // Filter for warmth
-    const flt = ambCtx.createBiquadFilter();
-    flt.type = 'lowpass';
-    flt.frequency.value = 600 + i * 100;
-    flt.Q.value = 0.7;
-    const g = ambCtx.createGain();
-    g.gain.value = 0.035;
-    osc.connect(flt);
-    flt.connect(g);
-    g.connect(ambMaster);
-    osc.start();
-    ambNodes.push(osc, lfo);
-  });
+  /* Phase accumulators for proper vibrato */
+  const voices = [
+    { f: 110,    a: 0.10, vib: 0 },
+    { f: 220,    a: 0.13, vib: 0.003 },
+    { f: 220.6,  a: 0.07, vib: 0 },
+    { f: 261.63, a: 0.11, vib: 0.003 },
+    { f: 262.2,  a: 0.06, vib: 0 },
+    { f: 329.63, a: 0.10, vib: 0.002 },
+    { f: 330.3,  a: 0.05, vib: 0 },
+    { f: 392,    a: 0.05, vib: 0.002 }
+  ];
+  const phases = voices.map(() => 0);
+  const TAU = 2 * Math.PI;
 
-  // ── Sub bass drone ──
-  const sub = ambCtx.createOscillator();
-  sub.type = 'triangle';
-  sub.frequency.value = 110;
-  const subF = ambCtx.createBiquadFilter();
-  subF.type = 'lowpass'; subF.frequency.value = 180;
-  const subG = ambCtx.createGain();
-  subG.gain.value = 0.05;
-  sub.connect(subF); subF.connect(subG); subG.connect(ambMaster);
-  sub.start();
-  ambNodes.push(sub);
-
-  // ── Filtered noise (gentle texture) ──
-  const bufLen = 2 * ambCtx.sampleRate;
-  const nBuf = ambCtx.createBuffer(1, bufLen, ambCtx.sampleRate);
-  const nData = nBuf.getChannelData(0);
-  for (let i = 0; i < bufLen; i++) nData[i] = Math.random() * 2 - 1;
-  const noise = ambCtx.createBufferSource();
-  noise.buffer = nBuf;
-  noise.loop = true;
-  const nFlt = ambCtx.createBiquadFilter();
-  nFlt.type = 'lowpass'; nFlt.frequency.value = 350; nFlt.Q.value = 0.5;
-  const nG = ambCtx.createGain();
-  nG.gain.value = 0.015;
-  noise.connect(nFlt); nFlt.connect(nG); nG.connect(ambMaster);
-  noise.start();
-  ambNodes.push(noise);
-
-  // ── Occasional chime (every 8-15s) ──
-  function scheduleChime() {
-    if (!musicOn) { setTimeout(scheduleChime, 2000); return; }
-    const delay = 8000 + Math.random() * 7000;
-    setTimeout(() => {
-      if (!ambCtx || !musicOn) { scheduleChime(); return; }
-      const chime = ambCtx.createOscillator();
-      chime.type = 'sine';
-      const notes = [523.25, 587.33, 659.25, 783.99, 880]; // C5 D5 E5 G5 A5
-      chime.frequency.value = notes[Math.floor(Math.random() * notes.length)];
-      const cG = ambCtx.createGain();
-      cG.gain.setValueAtTime(0.04, ambCtx.currentTime);
-      cG.gain.exponentialRampToValueAtTime(0.001, ambCtx.currentTime + 3);
-      const cF = ambCtx.createBiquadFilter();
-      cF.type = 'lowpass'; cF.frequency.value = 1200;
-      chime.connect(cF); cF.connect(cG); cG.connect(ambMaster);
-      chime.start();
-      chime.stop(ambCtx.currentTime + 3.5);
-      scheduleChime();
-    }, delay);
+  for (let i = 0; i < n; i++) {
+    const t = i / sr;
+    let s = 0;
+    const vibLfo = Math.sin(TAU * 0.18 * t);
+    for (let j = 0; j < voices.length; j++) {
+      const v = voices[j];
+      const freq = v.f * (1 + v.vib * vibLfo);
+      phases[j] += freq / sr;
+      s += Math.sin(TAU * phases[j]) * v.a;
+    }
+    /* Amplitude movement */
+    s *= 0.82 + 0.18 * Math.sin(TAU * 0.11 * t);
+    s *= 0.90 + 0.10 * Math.sin(TAU * 0.07 * t + 1.5);
+    /* Crossfade edges for seamless loop (0.4s) */
+    const fade = Math.min(1, i / (sr * 0.4), (n - 1 - i) / (sr * 0.4));
+    s *= fade;
+    s = Math.max(-1, Math.min(1, s));
+    dv.setInt16(44 + i * 2, (s * 30000) | 0, true);
   }
-  scheduleChime();
+  return new Blob([buf], { type: 'audio/wav' });
 }
 
 function startMusic() {
-  initAmbientMusic();
-  if (ambCtx.state === 'suspended') ambCtx.resume();
-  ambMaster.gain.linearRampToValueAtTime(1, ambCtx.currentTime + 2);
+  if (!ambAudio) {
+    ambAudio = new Audio(URL.createObjectURL(generateAmbientWav()));
+    ambAudio.loop = true;
+  }
+  ambAudio.volume = 0;
+  const p = ambAudio.play();
+  if (p && p.catch) p.catch(() => {});
+  /* Fade in */
+  clearInterval(ambFadeTimer);
+  ambFadeTimer = setInterval(() => {
+    if (ambAudio.volume < 0.75) ambAudio.volume = Math.min(0.75, ambAudio.volume + 0.03);
+    else clearInterval(ambFadeTimer);
+  }, 50);
   musicOn = true;
   musicBtn.classList.add('on');
 }
 
 function stopMusic() {
-  if (!ambCtx) return;
-  ambMaster.gain.linearRampToValueAtTime(0, ambCtx.currentTime + 1);
+  if (!ambAudio) return;
+  clearInterval(ambFadeTimer);
+  ambFadeTimer = setInterval(() => {
+    if (ambAudio.volume > 0.02) ambAudio.volume = Math.max(0, ambAudio.volume - 0.05);
+    else { ambAudio.pause(); clearInterval(ambFadeTimer); }
+  }, 50);
   musicOn = false;
   musicBtn.classList.remove('on');
 }
@@ -2212,7 +2188,7 @@ function toggleMusic() {
 function enterApp() {
   const entry = document.getElementById('entry');
   entry.classList.add('gone');
-  // User gesture — safe to start AudioContext on Safari
+  /* ★ .play() inside onclick = user gesture → iOS Safari allows audio ★ */
   startMusic();
 }
 
