@@ -270,6 +270,18 @@ canvas{width:100%;height:100%;display:block}
   color:rgba(255,255,255,.6)}
 .recs-hero-sub{font-size:clamp(9px,1.1vw,10px);font-weight:300;letter-spacing:.2em;
   color:rgba(255,255,255,.3);margin-top:2px}
+.recs-filters{position:sticky;top:0;z-index:2;display:flex;justify-content:center;gap:6px;
+  padding:clamp(14px,2vh,20px) 20px clamp(10px,1.5vh,16px);flex-wrap:wrap;
+  background:linear-gradient(180deg,rgba(7,7,12,.98) 0%,rgba(7,7,12,.92) 70%,rgba(7,7,12,0) 100%);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.recs-filter{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  letter-spacing:.1em;color:rgba(255,255,255,.35);background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);padding:6px 16px;cursor:pointer;
+  transition:all .3s var(--ease);white-space:nowrap}
+.recs-filter.on{color:var(--accent);border-color:rgba(200,168,124,.25);background:rgba(200,168,124,.08)}
+.recs-filter:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.12)}
+.recs-filter .filter-sub{font-size:clamp(8px,1vw,9px);color:rgba(255,255,255,.2);margin-left:4px;letter-spacing:.05em}
+.recs-filter.on .filter-sub{color:rgba(200,168,124,.5)}
 .recs-list{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto;padding:0 20px}
 .rec-card{background:rgba(18,18,28,.5);border:1px solid rgba(200,168,124,.06);
   padding:0;display:flex;gap:0;
@@ -431,6 +443,12 @@ canvas{width:100%;height:100%;display:block}
         <span class="recs-hero-title">推薦餐廳</span>
         <span class="recs-hero-sub">依據 Google 評分精選</span>
       </div>
+    </div>
+    <div class="recs-filters" id="recsFilters">
+      <button class="recs-filter on" data-tier="all">全部</button>
+      <button class="recs-filter" data-tier="low">低價<span class="filter-sub">&lt;$400</span></button>
+      <button class="recs-filter" data-tier="mid">平價<span class="filter-sub">$400–999</span></button>
+      <button class="recs-filter" data-tier="high">高價<span class="filter-sub">$1000+</span></button>
     </div>
     <div class="recs-list" id="recsList"></div>
     <button class="recs-close" id="recsClose">收起</button>
@@ -997,22 +1015,35 @@ function renderStarsSvg(rating) {
   return html;
 }
 
-function showRecs(cat) {
+/* ── Price Tier Logic ── */
+function getPriceTier(priceStr) {
+  const m = priceStr.replace(/,/g, '').match(/(\d+)/);
+  if (!m) return 'mid';
+  const v = parseInt(m[1]);
+  if (v < 400) return 'low';
+  if (v < 1000) return 'mid';
+  return 'high';
+}
+
+let currentRecsCat = '';
+let currentTierFilter = 'all';
+const recsFilters = document.getElementById('recsFilters');
+
+function renderRecCards(cat, tier) {
   const list = RESTAURANTS[cat];
   if (!list || !list.length) return;
-  // Hero image & mood text
-  recsHeroImg.src = CAT_HERO_IMAGES[cat] || '';
-  const moods = CAT_MOODS[cat] || ['今晚吃這個'];
-  recsHeroMood.textContent = moods[Math.floor(Math.random() * moods.length)];
-  recsHeroMoodSub.textContent = CAT_MOOD_SUBS[cat] || '';
-  recsCatTag.textContent = cat;
   recsList.innerHTML = '';
-  // Scroll sheet to top
-  const sheet = recsOverlay.querySelector('.recs-sheet');
-  if (sheet) sheet.scrollTop = 0;
-  list.forEach((r, i) => {
+  const filtered = tier === 'all' ? list : list.filter(r => getPriceTier(r.price) === tier);
+
+  if (!filtered.length) {
+    recsList.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--text3);font-size:clamp(12px,1.5vw,14px);letter-spacing:.1em">此價位暫無推薦餐廳</div>`;
+    return;
+  }
+
+  filtered.forEach((r, i) => {
     const card = document.createElement('div');
     card.className = 'rec-card';
+    const tierLabel = getPriceTier(r.price) === 'low' ? '低價' : getPriceTier(r.price) === 'high' ? '高價' : '平價';
     card.innerHTML = `
       <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy"></div>
       <div class="rec-body">
@@ -1032,11 +1063,40 @@ function showRecs(cat) {
         </div>
       </div>`;
     recsList.appendChild(card);
-    // Staggered entrance
-    setTimeout(() => card.classList.add('show'), 80 + i * 100);
+    setTimeout(() => card.classList.add('show'), 60 + i * 80);
   });
+}
+
+function showRecs(cat) {
+  const list = RESTAURANTS[cat];
+  if (!list || !list.length) return;
+  currentRecsCat = cat;
+  currentTierFilter = 'all';
+  // Hero image & mood text
+  recsHeroImg.src = CAT_HERO_IMAGES[cat] || '';
+  const moods = CAT_MOODS[cat] || ['今晚吃這個'];
+  recsHeroMood.textContent = moods[Math.floor(Math.random() * moods.length)];
+  recsHeroMoodSub.textContent = CAT_MOOD_SUBS[cat] || '';
+  recsCatTag.textContent = cat;
+  // Reset filters
+  recsFilters.querySelectorAll('.recs-filter').forEach(b => b.classList.toggle('on', b.dataset.tier === 'all'));
+  // Scroll sheet to top
+  const sheet = recsOverlay.querySelector('.recs-sheet');
+  if (sheet) sheet.scrollTop = 0;
+  renderRecCards(cat, 'all');
   recsOverlay.classList.add('open');
 }
+
+// Filter click handlers
+recsFilters.addEventListener('click', e => {
+  const btn = e.target.closest('.recs-filter');
+  if (!btn || !currentRecsCat) return;
+  const tier = btn.dataset.tier;
+  if (tier === currentTierFilter) return;
+  currentTierFilter = tier;
+  recsFilters.querySelectorAll('.recs-filter').forEach(b => b.classList.toggle('on', b.dataset.tier === tier));
+  renderRecCards(currentRecsCat, tier);
+});
 
 function hideRecs() { recsOverlay.classList.remove('open'); }
 recsClose.onclick = hideRecs;
