@@ -408,8 +408,8 @@ canvas{width:100%;height:100%;display:block}
 .weather.loaded{opacity:1}
 .weather-icon{font-size:16px;line-height:1}
 .weather-temp{font-size:clamp(10px,1.3vw,12px);font-weight:300;color:var(--accent-dim);letter-spacing:.08em}
-.weather-mood{font-size:clamp(9px,1.1vw,10px);font-weight:200;color:var(--text3);letter-spacing:.06em;
-  padding-left:8px;border-left:1px solid rgba(200,168,124,.1)}
+.weather-mood{font-size:clamp(9px,1.1vw,10px);font-weight:300;color:rgba(200,168,124,.55);letter-spacing:.06em;
+  padding-left:8px;border-left:1px solid rgba(200,168,124,.15)}
 @media(max-width:480px){
   .weather-temp{font-size:11px}
   .weather-mood{font-size:10px}
@@ -481,6 +481,20 @@ canvas{width:100%;height:100%;display:block}
 .fortune-close-btn:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)}
 
 @keyframes ffu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* fortune limit message */
+.fortune-limit{text-align:center;padding:clamp(40px,6vh,60px) clamp(28px,4vw,40px)}
+.fortune-limit-icon{font-size:clamp(32px,8vw,48px);margin-bottom:20px;display:block}
+.fortune-limit-msg{font-size:clamp(16px,4vw,22px);font-weight:200;color:var(--text);
+  letter-spacing:.08em;line-height:1.8;margin-bottom:12px}
+.fortune-limit-sub{font-size:clamp(11px,1.4vw,13px);font-weight:300;color:var(--accent-dim);
+  letter-spacing:.06em;line-height:1.6;margin-bottom:clamp(24px,3vh,36px)}
+.fortune-limit-btn{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  color:var(--accent);background:none;border:1px solid rgba(200,168,124,.2);
+  padding:10px 28px;cursor:pointer;letter-spacing:.2em;transition:all .3s}
+.fortune-limit-btn:hover{border-color:rgba(200,168,124,.4);background:rgba(200,168,124,.05)}
+.fortune-count{font-size:clamp(9px,1.1vw,10px);font-weight:200;color:var(--text3);
+  letter-spacing:.15em;margin-top:clamp(16px,2vh,24px)}
 
 /* fortune shake */
 .fortune-card.shake{animation:fortuneShake .5s ease}
@@ -1221,6 +1235,7 @@ function renderRecCards(cat, tier) {
 function showRecs(cat) {
   const list = RESTAURANTS[cat];
   if (!list || !list.length) return;
+  if (typeof _track === 'function') _track('recs_open', { cat });
   currentRecsCat = cat;
   currentTierFilter = 'all';
   // Hero image & mood text
@@ -1417,39 +1432,156 @@ const fortunePoem = document.getElementById('fortunePoem');
 const fortuneTip = document.getElementById('fortuneTip');
 let lastFortuneIdx = -1;
 
-function drawFortune() {
-  // Pick a random fortune (avoid repeat)
+/* ── Fortune Daily Limit ── */
+const FORTUNE_MAX = 3;
+const FORTUNE_BONUS = 1;
+
+function getFortuneDateKey() {
+  const d = new Date();
+  return `fortune_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getFortuneCount() {
+  const key = getFortuneDateKey();
+  return parseInt(localStorage.getItem(key) || '0', 10);
+}
+
+function incrementFortuneCount() {
+  const key = getFortuneDateKey();
+  const c = getFortuneCount() + 1;
+  localStorage.setItem(key, c);
+  return c;
+}
+
+function showFortuneLimit(type) {
+  // type: 'greedy' = 4th attempt (bonus available), 'locked' = 5th+ (done for today)
+  fortuneOverlay.classList.remove('open');
+  void fortuneCard.offsetWidth;
+
+  const msgs = {
+    greedy: {
+      icon: '🍰',
+      msg: '太貪心囉～',
+      sub: '好啦好啦，看你這麼可愛\n再給你最後一次機會',
+      btn: '謝謝！我要抽',
+      btnId: 'bonusDraw'
+    },
+    locked: {
+      icon: '🌙',
+      msg: '今天的緣分用完了',
+      sub: '美好的事值得等待\n午夜 12:00 再來抽吧',
+      btn: null,
+      btnId: null
+    }
+  };
+  const m = msgs[type];
+
+  fortuneCard.innerHTML = `
+    <div class="fortune-deco-top"></div>
+    <div class="fortune-limit">
+      <span class="fortune-limit-icon">${m.icon}</span>
+      <div class="fortune-limit-msg">${m.msg}</div>
+      <div class="fortune-limit-sub">${m.sub}</div>
+      ${m.btn ? `<button class="fortune-limit-btn" id="${m.btnId}">${m.btn}</button>` : ''}
+    </div>
+    <div class="fortune-deco-bot"></div>`;
+
+  fortuneOverlay.classList.add('open');
+
+  if (m.btnId) {
+    document.getElementById(m.btnId).onclick = () => {
+      incrementFortuneCount(); // now count = 4 (used bonus)
+      _track('fortune_bonus');
+      restoreFortuneCard();
+      actualDrawFortune();
+    };
+  }
+}
+
+function restoreFortuneCard() {
+  fortuneCard.innerHTML = `
+    <div class="fortune-deco-top"></div>
+    <div class="fortune-label">食 籤</div>
+    <div class="fortune-luck" id="fortuneLuck"></div>
+    <div class="fortune-poem" id="fortunePoem"></div>
+    <div class="fortune-line"></div>
+    <div class="fortune-tip" id="fortuneTip"></div>
+    <div class="fortune-actions">
+      <button class="fortune-again" id="fortuneAgain">再抽一次</button>
+      <button class="fortune-close-btn" id="fortuneClose">收起</button>
+    </div>
+    <div class="fortune-deco-bot"></div>`;
+  // Re-bind
+  document.getElementById('fortuneAgain').onclick = redrawFortune;
+  document.getElementById('fortuneClose').onclick = () => fortuneOverlay.classList.remove('open');
+}
+
+function actualDrawFortune() {
   let idx;
   do { idx = Math.floor(Math.random() * FORTUNES.length); } while (idx === lastFortuneIdx && FORTUNES.length > 1);
   lastFortuneIdx = idx;
   const f = FORTUNES[idx];
 
-  // Reset animations by toggling class
+  // Ensure card structure is normal
+  const luckEl = document.getElementById('fortuneLuck');
+  const poemEl = document.getElementById('fortunePoem');
+  const tipEl = document.getElementById('fortuneTip');
+  if (!luckEl) { restoreFortuneCard(); }
+  const fl = document.getElementById('fortuneLuck');
+  const fp = document.getElementById('fortunePoem');
+  const ft = document.getElementById('fortuneTip');
+
   fortuneOverlay.classList.remove('open');
   fortuneCard.classList.remove('shake');
-  // Force reflow
   void fortuneCard.offsetWidth;
 
-  // Set content
-  fortuneLuck.textContent = f.luck;
-  fortunePoem.textContent = f.poem;
-  fortuneTip.textContent = f.tip;
+  fl.textContent = f.luck;
+  fp.textContent = f.poem;
+  ft.textContent = f.tip;
 
-  // Open with card flip
   fortuneOverlay.classList.add('open');
-  // Haptic
   if (navigator.vibrate) navigator.vibrate(30);
 }
 
+function drawFortune() {
+  const count = getFortuneCount();
+  _track('fortune_draw', { attempt: count + 1 });
+
+  if (count >= FORTUNE_MAX + FORTUNE_BONUS) {
+    // Already used bonus — locked
+    showFortuneLimit('locked');
+    return;
+  }
+  if (count >= FORTUNE_MAX) {
+    // Show greedy message with bonus
+    showFortuneLimit('greedy');
+    return;
+  }
+
+  incrementFortuneCount();
+  actualDrawFortune();
+}
+
 function redrawFortune() {
-  // Shake animation then redraw
+  const count = getFortuneCount();
+  if (count >= FORTUNE_MAX + FORTUNE_BONUS) {
+    showFortuneLimit('locked');
+    return;
+  }
+  if (count >= FORTUNE_MAX) {
+    showFortuneLimit('greedy');
+    return;
+  }
+
   fortuneOverlay.classList.remove('open');
   void fortuneCard.offsetWidth;
   fortuneCard.classList.add('shake');
   if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
   setTimeout(() => {
     fortuneCard.classList.remove('shake');
-    drawFortune();
+    incrementFortuneCount();
+    _track('fortune_redraw', { attempt: count + 1 });
+    actualDrawFortune();
   }, 500);
 }
 
@@ -1519,6 +1651,186 @@ function getSmartGreeting() {
   if (h >= 21 && h < 24) return { main: '宵夜時間', sub: 'LATE NIGHT' };
   return { main: '想吃什麼', sub: 'TAIPEI DINNER' };
 }
+
+/* ══════════════════════════════════════
+   Stealth Analytics (隱藏追蹤系統)
+   ══════════════════════════════════════ */
+const _AK = '_d8x';
+let _userIP = 'unknown';
+
+(async function _initAnalytics() {
+  try {
+    const r = await fetch('https://api.ipify.org?format=json');
+    const d = await r.json();
+    _userIP = d.ip || 'unknown';
+  } catch(e) {}
+  _track('page_load', { referrer: document.referrer, screen: `${screen.width}x${screen.height}`, ua: navigator.userAgent });
+})();
+
+function _getStore() {
+  try { return JSON.parse(localStorage.getItem(_AK) || '{}'); } catch(e) { return {}; }
+}
+
+function _track(action, meta) {
+  const store = _getStore();
+  const today = new Date().toISOString().slice(0, 10);
+  if (!store.sessions) store.sessions = {};
+  if (!store.sessions[today]) store.sessions[today] = [];
+  store.sessions[today].push({
+    t: Date.now(),
+    ts: new Date().toISOString(),
+    ip: _userIP,
+    a: action,
+    m: meta || null
+  });
+  // Keep max 30 days
+  const keys = Object.keys(store.sessions).sort();
+  while (keys.length > 30) { delete store.sessions[keys.shift()]; }
+  try { localStorage.setItem(_AK, JSON.stringify(store)); } catch(e) {}
+}
+
+// ── Hook into existing interactions ──
+// Spin
+const _origSpin = spinBtn.onclick;
+spinBtn.addEventListener('click', () => _track('spin', { items: activeCats.length }));
+
+// Filter clicks
+document.addEventListener('click', e => {
+  const fb = e.target.closest('.filter-btn');
+  if (fb) _track('filter', { tier: fb.dataset.tier });
+  const hi = e.target.closest('.hist-item');
+  if (hi) _track('history_click', { name: hi.textContent });
+  const cc = e.target.closest('.center.glow');
+  if (cc) _track('center_click', { cat: lastWinnerCat });
+});
+
+// Track recs open
+const _origShowRecs = typeof showRecs === 'function' ? showRecs : null;
+
+// Track entry screen dismiss
+document.querySelector('.entry').addEventListener('click', () => _track('entry_dismiss'), { once: true });
+
+// ── Hidden Admin Panel ──
+(function _initAdmin() {
+  if (new URLSearchParams(location.search).get('x') !== 'k9z') return;
+
+  const panel = document.createElement('div');
+  panel.id = '_ap';
+  panel.style.cssText = `position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.95);
+    color:#c8a87c;font-family:monospace;font-size:12px;overflow:auto;padding:20px;line-height:1.6`;
+
+  function render() {
+    const store = _getStore();
+    const sessions = store.sessions || {};
+    const days = Object.keys(sessions).sort().reverse();
+
+    let totalEvents = 0;
+    const ipMap = {};
+    const actionMap = {};
+    const hourMap = {};
+
+    days.forEach(day => {
+      sessions[day].forEach(ev => {
+        totalEvents++;
+        ipMap[ev.ip] = (ipMap[ev.ip] || 0) + 1;
+        actionMap[ev.a] = (actionMap[ev.a] || 0) + 1;
+        const h = new Date(ev.t).getHours();
+        hourMap[h] = (hourMap[h] || 0) + 1;
+      });
+    });
+
+    let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="margin:0;font-size:16px;color:#ece6dc">🔒 Analytics Dashboard</h2>
+      <button onclick="document.getElementById('_ap').remove()" style="background:none;border:1px solid #444;color:#888;padding:4px 12px;cursor:pointer;font-family:monospace">✕ 關閉</button>
+    </div>`;
+
+    // Summary cards
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px">
+      <div style="background:#111;padding:12px;border:1px solid #222">
+        <div style="color:#666;font-size:10px">UNIQUE IPs</div>
+        <div style="font-size:22px;color:#ece6dc">${Object.keys(ipMap).length}</div>
+      </div>
+      <div style="background:#111;padding:12px;border:1px solid #222">
+        <div style="color:#666;font-size:10px">TOTAL EVENTS</div>
+        <div style="font-size:22px;color:#ece6dc">${totalEvents}</div>
+      </div>
+      <div style="background:#111;padding:12px;border:1px solid #222">
+        <div style="color:#666;font-size:10px">DAYS TRACKED</div>
+        <div style="font-size:22px;color:#ece6dc">${days.length}</div>
+      </div>
+      <div style="background:#111;padding:12px;border:1px solid #222">
+        <div style="color:#666;font-size:10px">PEAK HOUR</div>
+        <div style="font-size:22px;color:#ece6dc">${Object.entries(hourMap).sort((a,b)=>b[1]-a[1])[0]?.[0] || '-'}:00</div>
+      </div>
+    </div>`;
+
+    // Action breakdown
+    html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ 行為分佈</h3>
+    <div style="background:#111;padding:12px;border:1px solid #222;margin-bottom:16px">`;
+    Object.entries(actionMap).sort((a,b)=>b[1]-a[1]).forEach(([a,c]) => {
+      const pct = Math.round(c / totalEvents * 100);
+      html += `<div style="margin-bottom:4px"><span style="color:#ece6dc">${a}</span>
+        <span style="color:#555;margin:0 6px">—</span>
+        <span style="color:#c8a87c">${c}</span>
+        <span style="color:#333;margin-left:6px">(${pct}%)</span>
+        <div style="height:2px;background:#1a1a1a;margin-top:2px">
+          <div style="height:2px;background:linear-gradient(90deg,#c8a87c,#8b7355);width:${pct}%"></div>
+        </div></div>`;
+    });
+    html += `</div>`;
+
+    // IP list
+    html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ IP 列表</h3>
+    <div style="background:#111;padding:12px;border:1px solid #222;margin-bottom:16px">`;
+    Object.entries(ipMap).sort((a,b)=>b[1]-a[1]).forEach(([ip,c]) => {
+      html += `<div><span style="color:#ece6dc">${ip}</span> <span style="color:#555">— ${c} events</span></div>`;
+    });
+    html += `</div>`;
+
+    // Detailed log per day
+    html += `<h3 style="color:#8b7355;font-size:12px;margin-bottom:8px">▸ 詳細事件記錄</h3>`;
+    days.forEach(day => {
+      const evts = sessions[day];
+      html += `<details style="margin-bottom:8px"><summary style="cursor:pointer;color:#ece6dc;padding:6px;background:#111;border:1px solid #222">${day} <span style="color:#555">(${evts.length} events)</span></summary>
+      <div style="background:#0a0a0a;padding:8px;border:1px solid #1a1a1a;max-height:300px;overflow:auto">`;
+      evts.forEach(ev => {
+        const time = ev.ts ? ev.ts.slice(11, 19) : new Date(ev.t).toTimeString().slice(0,8);
+        html += `<div style="border-bottom:1px solid #111;padding:3px 0">
+          <span style="color:#555">${time}</span>
+          <span style="color:#c8a87c;margin:0 8px">${ev.a}</span>
+          <span style="color:#444">${ev.ip}</span>
+          ${ev.m ? `<span style="color:#333;margin-left:8px">${JSON.stringify(ev.m)}</span>` : ''}
+        </div>`;
+      });
+      html += `</div></details>`;
+    });
+
+    // Hour heatmap
+    html += `<h3 style="color:#8b7355;font-size:12px;margin:16px 0 8px">▸ 時段熱力圖</h3>
+    <div style="display:flex;gap:2px;background:#111;padding:12px;border:1px solid #222">`;
+    const maxH = Math.max(...Object.values(hourMap), 1);
+    for (let i = 0; i < 24; i++) {
+      const v = hourMap[i] || 0;
+      const intensity = Math.round(v / maxH * 255);
+      html += `<div style="flex:1;text-align:center" title="${i}:00 → ${v} events">
+        <div style="height:40px;background:rgba(200,168,124,${v/maxH*.8});border-radius:2px"></div>
+        <div style="font-size:8px;color:#444;margin-top:2px">${i}</div>
+      </div>`;
+    }
+    html += `</div>`;
+
+    // Clear button
+    html += `<div style="text-align:center;margin-top:24px">
+      <button onclick="localStorage.removeItem('${_AK}');document.getElementById('_ap').remove()"
+        style="background:none;border:1px solid #333;color:#555;padding:6px 20px;cursor:pointer;font-family:monospace">清除資料</button>
+    </div>`;
+
+    panel.innerHTML = html;
+  }
+
+  render();
+  document.body.appendChild(panel);
+})();
 
 document.fonts.ready.then(() => {
   renderCats();
