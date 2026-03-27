@@ -63,6 +63,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);
   opacity:0;will-change:left,top}
 .cursor-glow.active{opacity:1}
 
+/* ══ Starfield (inside center circle) ══ */
+.starfield{position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:50%;opacity:.8}
+
 /* ══ Wheel Breathing Glow ══ */
 .wheel-wrap::after{content:'';position:absolute;inset:-20px;border-radius:50%;
   background:radial-gradient(circle,rgba(200,168,124,.03) 0%,transparent 60%);
@@ -655,7 +658,6 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 <div class="amb"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
 <div class="bokeh" id="bokeh"></div>
 <div class="cursor-glow" id="cursorGlow"></div>
-
 <!-- ══ App ══ -->
 <div id="app">
   <header>
@@ -675,6 +677,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
     <canvas id="particles"></canvas>
     <div class="pointer"></div>
     <div class="center" id="centerCircle">
+      <canvas class="starfield" id="starfield"></canvas>
       <div class="center-ring"></div>
       <div class="center-spin-text" id="centerSpinText"></div>
       <div class="center-main" id="centerMain">今晚吃什麼</div>
@@ -692,8 +695,8 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 </div>
 <button class="fortune-btn" id="fortuneBtn">抽食籤</button>
 <button class="gomoku-btn" id="gomokuBtn" onclick="openGomoku()">
-  <span class="gomoku-btn-main">五子棋挑戰</span>
-  <span class="gomoku-btn-sub">贏了解鎖隱藏菜單</span>
+  <span class="gomoku-btn-main">挑戰</span>
+  <span class="gomoku-btn-sub">贏了好像可以解鎖什麼</span>
 </button>
 
 <!-- ══ Gomoku Overlay ══ -->
@@ -701,7 +704,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   <div class="gomoku-header">
     <div class="gomoku-title">五 子 棋 對 決</div>
     <div class="gomoku-status" id="gomokuStatus">挑戰比特幣！</div>
-    <div class="gomoku-hint" id="gomokuHint">贏了有隱藏菜單喔</div>
+    <div class="gomoku-hint" id="gomokuHint">贏了好像可以解鎖什麼</div>
   </div>
   <div class="gomoku-board-wrap">
     <canvas class="gomoku-board" id="gomokuBoard"></canvas>
@@ -1204,13 +1207,16 @@ function renderHistory() {
   const restartBtn = document.getElementById('gomokuRestart');
   const closeBtn = document.getElementById('gomokuClose');
 
-  let board = []; // 0=empty, 1=player(black), 2=AI(white)
+  let board = []; // 0=empty, 1=AI(black), 2=player(white)
   let gameOver = false;
-  let playerTurn = true;
+  let playerTurn = false;
   let moveCount = 0;
   let cellSize = 0;
   let padding = 0;
   let gdpr = 1;
+  let previewR = -1, previewC = -1; // preview stone position
+  let lastAiR = -1, lastAiC = -1; // AI last move for highlight
+  let lastAiT = 0; // timestamp for pulse animation
 
   const SECRET_RESTAURANTS = [
     {name:'中山73・隱藏Bar',desc:'需要按門鈴才能進入的神秘酒吧，調酒師會依你的心情即興創作'},
@@ -1236,11 +1242,12 @@ function renderHistory() {
   function initBoard() {
     board = Array.from({length:SIZE}, () => Array(SIZE).fill(0));
     gameOver = false;
-    playerTurn = true;
+    playerTurn = false;
     moveCount = 0;
-    statusEl.textContent = '你的回合（黑子）';
-    hintEl.textContent = '贏了有隱藏菜單喔';
-    catSay('來吧！', 2000);
+    statusEl.textContent = '比特幣先攻…';
+    hintEl.textContent = '贏了好像可以解鎖什麼';
+    catSay('我先！', 2000);
+    setTimeout(() => { if (!gameOver) aiMove(); }, 600);
   }
 
   /* ── Canvas setup ── */
@@ -1256,6 +1263,17 @@ function renderHistory() {
     gctx.setTransform(gdpr, 0, 0, gdpr, 0, 0);
     padding = w * 0.04;
     cellSize = (w - padding * 2) / (SIZE - 1);
+  }
+
+  /* ── Board animation loop (for AI highlight pulse) ── */
+  let boardAnimId = 0;
+  function boardAnimLoop() {
+    if (!overlay.classList.contains('open')) { boardAnimId = 0; return; }
+    if (lastAiR >= 0 || (previewR >= 0 && playerTurn)) drawBoard();
+    boardAnimId = requestAnimationFrame(boardAnimLoop);
+  }
+  function startBoardAnim() {
+    if (!boardAnimId) boardAnimLoop();
   }
 
   /* ── Draw board ── */
@@ -1311,6 +1329,42 @@ function renderHistory() {
         gctx.lineWidth = 0.5;
         gctx.stroke();
       }
+    }
+    // AI last move highlight (pulsing golden ring + dot)
+    if (lastAiR >= 0 && lastAiC >= 0) {
+      const ax = padding + lastAiC * cellSize;
+      const ay = padding + lastAiR * cellSize;
+      const ar = cellSize * 0.42;
+      const pulse = Math.sin(Date.now() * 0.004) * 0.3 + 0.7;
+      // Outer glow ring
+      gctx.beginPath(); gctx.arc(ax, ay, ar + 4, 0, Math.PI * 2);
+      gctx.strokeStyle = `rgba(200,168,124,${(0.6 * pulse).toFixed(2)})`;
+      gctx.lineWidth = 2; gctx.stroke();
+      // Small red dot in center
+      gctx.beginPath(); gctx.arc(ax, ay, 2.5, 0, Math.PI * 2);
+      gctx.fillStyle = `rgba(220,80,80,${(0.8 * pulse).toFixed(2)})`;
+      gctx.fill();
+    }
+    // Preview stone (semi-transparent + pulsing ring)
+    if (previewR >= 0 && previewC >= 0 && board[previewR][previewC] === 0 && playerTurn && !gameOver) {
+      const px = padding + previewC * cellSize;
+      const py = padding + previewR * cellSize;
+      const pr = cellSize * 0.42;
+      // Ghost stone
+      gctx.globalAlpha = 0.45;
+      const pg = gctx.createRadialGradient(px - pr*0.3, py - pr*0.3, 0, px, py, pr);
+      pg.addColorStop(0, '#fff'); pg.addColorStop(0.8, '#ccc'); pg.addColorStop(1, '#aaa');
+      gctx.beginPath(); gctx.arc(px, py, pr, 0, Math.PI * 2);
+      gctx.fillStyle = pg; gctx.fill();
+      gctx.globalAlpha = 1;
+      // Pulsing ring
+      gctx.beginPath(); gctx.arc(px, py, pr + 3, 0, Math.PI * 2);
+      gctx.strokeStyle = 'rgba(200,168,124,.6)'; gctx.lineWidth = 1.5; gctx.stroke();
+      // "點擊確認" hint
+      gctx.font = `${Math.max(9, cellSize * 0.55)}px sans-serif`;
+      gctx.fillStyle = 'rgba(200,168,124,.8)';
+      gctx.textAlign = 'center';
+      gctx.fillText('再點確認', px, py - pr - 5);
     }
   }
 
@@ -1408,11 +1462,11 @@ function renderHistory() {
 
   function minimax(depth, alpha, beta, isMax) {
     // Quick win/loss check from last move is handled by caller
-    if (depth === 0) return boardScore(2); // AI is player 2
+    if (depth === 0) return boardScore(1); // AI is player 1
 
     const candidates = getCandidates();
     // Sort by heuristic for better pruning
-    const player = isMax ? 2 : 1;
+    const player = isMax ? 1 : 2;
     candidates.sort((a,b) => {
       const sa = evaluatePosition(a[0],a[1],player) + evaluatePosition(a[0],a[1],player===1?2:1)*0.9;
       const sb = evaluatePosition(b[0],b[1],player) + evaluatePosition(b[0],b[1],player===1?2:1)*0.9;
@@ -1425,8 +1479,8 @@ function renderHistory() {
     if (isMax) {
       let maxEval = -Infinity;
       for (const [r,c] of topCands) {
-        board[r][c] = 2;
-        if (checkWin(r,c,2)) { board[r][c]=0; return SCORES.five * (depth+1); }
+        board[r][c] = 1;
+        if (checkWin(r,c,1)) { board[r][c]=0; return SCORES.five * (depth+1); }
         const ev = minimax(depth-1, alpha, beta, false);
         board[r][c] = 0;
         maxEval = Math.max(maxEval, ev);
@@ -1437,8 +1491,8 @@ function renderHistory() {
     } else {
       let minEval = Infinity;
       for (const [r,c] of topCands) {
-        board[r][c] = 1;
-        if (checkWin(r,c,1)) { board[r][c]=0; return -SCORES.five * (depth+1); }
+        board[r][c] = 2;
+        if (checkWin(r,c,2)) { board[r][c]=0; return -SCORES.five * (depth+1); }
         const ev = minimax(depth-1, alpha, beta, true);
         board[r][c] = 0;
         minEval = Math.min(minEval, ev);
@@ -1455,17 +1509,17 @@ function renderHistory() {
 
     setTimeout(() => {
       if (gameOver) return;
-      // First: check immediate win
+      // First: check immediate win (AI=1)
       const candidates = getCandidates();
       for (const [r,c] of candidates) {
-        board[r][c] = 2;
-        if (checkWin(r,c,2)) { board[r][c]=0; placeStone(r,c,2); return; }
+        board[r][c] = 1;
+        if (checkWin(r,c,1)) { board[r][c]=0; placeStone(r,c,1); return; }
         board[r][c] = 0;
       }
-      // Second: block player immediate win
+      // Second: block player(2) immediate win
       for (const [r,c] of candidates) {
-        board[r][c] = 1;
-        if (checkWin(r,c,1)) { board[r][c]=0; placeStone(r,c,2); return; }
+        board[r][c] = 2;
+        if (checkWin(r,c,2)) { board[r][c]=0; placeStone(r,c,1); return; }
         board[r][c] = 0;
       }
 
@@ -1475,19 +1529,19 @@ function renderHistory() {
 
       // Score and sort candidates
       const scored = candidates.map(([r,c]) => {
-        const atk = evaluatePosition(r,c,2);
-        const def = evaluatePosition(r,c,1);
+        const atk = evaluatePosition(r,c,1);
+        const def = evaluatePosition(r,c,2);
         return { r, c, h: atk + def * 1.05 };
       }).sort((a,b) => b.h - a.h).slice(0, 15);
 
       for (const {r,c} of scored) {
-        board[r][c] = 2;
+        board[r][c] = 1;
         const sc = minimax(depth, -Infinity, Infinity, false);
         board[r][c] = 0;
         if (sc > bestScore) { bestScore = sc; bestMove = [r,c]; }
       }
 
-      placeStone(bestMove[0], bestMove[1], 2);
+      placeStone(bestMove[0], bestMove[1], 1);
 
       if (!gameOver) {
         // Taunt or worry
@@ -1500,11 +1554,13 @@ function renderHistory() {
   function placeStone(r, c, player) {
     board[r][c] = player;
     moveCount++;
+    previewR = -1; previewC = -1;
+    if (player === 1) { lastAiR = r; lastAiC = c; }
     drawBoard();
 
     if (checkWin(r, c, player)) {
       gameOver = true;
-      if (player === 1) {
+      if (player === 2) {
         statusEl.textContent = '你贏了！';
         catSay(pick(CAT_LOSE), 4000);
         hintEl.textContent = '';
@@ -1514,7 +1570,7 @@ function renderHistory() {
         catSay(pick(CAT_WIN), 4000);
         hintEl.textContent = '再來一局？';
       }
-      if (typeof _track === 'function') _track('gomoku_end', { winner: player === 1 ? 'player' : 'ai' });
+      if (typeof _track === 'function') _track('gomoku_end', { winner: player === 2 ? 'player' : 'ai' });
       return;
     }
     if (moveCount >= SIZE * SIZE) {
@@ -1523,12 +1579,12 @@ function renderHistory() {
       catSay('竟然平手…', 3000);
       return;
     }
-    if (player === 1) {
+    if (player === 2) {
       playerTurn = false;
       aiMove();
     } else {
       playerTurn = true;
-      statusEl.textContent = '你的回合';
+      statusEl.textContent = '你的回合（白子）';
     }
   }
 
@@ -1557,40 +1613,46 @@ function renderHistory() {
     wrap.appendChild(div.firstElementChild);
   }
 
-  /* ── Click handler ── */
-  canvas.addEventListener('click', e => {
+  /* ── Tap helper: preview + confirm ── */
+  function handleTap(mx, my) {
     if (gameOver || !playerTurn) return;
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
     const col = Math.round((mx - padding) / cellSize);
     const row = Math.round((my - padding) / cellSize);
     if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return;
     if (board[row][col] !== 0) return;
-    placeStone(row, col, 1);
+    // Same spot = confirm
+    if (previewR === row && previewC === col) {
+      previewR = -1; previewC = -1;
+      placeStone(row, col, 2);
+    } else {
+      // Show preview
+      previewR = row; previewC = col;
+      drawBoard();
+    }
+  }
+
+  /* ── Click handler (desktop) ── */
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    handleTap(e.clientX - rect.left, e.clientY - rect.top);
   });
 
-  /* ── Touch support ── */
+  /* ── Touch support (mobile) ── */
   canvas.addEventListener('touchend', e => {
-    if (gameOver || !playerTurn) return;
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     const t = e.changedTouches[0];
-    const mx = t.clientX - rect.left;
-    const my = t.clientY - rect.top;
-    const col = Math.round((mx - padding) / cellSize);
-    const row = Math.round((my - padding) / cellSize);
-    if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return;
-    if (board[row][col] !== 0) return;
-    placeStone(row, col, 1);
+    handleTap(t.clientX - rect.left, t.clientY - rect.top);
   });
 
   /* ── Open / Close ── */
   window.openGomoku = function() {
     overlay.classList.add('open');
     setupGCanvas();
+    lastAiR = -1; lastAiC = -1;
     initBoard();
     drawBoard();
+    startBoardAnim();
     if (typeof _track === 'function') _track('gomoku_open');
   };
 
@@ -1777,7 +1839,7 @@ function renderRecCards(cat, tier) {
     card.className = 'rec-card';
     const tierLabel = getPriceTier(r.price) === 'low' ? '低價' : getPriceTier(r.price) === 'high' ? '高價' : '平價';
     card.innerHTML = `
-      <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy"></div>
+      <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80'"></div>
       <div class="rec-body">
         <div class="rec-top">
           <span class="rec-name">${r.name}</span>
@@ -2405,6 +2467,72 @@ document.addEventListener('touchmove', e => {
   if (t) moveCursorGlow(t.clientX, t.clientY);
 }, { passive: true });
 document.addEventListener('mouseleave', () => { cursorGlow.classList.remove('active'); glowActive = false; });
+
+/* ══ Starfield (center circle galaxy) ══ */
+(function initStarfield() {
+  const c = document.getElementById('starfield');
+  const parent = document.getElementById('centerCircle');
+  if (!c || !parent) return;
+  const ctx = c.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  let size, half, stars = [];
+
+  function resize() {
+    size = parent.offsetWidth;
+    half = size / 2;
+    c.width = size * dpr; c.height = size * dpr;
+    c.style.width = size + 'px'; c.style.height = size + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function makeStar() {
+    const angle = Math.random() * Math.PI * 2;
+    const dist = Math.random() * half * 0.9;
+    return {
+      angle, dist,
+      r: Math.random() * 1.1 + 0.2,
+      a: Math.random() * 0.7 + 0.15,
+      twinkleSpeed: Math.random() * 0.02 + 0.005,
+      phase: Math.random() * Math.PI * 2,
+      orbitSpeed: (Math.random() * 0.0003 + 0.0001) * (Math.random() < 0.5 ? 1 : -1)
+    };
+  }
+
+  function init() {
+    resize();
+    stars = [];
+    const count = Math.min(Math.floor(size * size / 300), 120);
+    for (let i = 0; i < count; i++) stars.push(makeStar());
+  }
+
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, size, size);
+    t++;
+    for (const s of stars) {
+      s.angle += s.orbitSpeed;
+      const x = half + Math.cos(s.angle) * s.dist;
+      const y = half + Math.sin(s.angle) * s.dist;
+      const twinkle = Math.sin(t * s.twinkleSpeed + s.phase) * 0.35 + 0.65;
+      const alpha = s.a * twinkle;
+      ctx.beginPath();
+      ctx.arc(x, y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,168,124,${alpha.toFixed(2)})`;
+      ctx.fill();
+      if (s.r > 0.8) {
+        ctx.beginPath();
+        ctx.arc(x, y, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,168,124,${(alpha * 0.08).toFixed(3)})`;
+        ctx.fill();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  init();
+  draw();
+  window.addEventListener('resize', init);
+})();
 
 // ── Time-Aware Smart Greeting ──
 function getSmartGreeting() {
