@@ -663,6 +663,9 @@ canvas{width:100%;height:100%;display:block}
 </head>
 <body>
 
+<!-- YouTube Player (hidden, audio only) -->
+<div id="ytPlayerHost" style="position:fixed;top:-10px;left:-10px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1"></div>
+
 <!-- ══ Entry Screen ══ -->
 <div class="entry" id="entry" onclick="enterApp()">
   <div class="entry-bg" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&h=900&fit=crop&q=80')"></div>
@@ -2105,86 +2108,60 @@ recsOverlay.onclick = e => { if (e.target === recsOverlay) hideRecs(); };
 /* ══════════════════════════════════════
    Music
    ══════════════════════════════════════ */
-/* ══ Ambient Music — HTML5 Audio + WAV generator (iOS Safari compatible) ══ */
+/* ══ Music — YouTube IFrame API ══ */
 let musicOn = false;
-let ambAudio = null;
-let ambFadeTimer = null;
+let ytPlayer = null;
+let ytReady = false;
+let ytPendingPlay = false;
 
-/* Generate a warm ambient pad loop as a WAV Blob */
-function generateAmbientWav() {
-  const sr = 22050, dur = 16, n = sr * dur;
-  const buf = new ArrayBuffer(44 + n * 2);
-  const dv = new DataView(buf);
-  /* WAV header */
-  const ws = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
-  ws(0,'RIFF'); dv.setUint32(4, 36 + n * 2, true);
-  ws(8,'WAVE'); ws(12,'fmt ');
-  dv.setUint32(16, 16, true); dv.setUint16(20, 1, true);
-  dv.setUint16(22, 1, true); dv.setUint32(24, sr, true);
-  dv.setUint32(28, sr * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
-  ws(36,'data'); dv.setUint32(40, n * 2, true);
+/* Load YouTube IFrame API */
+(function() {
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
 
-  /* Phase accumulators for proper vibrato */
-  const voices = [
-    { f: 110,    a: 0.10, vib: 0 },
-    { f: 220,    a: 0.13, vib: 0.003 },
-    { f: 220.6,  a: 0.07, vib: 0 },
-    { f: 261.63, a: 0.11, vib: 0.003 },
-    { f: 262.2,  a: 0.06, vib: 0 },
-    { f: 329.63, a: 0.10, vib: 0.002 },
-    { f: 330.3,  a: 0.05, vib: 0 },
-    { f: 392,    a: 0.05, vib: 0.002 }
-  ];
-  const phases = voices.map(() => 0);
-  const TAU = 2 * Math.PI;
-
-  for (let i = 0; i < n; i++) {
-    const t = i / sr;
-    let s = 0;
-    const vibLfo = Math.sin(TAU * 0.18 * t);
-    for (let j = 0; j < voices.length; j++) {
-      const v = voices[j];
-      const freq = v.f * (1 + v.vib * vibLfo);
-      phases[j] += freq / sr;
-      s += Math.sin(TAU * phases[j]) * v.a;
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('ytPlayerHost', {
+    height: '1', width: '1',
+    videoId: 'SmpbY2VIbj0',
+    playerVars: {
+      autoplay: 0,
+      loop: 1,
+      playlist: 'SmpbY2VIbj0',
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      modestbranding: 1,
+      playsinline: 1,
+      rel: 0
+    },
+    events: {
+      onReady: function() {
+        ytReady = true;
+        ytPlayer.setVolume(60);
+        if (ytPendingPlay) { ytPlayer.playVideo(); ytPendingPlay = false; }
+      },
+      onStateChange: function(e) {
+        /* If ended, replay (backup for loop) */
+        if (e.data === YT.PlayerState.ENDED) ytPlayer.playVideo();
+      }
     }
-    /* Amplitude movement */
-    s *= 0.82 + 0.18 * Math.sin(TAU * 0.11 * t);
-    s *= 0.90 + 0.10 * Math.sin(TAU * 0.07 * t + 1.5);
-    /* Crossfade edges for seamless loop (0.4s) */
-    const fade = Math.min(1, i / (sr * 0.4), (n - 1 - i) / (sr * 0.4));
-    s *= fade;
-    s = Math.max(-1, Math.min(1, s));
-    dv.setInt16(44 + i * 2, (s * 30000) | 0, true);
-  }
-  return new Blob([buf], { type: 'audio/wav' });
+  });
 }
 
 function startMusic() {
-  if (!ambAudio) {
-    ambAudio = new Audio(URL.createObjectURL(generateAmbientWav()));
-    ambAudio.loop = true;
+  if (ytReady && ytPlayer) {
+    ytPlayer.playVideo();
+  } else {
+    ytPendingPlay = true;
   }
-  ambAudio.volume = 0;
-  const p = ambAudio.play();
-  if (p && p.catch) p.catch(() => {});
-  /* Fade in */
-  clearInterval(ambFadeTimer);
-  ambFadeTimer = setInterval(() => {
-    if (ambAudio.volume < 0.75) ambAudio.volume = Math.min(0.75, ambAudio.volume + 0.03);
-    else clearInterval(ambFadeTimer);
-  }, 50);
   musicOn = true;
   musicBtn.classList.add('on');
 }
 
 function stopMusic() {
-  if (!ambAudio) return;
-  clearInterval(ambFadeTimer);
-  ambFadeTimer = setInterval(() => {
-    if (ambAudio.volume > 0.02) ambAudio.volume = Math.max(0, ambAudio.volume - 0.05);
-    else { ambAudio.pause(); clearInterval(ambFadeTimer); }
-  }, 50);
+  if (ytReady && ytPlayer) ytPlayer.pauseVideo();
   musicOn = false;
   musicBtn.classList.remove('on');
 }
@@ -2198,7 +2175,7 @@ function toggleMusic() {
 function enterApp() {
   const entry = document.getElementById('entry');
   entry.classList.add('gone');
-  /* ★ .play() inside onclick = user gesture → iOS Safari allows audio ★ */
+  /* ★ playVideo() inside onclick = user gesture → mobile browsers allow it ★ */
   startMusic();
 }
 
