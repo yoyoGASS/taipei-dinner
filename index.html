@@ -672,6 +672,56 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 
 @keyframes ffu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
+/* ══ Share Button ══ */
+.share-btn{font-family:var(--serif);font-size:clamp(10px,1.3vw,11px);font-weight:300;
+  letter-spacing:.12em;color:var(--accent-dim);background:transparent;
+  border:1px solid rgba(200,168,124,.18);padding:4px 14px;cursor:pointer;
+  border-radius:20px;transition:all .3s var(--ease);white-space:nowrap;display:inline-flex;
+  align-items:center;gap:4px}
+.share-btn:hover{color:var(--accent);border-color:rgba(200,168,124,.4);
+  background:rgba(200,168,124,.06);transform:scale(1.04)}
+.share-btn:active{transform:scale(.96)}
+.center-share{margin-top:3px;opacity:0;transition:opacity .8s .8s;z-index:1}
+.center-share.show{opacity:.7}
+.fortune-share{margin-top:6px}
+@media(max-width:480px){
+  .share-btn{font-size:12px;padding:5px 12px}
+}
+
+/* ══ Toast ══ */
+.share-toast{position:fixed;bottom:clamp(60px,10vh,90px);left:50%;transform:translateX(-50%) translateY(20px);
+  z-index:9999;font-family:var(--serif);font-size:clamp(12px,1.5vw,14px);font-weight:300;
+  letter-spacing:.12em;color:var(--text);padding:10px 24px;
+  background:rgba(12,12,20,.82);border:1px solid rgba(200,168,124,.15);
+  border-radius:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;pointer-events:none;transition:opacity .3s,transform .3s var(--ease);
+  box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.share-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+
+/* ══ Share Overlay (URL share) ══ */
+.share-overlay{position:fixed;inset:0;z-index:9998;background:rgba(7,7,12,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+.share-overlay.open{opacity:1;pointer-events:auto}
+.share-overlay-card{text-align:center;padding:clamp(32px,5vh,48px) clamp(24px,4vw,36px);
+  background:rgba(18,18,28,.7);border:1px solid rgba(200,168,124,.12);
+  max-width:min(360px,86vw);width:100%;
+  transform:scale(.92);opacity:0;transition:all .5s var(--ease)}
+.share-overlay.open .share-overlay-card{transform:scale(1);opacity:1}
+.share-overlay-icon{font-size:clamp(36px,9vw,48px);margin-bottom:16px;display:block}
+.share-overlay-msg{font-size:clamp(16px,4vw,20px);font-weight:200;color:var(--text);
+  letter-spacing:.08em;line-height:1.5;margin-bottom:8px}
+.share-overlay-name{font-size:clamp(24px,6.5vw,32px);font-weight:200;color:var(--accent);
+  letter-spacing:.1em;margin-bottom:20px;display:block}
+.share-overlay-sub{font-size:clamp(11px,1.4vw,13px);font-weight:300;color:var(--text2);
+  letter-spacing:.15em;margin-bottom:clamp(20px,3vh,28px)}
+.share-overlay-enter{font-family:var(--serif);font-size:clamp(13px,1.6vw,14px);font-weight:300;
+  letter-spacing:.35em;color:var(--accent);background:none;
+  border:1px solid rgba(200,168,124,.2);padding:12px 40px;cursor:pointer;
+  transition:all .4s var(--ease)}
+.share-overlay-enter:hover{border-color:rgba(200,168,124,.45);background:rgba(200,168,124,.06)}
+
 /* fortune shake */
 .fortune-card.shake{animation:fortuneShake .5s ease}
 @keyframes fortuneShake{
@@ -733,7 +783,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 .mood-opt:hover::before{opacity:1}
 .mood-opt.selected{border-color:rgba(200,168,124,.35);color:var(--accent);
   background:rgba(200,168,124,.04);box-shadow:0 0 20px rgba(200,168,124,.06)}
-.mood-opt-emoji{font-size:clamp(20px,5vw,26px);flex-shrink:0}
+.mood-opt-emoji{font-size:clamp(13px,2.2vw,15px);flex-shrink:0;color:var(--accent);font-weight:500;letter-spacing:.08em;min-width:2em;text-align:center}
 .mood-opt-text{flex:1}
 
 /* mood result */
@@ -865,7 +915,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
       </div>
     </div>
     <div style="display:flex;align-items:baseline;gap:0">
-      <button class="mood-btn" id="moodBtn">✨ 推薦</button>
+      <button class="mood-btn" id="moodBtn">推薦</button>
       <button class="mylist-btn" id="myListBtn">清單</button>
       <button class="music-btn" id="musicBtn">音樂</button>
     </div>
@@ -924,6 +974,20 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   <div class="fortune-card" id="fortuneCard"></div>
 </div>
 
+<!-- ══ Toast ══ -->
+<div class="share-toast" id="shareToast"></div>
+
+<!-- ══ Share URL Overlay ══ -->
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-overlay-card">
+    <span class="share-overlay-icon">T</span>
+    <div class="share-overlay-msg">你的朋友推薦了</div>
+    <span class="share-overlay-name" id="shareOverlayName"></span>
+    <div class="share-overlay-sub" id="shareOverlaySub"></div>
+    <button class="share-overlay-enter" onclick="dismissShareOverlay()">進入探索</button>
+  </div>
+</div>
+
 <!-- music bar removed — using Web Audio API -->
 
 <!-- ══ Mood Quiz Overlay ══ -->
@@ -972,9 +1036,9 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
       <div class="mylist-sub">MY LIST</div>
     </div>
     <div class="mylist-tabs" id="mylistTabs">
-      <button class="mylist-tab on" data-tab="fav">❤️ 收藏</button>
-      <button class="mylist-tab" data-tab="ban">🚫 黑名單</button>
-      <button class="mylist-tab" data-tab="recent">🕐 最近吃過</button>
+      <button class="mylist-tab on" data-tab="fav">收藏</button>
+      <button class="mylist-tab" data-tab="ban">黑名單</button>
+      <button class="mylist-tab" data-tab="recent">最近吃過</button>
     </div>
     <div class="mylist-content" id="mylistContent"></div>
     <button class="mylist-bottom-close" id="mylistBottomClose">收起</button>
@@ -1548,7 +1612,7 @@ function revealResult(item) {
   const winArea = findRestaurantArea(item.name);
   setTimeout(() => {
     centerMapLink.href = getMapUrl(item.name, winArea);
-    centerMapLink.textContent = '📍 看地圖';
+    centerMapLink.textContent = '看地圖';
     centerMapLink.classList.add('show');
     centerMapLink.onclick = e => e.stopPropagation();
   }, 800);
@@ -1984,7 +2048,7 @@ function renderHistory() {
   function showSecretMenu() {
     const wrap = canvas.parentElement;
     let html = `<div class="gomoku-secret">
-      <span class="gomoku-secret-icon">🏆</span>
+      <span class="gomoku-secret-icon">WINNER</span>
       <div class="gomoku-secret-title">隱 藏 菜 單</div>
       <div class="gomoku-secret-sub">恭喜你打敗了比特幣！<br>解鎖了只有贏家才知道的秘密餐廳</div>
       <div class="gomoku-secret-list">`;
@@ -2172,7 +2236,7 @@ function renderStarsSvg(rating) {
   const total = full + (hasHalf ? 1 : 0);
   const empty = 5 - total;
   let html = '';
-  const star = '★';
+  const star = '<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:middle;fill:currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>';
   for (let i = 0; i < full; i++) html += `<span class="rec-star" style="animation-delay:${i*0.06}s">${star}</span>`;
   if (hasHalf) html += `<span class="rec-star dim" style="animation-delay:${full*0.06}s">${star}</span>`;
   for (let i = 0; i < empty; i++) html += `<span class="rec-star dim" style="animation-delay:${(total+i)*0.06}s">${star}</span>`;
@@ -2221,7 +2285,7 @@ function renderRecCards(cat, tier) {
         <div class="rec-stars">${renderStarsSvg(r.stars)}<span class="rec-reviews">${r.reviews} 則評論</span></div>
         <div class="rec-info">
           <span class="rec-price">${r.price}</span>
-          <span class="rec-area">📍 ${r.area}</span>${dist ? `<span class="rec-distance">${dist}</span>` : ''}
+          <span class="rec-area">${r.area}</span>${dist ? `<span class="rec-distance">${dist}</span>` : ''}
         </div>
         <div class="rec-desc">${r.desc}</div>
         <div class="rec-quotes">
@@ -2229,9 +2293,9 @@ function renderRecCards(cat, tier) {
           <div class="rec-quote-bad"><span class="rec-qt">提醒</span>「${r.worst}」</div>
         </div>
         <div class="rec-nav-row">
-          <a class="rec-nav-btn" href="${navUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺️ 導航</a>
-          <button class="rec-pref-btn${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}">❤️ 收藏</button>
-          <button class="rec-pref-btn${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}">🚫 排除</button>
+          <a class="rec-nav-btn" href="${navUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">導航</a>
+          <button class="rec-pref-btn${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}">收藏</button>
+          <button class="rec-pref-btn${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}">排除</button>
         </div>
       </div>`;
     recsList.appendChild(card);
@@ -2316,7 +2380,7 @@ function renderMyListContent() {
     items.forEach(f => {
       const el = document.createElement('div');
       el.className = 'mylist-item';
-      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">❤️ ${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-fav" data-name="${f.name}">移除</button>`;
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-fav" data-name="${f.name}">移除</button>`;
       mylistContent.appendChild(el);
     });
   } else if (currentMylistTab === 'ban') {
@@ -2325,7 +2389,7 @@ function renderMyListContent() {
     items.forEach(f => {
       const el = document.createElement('div');
       el.className = 'mylist-item';
-      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">🚫 ${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-ban" data-name="${f.name}">移除</button>`;
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-ban" data-name="${f.name}">移除</button>`;
       mylistContent.appendChild(el);
     });
   } else if (currentMylistTab === 'recent') {
@@ -2335,7 +2399,7 @@ function renderMyListContent() {
       const el = document.createElement('div');
       el.className = 'mylist-item';
       const dateStr = f.eatenAt ? new Date(f.eatenAt).toLocaleDateString('zh-TW') : '';
-      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">🕐 ${f.name}</div><div class="mylist-item-meta">${f.category}${dateStr ? ' · ' + dateStr : ''}</div></div><button class="mylist-item-remove" data-action="rm-recent" data-name="${f.name}">移除</button>`;
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">${f.name}</div><div class="mylist-item-meta">${f.category}${dateStr ? ' · ' + dateStr : ''}</div></div><button class="mylist-item-remove" data-action="rm-recent" data-name="${f.name}">移除</button>`;
       mylistContent.appendChild(el);
     });
   }
@@ -2414,7 +2478,7 @@ function enterApp() {
   const entry = document.getElementById('entry');
   entry.classList.add('gone');
   document.getElementById('app').classList.add('entered');
-  /* ★ onclick = user gesture → browsers allow audio play ★ */
+  /* onclick = user gesture — browsers allow audio play */
   startMusic();
 }
 
@@ -2459,15 +2523,15 @@ window.addEventListener('resize', () => { setupCanvas(); setupParticleCanvas(); 
    Weather Widget (Open-Meteo, free, no API key)
    ══════════════════════════════════════ */
 function getWeatherIcon(code) {
-  if (code === 0) return '☀';
-  if ([1,2].includes(code)) return '⛅';
-  if (code === 3) return '☁';
-  if ([45,48].includes(code)) return '🌫';
-  if ([51,53,55].includes(code)) return '🌦';
-  if ([61,63,65,80,81,82].includes(code)) return '🌧';
-  if ([71,73,75,77,85,86].includes(code)) return '❄';
-  if ([95,96,99].includes(code)) return '⛈';
-  return '🌙';
+  if (code === 0) return '晴';
+  if ([1,2].includes(code)) return '雲';
+  if (code === 3) return '陰';
+  if ([45,48].includes(code)) return '霧';
+  if ([51,53,55].includes(code)) return '雨';
+  if ([61,63,65,80,81,82].includes(code)) return '雨';
+  if ([71,73,75,77,85,86].includes(code)) return '雪';
+  if ([95,96,99].includes(code)) return '雷';
+  return '夜';
 }
 function getWeatherName(code) {
   if (code === 0) return '晴';
@@ -2627,7 +2691,7 @@ const CAT_REASONS = {
   '東南亞':['酸辣交織就是今晚的節奏','香料的異國風情帶你逃離日常','微辣中帶著甜，像今晚的你'],
 };
 
-const STEP_LABELS = ['第一籤 · 直覺','第二籤 · 命運','第三籤 · 天選 ✦'];
+const STEP_LABELS = ['第一籤 · 直覺','第二籤 · 命運','第三籤 · 天選'];
 const FORTUNE_MAX = 3;
 const FORTUNE_BONUS = 1;
 
@@ -2796,12 +2860,12 @@ function showFortuneLimit(type) {
 
   const msgs = {
     greedy: {
-      icon: '🍰', msg: '太貪心囉～',
+      icon: '—', msg: '太貪心囉～',
       sub: '好啦好啦，看你這麼可愛\n再給你最後一次機會',
       btn: '謝謝！我要抽', btnId: 'bonusDraw'
     },
     locked: {
-      icon: '🌙', msg: '今天的緣分用完了',
+      icon: '—', msg: '今天的緣分用完了',
       sub: '美好的事值得等待\n午夜 12:00 再來抽吧',
       btn: null, btnId: null
     }
@@ -3121,8 +3185,8 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     });
 
     let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <h2 style="margin:0;font-size:16px;color:#ece6dc">🔒 用戶行為分析</h2>
-      <button onclick="document.getElementById('_ap').remove()" style="background:none;border:1px solid #444;color:#888;padding:4px 12px;cursor:pointer;font-family:monospace">✕ 關閉</button>
+      <h2 style="margin:0;font-size:16px;color:#ece6dc">用戶行為分析</h2>
+      <button onclick="document.getElementById('_ap').remove()" style="background:none;border:1px solid #444;color:#888;padding:4px 12px;cursor:pointer;font-family:monospace">X 關閉</button>
     </div>`;
 
     // Summary cards
@@ -3227,29 +3291,29 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
       step: '第一題',
       question: '今天心情如何？',
       options: [
-        { emoji: '😊', text: '開心放鬆', weights: { '台式': 1, '熱炒': 1, '火鍋': 1 } },
-        { emoji: '😴', text: '疲倦需要療癒', weights: { '日式': 2, '麵食': 1, '火鍋': 1 } },
-        { emoji: '🥳', text: '社交聚會', weights: { '韓式': 1, '火鍋': 2, '熱炒': 1 } },
-        { emoji: '🤔', text: '獨自沉思', weights: { '日式': 1, '麵食': 2, '東南亞': 1 } }
+        { emoji: 'A', text: '開心放鬆', weights: { '台式': 1, '熱炒': 1, '火鍋': 1 } },
+        { emoji: 'B', text: '疲倦需要療癒', weights: { '日式': 2, '麵食': 1, '火鍋': 1 } },
+        { emoji: 'C', text: '社交聚會', weights: { '韓式': 1, '火鍋': 2, '熱炒': 1 } },
+        { emoji: 'D', text: '獨自沉思', weights: { '日式': 1, '麵食': 2, '東南亞': 1 } }
       ]
     },
     {
       step: '第二題',
       question: '預算大概？',
       options: [
-        { emoji: '💰', text: '省省的 (<$400)', weights: { '台式': 1, '麵食': 1, '熱炒': 1, '東南亞': 1 } },
-        { emoji: '💰💰', text: '正常 ($400-800)', weights: { '日式': 1, '韓式': 1, '火鍋': 1 } },
-        { emoji: '💰💰💰', text: '犒賞自己 ($800+)', weights: { '日式': 2, '西式': 2 } }
+        { emoji: '$', text: '省省的 (<$400)', weights: { '台式': 1, '麵食': 1, '熱炒': 1, '東南亞': 1 } },
+        { emoji: '$$', text: '正常 ($400-800)', weights: { '日式': 1, '韓式': 1, '火鍋': 1 } },
+        { emoji: '$$$', text: '犒賞自己 ($800+)', weights: { '日式': 2, '西式': 2 } }
       ]
     },
     {
       step: '第三題',
       question: '想要什麼感覺？',
       options: [
-        { emoji: '🔥', text: '熱騰騰的', weights: { '火鍋': 2, '麵食': 1, '熱炒': 1 } },
-        { emoji: '🍣', text: '精緻細膩', weights: { '日式': 2, '西式': 1 } },
-        { emoji: '🌶️', text: '重口味', weights: { '韓式': 2, '熱炒': 1, '東南亞': 1 } },
-        { emoji: '🏠', text: '家常味道', weights: { '台式': 2, '麵食': 1 } }
+        { emoji: 'A', text: '熱騰騰的', weights: { '火鍋': 2, '麵食': 1, '熱炒': 1 } },
+        { emoji: 'B', text: '精緻細膩', weights: { '日式': 2, '西式': 1 } },
+        { emoji: 'C', text: '重口味', weights: { '韓式': 2, '熱炒': 1, '東南亞': 1 } },
+        { emoji: 'D', text: '家常味道', weights: { '台式': 2, '麵食': 1 } }
       ]
     }
   ];
