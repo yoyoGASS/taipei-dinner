@@ -665,6 +665,103 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   60%{transform:scale(1) rotate(1deg)}
   80%{transform:scale(1.005) rotate(-.5deg)}}
 
+/* ══ Mood Quiz Overlay ══ */
+.mood-overlay{position:fixed;inset:0;z-index:150;
+  background:rgba(7,7,12,.92);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .6s var(--ease)}
+.mood-overlay.open{opacity:1;pointer-events:auto}
+
+.mood-card{width:min(400px,90vw);padding:clamp(32px,5vh,44px) clamp(24px,3.5vw,36px);
+  text-align:center;position:relative;
+  border:1px solid rgba(200,168,124,.1);
+  background:linear-gradient(180deg,rgba(16,16,24,.7) 0%,rgba(10,10,16,.85) 100%);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transform:scale(.85) rotateY(90deg);opacity:0;
+  transition:all .7s var(--ease) .1s}
+.mood-overlay.open .mood-card{transform:scale(1) rotateY(0);opacity:1}
+.mood-card.flip-out{transform:scale(.85) rotateY(-90deg)!important;opacity:0!important;transition:all .4s var(--ease)!important}
+
+.mood-close{position:absolute;top:12px;right:12px;z-index:20;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:1px solid rgba(200,168,124,.08);color:var(--text3);
+  font-size:18px;cursor:pointer;transition:all .3s}
+.mood-close:hover{color:var(--accent);border-color:rgba(200,168,124,.2)}
+
+.mood-deco{position:absolute;left:50%;transform:translateX(-50%);
+  width:50px;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,124,.35),transparent)}
+.mood-deco-top{top:14px}
+.mood-deco-bot{bottom:14px}
+
+.mood-dots{display:flex;gap:12px;justify-content:center;margin-bottom:clamp(18px,2.5vh,24px)}
+.mood-dot{width:6px;height:6px;border-radius:50%;border:1px solid rgba(200,168,124,.2);
+  background:transparent;transition:all .5s}
+.mood-dot.filled{background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 6px rgba(200,168,124,.25)}
+.mood-dot.current{border-color:rgba(200,168,124,.5);animation:dotPulse 2s ease-in-out infinite}
+
+.mood-step{font-size:clamp(11px,1.4vw,12px);font-weight:300;letter-spacing:.5em;
+  color:var(--accent-dim);margin-bottom:clamp(10px,1.5vh,16px)}
+.mood-question{font-size:clamp(20px,5vw,26px);font-weight:200;color:var(--text);
+  letter-spacing:.1em;line-height:1.6;margin-bottom:clamp(22px,3.5vh,32px)}
+
+.mood-options{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.mood-opt{font-family:var(--serif);font-size:clamp(14px,1.8vw,16px);font-weight:300;
+  color:var(--text2);background:none;border:1px solid rgba(200,168,124,.08);
+  padding:14px 20px;cursor:pointer;letter-spacing:.08em;transition:all .4s var(--ease);
+  text-align:left;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.mood-opt::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(200,168,124,.04) 0%,transparent 50%);opacity:0;transition:opacity .4s}
+.mood-opt:hover{border-color:rgba(200,168,124,.2);color:var(--text)}
+.mood-opt:hover::before{opacity:1}
+.mood-opt.selected{border-color:rgba(200,168,124,.35);color:var(--accent);
+  background:rgba(200,168,124,.04);box-shadow:0 0 20px rgba(200,168,124,.06)}
+.mood-opt-emoji{font-size:clamp(20px,5vw,26px);flex-shrink:0}
+.mood-opt-text{flex:1}
+
+/* mood result */
+.mood-result-title{font-size:clamp(11px,1.4vw,12px);font-weight:300;letter-spacing:.5em;
+  color:var(--accent-dim);margin-bottom:clamp(18px,2.5vh,24px)}
+.mood-result-list{display:flex;flex-direction:column;gap:12px;margin-bottom:clamp(22px,3.5vh,32px)}
+.mood-result-item{display:flex;align-items:center;gap:14px;padding:12px 16px;
+  border:1px solid rgba(200,168,124,.08);text-align:left;cursor:pointer;
+  transition:all .4s var(--ease);position:relative;overflow:hidden}
+.mood-result-item::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(200,168,124,.04) 0%,transparent 50%);opacity:0;transition:opacity .4s}
+.mood-result-item:hover{border-color:rgba(200,168,124,.2)}
+.mood-result-item:hover::before{opacity:1}
+.mood-result-rank{font-size:clamp(11px,1.3vw,12px);font-weight:300;color:var(--text3);
+  letter-spacing:.1em;min-width:28px;opacity:.5}
+.mood-result-cat{font-size:clamp(20px,5vw,24px);font-weight:200;color:var(--accent);
+  letter-spacing:.15em;flex:1}
+.mood-result-score{font-size:clamp(11px,1.3vw,12px);font-weight:300;color:var(--text3);
+  letter-spacing:.05em;opacity:.6}
+.mood-result-item:first-child{border-color:rgba(200,168,124,.2)}
+.mood-result-item:first-child .mood-result-cat{color:var(--accent);
+  text-shadow:0 0 30px rgba(200,168,124,.15)}
+.mood-result-item:first-child .mood-result-rank{color:var(--accent);opacity:1}
+
+.mood-result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.mood-act{font-family:var(--serif);font-size:clamp(13px,1.6vw,14px);font-weight:300;
+  padding:12px 24px;cursor:pointer;letter-spacing:.12em;transition:all .4s var(--ease);border:1px solid}
+.mood-act-primary{color:#0a0a10;background:var(--accent);border-color:var(--accent);font-weight:400}
+.mood-act-primary:hover{background:#d4b88e;border-color:#d4b88e}
+.mood-act-secondary{color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.08);background:none}
+.mood-act-secondary:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)}
+.mood-act-ghost{color:var(--text3);border-color:transparent;background:none;padding:12px 16px}
+.mood-act-ghost:hover{color:var(--accent-dim)}
+
+/* mood header button */
+.mood-btn{font-family:var(--serif);font-size:10px;font-weight:300;letter-spacing:.18em;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px;transition:color .5s;
+  margin-right:8px}
+.mood-btn:hover{color:var(--accent-dim)}
+@media(max-width:480px){.mood-btn{font-size:14px;padding:8px 4px}}
+
+/* mood fadeUp for result */
+@keyframes moodFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.mood-fade-in{animation:moodFadeUp .5s var(--ease) forwards}
+
 /* ══ Gomoku — 五子棋 ══ */
 .gomoku-overlay{position:fixed;inset:0;z-index:300;
   background:rgba(7,7,12,.96);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
@@ -751,6 +848,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
       </div>
     </div>
     <div style="display:flex;align-items:baseline;gap:0">
+      <button class="mood-btn" id="moodBtn">✨ 推薦</button>
       <button class="mylist-btn" id="myListBtn">清單</button>
       <button class="music-btn" id="musicBtn">音樂</button>
     </div>
@@ -809,6 +907,16 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 </div>
 
 <!-- music bar removed — using Web Audio API -->
+
+<!-- ══ Mood Quiz Overlay ══ -->
+<div class="mood-overlay" id="moodOverlay">
+  <div class="mood-card" id="moodCard">
+    <button class="mood-close" id="moodClose">&times;</button>
+    <div class="mood-deco mood-deco-top"></div>
+    <div class="mood-deco mood-deco-bot"></div>
+    <div id="moodContent"></div>
+  </div>
+</div>
 
 <!-- ══ Recommendation Sheet ══ -->
 <div class="recs-overlay" id="recsOverlay">
@@ -3002,6 +3110,225 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
 
   render();
   document.body.appendChild(panel);
+})();
+
+/* ══════════════════════════════════════
+   Mood Quiz Engine
+   ══════════════════════════════════════ */
+(function() {
+  const moodOverlay = document.getElementById('moodOverlay');
+  const moodCard = document.getElementById('moodCard');
+  const moodContent = document.getElementById('moodContent');
+  const moodCloseBtn = document.getElementById('moodClose');
+  const moodBtn = document.getElementById('moodBtn');
+
+  const quizQuestions = [
+    {
+      step: '第一題',
+      question: '今天心情如何？',
+      options: [
+        { emoji: '😊', text: '開心放鬆', weights: { '台式': 1, '熱炒': 1, '火鍋': 1 } },
+        { emoji: '😴', text: '疲倦需要療癒', weights: { '日式': 2, '麵食': 1, '火鍋': 1 } },
+        { emoji: '🥳', text: '社交聚會', weights: { '韓式': 1, '火鍋': 2, '熱炒': 1 } },
+        { emoji: '🤔', text: '獨自沉思', weights: { '日式': 1, '麵食': 2, '東南亞': 1 } }
+      ]
+    },
+    {
+      step: '第二題',
+      question: '預算大概？',
+      options: [
+        { emoji: '💰', text: '省省的 (<$400)', weights: { '台式': 1, '麵食': 1, '熱炒': 1, '東南亞': 1 } },
+        { emoji: '💰💰', text: '正常 ($400-800)', weights: { '日式': 1, '韓式': 1, '火鍋': 1 } },
+        { emoji: '💰💰💰', text: '犒賞自己 ($800+)', weights: { '日式': 2, '西式': 2 } }
+      ]
+    },
+    {
+      step: '第三題',
+      question: '想要什麼感覺？',
+      options: [
+        { emoji: '🔥', text: '熱騰騰的', weights: { '火鍋': 2, '麵食': 1, '熱炒': 1 } },
+        { emoji: '🍣', text: '精緻細膩', weights: { '日式': 2, '西式': 1 } },
+        { emoji: '🌶️', text: '重口味', weights: { '韓式': 2, '熱炒': 1, '東南亞': 1 } },
+        { emoji: '🏠', text: '家常味道', weights: { '台式': 2, '麵食': 1 } }
+      ]
+    }
+  ];
+
+  let quizStep = 0;
+  let quizScores = {};
+  let quizResults = [];
+  let resultViewIndex = 0;
+
+  function resetQuiz() {
+    quizStep = 0;
+    quizScores = {};
+    quizResults = [];
+    resultViewIndex = 0;
+  }
+
+  function openMoodQuiz() {
+    resetQuiz();
+    moodOverlay.classList.add('open');
+    moodCard.classList.remove('flip-out');
+    renderQuestion();
+  }
+
+  function closeMoodQuiz() {
+    moodOverlay.classList.remove('open');
+  }
+
+  function renderDots(total, current) {
+    let html = '<div class="mood-dots">';
+    for (let i = 0; i < total; i++) {
+      const cls = i < current ? 'filled' : (i === current ? 'current' : '');
+      html += `<div class="mood-dot ${cls}"></div>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderQuestion() {
+    const q = quizQuestions[quizStep];
+    let html = renderDots(3, quizStep);
+    html += `<div class="mood-step">${q.step}</div>`;
+    html += `<div class="mood-question">${q.question}</div>`;
+    html += '<div class="mood-options">';
+    q.options.forEach((opt, i) => {
+      html += `<button class="mood-opt" data-idx="${i}">
+        <span class="mood-opt-emoji">${opt.emoji}</span>
+        <span class="mood-opt-text">${opt.text}</span>
+      </button>`;
+    });
+    html += '</div>';
+    moodContent.innerHTML = html;
+
+    // Stagger option animations
+    const opts = moodContent.querySelectorAll('.mood-opt');
+    opts.forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(12px)';
+      setTimeout(() => {
+        el.style.transition = 'all .4s var(--ease)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 100 + i * 80);
+    });
+
+    // Bind clicks
+    opts.forEach(el => {
+      el.addEventListener('click', function() {
+        // Highlight selected
+        opts.forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+
+        const idx = parseInt(this.dataset.idx);
+        const chosen = q.options[idx];
+
+        // Add weights
+        Object.entries(chosen.weights).forEach(([cat, w]) => {
+          quizScores[cat] = (quizScores[cat] || 0) + w;
+        });
+
+        // Advance after brief delay
+        setTimeout(() => {
+          quizStep++;
+          if (quizStep < quizQuestions.length) {
+            flipToNext(renderQuestion);
+          } else {
+            calculateResults();
+            flipToNext(renderResult);
+          }
+        }, 350);
+      });
+    });
+  }
+
+  function flipToNext(renderFn) {
+    moodCard.classList.add('flip-out');
+    setTimeout(() => {
+      renderFn();
+      moodCard.classList.remove('flip-out');
+    }, 400);
+  }
+
+  function calculateResults() {
+    const sorted = Object.entries(quizScores)
+      .sort((a, b) => b[1] - a[1]);
+    quizResults = sorted.slice(0, Math.min(sorted.length, 3));
+    resultViewIndex = 0;
+  }
+
+  function renderResult() {
+    let html = renderDots(3, 3);
+    html += '<div class="mood-result-title">為你推薦</div>';
+    html += '<div class="mood-result-list">';
+    quizResults.forEach(([cat, score], i) => {
+      const style = `animation-delay:${i * 0.12}s;opacity:0`;
+      html += `<div class="mood-result-item mood-fade-in" style="${style}" data-cat="${cat}">
+        <span class="mood-result-rank">#${i + 1}</span>
+        <span class="mood-result-cat">${cat}</span>
+        <span class="mood-result-score">${score}分</span>
+      </div>`;
+    });
+    html += '</div>';
+    html += '<div class="mood-result-actions">';
+    if (quizResults.length > 0) {
+      html += `<button class="mood-act mood-act-primary" id="moodGo">就決定是你了！</button>`;
+    }
+    html += `<button class="mood-act mood-act-secondary" id="moodManual">我自己選</button>`;
+    html += '</div>';
+
+    moodContent.innerHTML = html;
+
+    // Bind result item clicks — select that category
+    moodContent.querySelectorAll('.mood-result-item').forEach(el => {
+      el.addEventListener('click', function() {
+        const cat = this.dataset.cat;
+        selectCategoryAndClose(cat);
+      });
+    });
+
+    // "就決定是你了" — select #1 and spin
+    const goBtn = document.getElementById('moodGo');
+    if (goBtn) {
+      goBtn.addEventListener('click', () => {
+        const topCat = quizResults[0][0];
+        selectCategoryAndSpin(topCat);
+      });
+    }
+
+    // "我自己選" — close
+    const manualBtn = document.getElementById('moodManual');
+    if (manualBtn) {
+      manualBtn.addEventListener('click', closeMoodQuiz);
+    }
+  }
+
+  function selectCategoryAndClose(cat) {
+    closeMoodQuiz();
+    // Set active category
+    activeCats.clear();
+    activeCats.add(cat);
+    renderCats();
+    refreshWheel();
+  }
+
+  function selectCategoryAndSpin(cat) {
+    closeMoodQuiz();
+    activeCats.clear();
+    activeCats.add(cat);
+    renderCats();
+    refreshWheel();
+    // Trigger spin after wheel refreshes
+    setTimeout(() => { spin(); }, 400);
+  }
+
+  // Event listeners
+  moodBtn.addEventListener('click', openMoodQuiz);
+  moodCloseBtn.addEventListener('click', closeMoodQuiz);
+  moodOverlay.addEventListener('click', (e) => {
+    if (e.target === moodOverlay) closeMoodQuiz();
+  });
 })();
 
 document.fonts.ready.then(() => {
