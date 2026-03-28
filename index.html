@@ -382,12 +382,83 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   padding:12px 40px;cursor:pointer;letter-spacing:.25em;transition:all .4s}
 .recs-close:hover{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2)}
 
+/* ══ Preference Buttons on Rec Cards ══ */
+.rec-pref-btns{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,168,124,.06)}
+.rec-pref-btn{font-family:var(--serif);font-size:clamp(11px,1.3vw,13px);font-weight:300;
+  letter-spacing:.08em;color:var(--text3);background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);padding:5px 12px;cursor:pointer;
+  transition:all .3s var(--ease);display:flex;align-items:center;gap:5px;flex:1;justify-content:center}
+.rec-pref-btn:hover{border-color:rgba(255,255,255,.15);color:var(--text2)}
+.rec-pref-btn.fav-active{color:var(--accent);border-color:rgba(200,168,124,.25);background:rgba(200,168,124,.08)}
+.rec-pref-btn.ban-active{color:#c27070;border-color:rgba(194,112,112,.25);background:rgba(194,112,112,.08)}
+.rec-card.blacklisted{opacity:.45;filter:saturate(.3)}
+.rec-card.blacklisted .rec-name{text-decoration:line-through;text-decoration-color:rgba(194,112,112,.5)}
+
+/* ══ My List Button (Header) ══ */
+.mylist-btn{font-family:var(--serif);font-size:10px;font-weight:300;letter-spacing:.18em;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px;transition:color .5s;
+  margin-right:8px}
+.mylist-btn:hover{color:var(--accent-dim)}
+
+/* ══ My List Panel ══ */
+.mylist-overlay{position:fixed;inset:0;z-index:95;
+  background:rgba(7,7,12,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
+.mylist-overlay.open{opacity:1;pointer-events:auto}
+.mylist-sheet{position:absolute;bottom:0;left:0;right:0;
+  max-height:80vh;padding:0 0 clamp(30px,5vh,48px);
+  transform:translateY(40px);opacity:0;
+  transition:transform .6s var(--ease),opacity .5s;
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.mylist-overlay.open .mylist-sheet{transform:translateY(0);opacity:1}
+.mylist-header{text-align:center;padding:clamp(24px,4vh,36px) 20px clamp(12px,2vh,20px);position:relative}
+.mylist-title{font-size:clamp(18px,4vw,24px);font-weight:200;letter-spacing:.15em;color:var(--text)}
+.mylist-sub{font-size:clamp(9px,1.1vw,10px);font-weight:300;letter-spacing:.5em;
+  color:var(--accent);margin-top:4px;text-transform:uppercase}
+.mylist-close{position:absolute;top:12px;right:12px;z-index:20;width:36px;height:36px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.45);
+  color:rgba(255,255,255,.8);font-size:22px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:all .3s}
+.mylist-close:hover{background:rgba(0,0,0,.7);color:#fff;border-color:rgba(255,255,255,.4)}
+.mylist-tabs{display:flex;justify-content:center;gap:6px;padding:0 20px clamp(10px,1.5vh,16px);
+  position:sticky;top:0;z-index:2;
+  background:linear-gradient(180deg,rgba(7,7,12,.98) 0%,rgba(7,7,12,.92) 70%,rgba(7,7,12,0) 100%);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.mylist-tab{font-family:var(--serif);font-size:clamp(10px,1.3vw,12px);font-weight:300;
+  letter-spacing:.1em;color:rgba(255,255,255,.35);background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);padding:6px 16px;cursor:pointer;
+  transition:all .3s var(--ease);white-space:nowrap}
+.mylist-tab.on{color:var(--accent);border-color:rgba(200,168,124,.25);background:rgba(200,168,124,.08)}
+.mylist-tab:hover{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.12)}
+.mylist-content{max-width:480px;margin:0 auto;padding:0 20px}
+.mylist-item{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:rgba(18,18,28,.5);border:1px solid rgba(200,168,124,.06);
+  margin-bottom:8px;transition:all .3s var(--ease)}
+.mylist-item-info{flex:1}
+.mylist-item-name{font-size:clamp(14px,2vw,16px);font-weight:400;color:var(--text);letter-spacing:.03em}
+.mylist-item-meta{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:var(--text3);
+  letter-spacing:.06em;margin-top:2px}
+.mylist-item-remove{font-family:var(--serif);font-size:clamp(10px,1.2vw,11px);font-weight:300;
+  color:rgba(255,255,255,.3);background:none;border:1px solid rgba(255,255,255,.08);
+  padding:4px 12px;cursor:pointer;transition:all .3s;letter-spacing:.08em;flex-shrink:0;margin-left:12px}
+.mylist-item-remove:hover{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)}
+.mylist-empty{text-align:center;padding:40px 0;color:var(--text3);
+  font-size:clamp(12px,1.5vw,14px);letter-spacing:.1em}
+.mylist-bottom-close{display:block;margin:clamp(16px,2.5vh,24px) auto 0;padding-left:20px;padding-right:20px;
+  font-family:var(--serif);font-size:clamp(12px,1.4vw,13px);font-weight:300;color:rgba(255,255,255,.5);
+  background:none;border:1px solid rgba(255,255,255,.1);
+  padding:12px 40px;cursor:pointer;letter-spacing:.25em;transition:all .4s}
+.mylist-bottom-close:hover{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2)}
+
 /* ══ Mobile-First Responsive ══ */
 @media(max-width:480px){
   #app{padding:0 12px}
   header{padding:12px 4px 0}
   .title{font-size:14px;letter-spacing:.3em}
   .music-btn{font-size:14px;padding:8px 4px}
+  .mylist-btn{font-size:14px;padding:8px 4px}
+  .rec-pref-btn{font-size:13px;padding:6px 10px}
   .cats{gap:5px 3px;margin:10px 0 8px}
   .cat{font-size:14px;padding:8px 12px;letter-spacing:.08em}
   .wheel-wrap{width:min(440px,88vw,56vh);height:min(440px,88vw,56vh)}
@@ -679,7 +750,10 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
         <span class="weather-mood" id="weatherMood"></span>
       </div>
     </div>
-    <button class="music-btn" id="musicBtn">音樂</button>
+    <div style="display:flex;align-items:baseline;gap:0">
+      <button class="mylist-btn" id="myListBtn">清單</button>
+      <button class="music-btn" id="musicBtn">音樂</button>
+    </div>
   </header>
   <div class="cats" id="cats"></div>
   <div class="wheel-wrap" id="wheelWrap">
@@ -763,6 +837,23 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   </div>
 </div>
 
+<!-- ══ My List Panel ══ -->
+<div class="mylist-overlay" id="mylistOverlay">
+  <div class="mylist-sheet">
+    <div class="mylist-header">
+      <button class="mylist-close" id="mylistClose">&times;</button>
+      <div class="mylist-title">我 的 清 單</div>
+      <div class="mylist-sub">MY LIST</div>
+    </div>
+    <div class="mylist-tabs" id="mylistTabs">
+      <button class="mylist-tab on" data-tab="fav">❤️ 收藏</button>
+      <button class="mylist-tab" data-tab="ban">🚫 黑名單</button>
+      <button class="mylist-tab" data-tab="recent">🕐 最近吃過</button>
+    </div>
+    <div class="mylist-content" id="mylistContent"></div>
+    <button class="mylist-bottom-close" id="mylistBottomClose">收起</button>
+  </div>
+</div>
 
 <script>
 /* ══════════════════════════════════════
@@ -837,6 +928,63 @@ function saveMenu() { localStorage.setItem(STORAGE_KEY, JSON.stringify(menuData)
 loadMenu();
 
 /* ══════════════════════════════════════
+   Preference System (Favorites / Blacklist / Recently Eaten)
+   ══════════════════════════════════════ */
+const PREFS_KEY = 'taipei_dinner_prefs';
+const PREFS_MAX = { favorites: 50, blacklist: 50, recentlyEaten: 20 };
+let prefs = { favorites: [], blacklist: [], recentlyEaten: [] };
+
+function loadPrefs() {
+  try {
+    const s = localStorage.getItem(PREFS_KEY);
+    if (s) { const p = JSON.parse(s); prefs = { favorites: p.favorites || [], blacklist: p.blacklist || [], recentlyEaten: p.recentlyEaten || [] }; }
+  } catch { prefs = { favorites: [], blacklist: [], recentlyEaten: [] }; }
+}
+function savePrefs() { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
+loadPrefs();
+
+function isFavorited(name) { return prefs.favorites.some(f => f.name === name); }
+function isBlacklisted(name) { return prefs.blacklist.some(f => f.name === name); }
+
+function toggleFavorite(name, category) {
+  const idx = prefs.favorites.findIndex(f => f.name === name);
+  if (idx >= 0) { prefs.favorites.splice(idx, 1); }
+  else {
+    // Remove from blacklist if adding to favorites
+    const bIdx = prefs.blacklist.findIndex(f => f.name === name);
+    if (bIdx >= 0) prefs.blacklist.splice(bIdx, 1);
+    prefs.favorites.push({ name, category, addedAt: new Date().toISOString() });
+    if (prefs.favorites.length > PREFS_MAX.favorites) prefs.favorites.shift();
+  }
+  savePrefs();
+}
+
+function toggleBlacklist(name, category) {
+  const idx = prefs.blacklist.findIndex(f => f.name === name);
+  if (idx >= 0) { prefs.blacklist.splice(idx, 1); }
+  else {
+    // Remove from favorites if adding to blacklist
+    const fIdx = prefs.favorites.findIndex(f => f.name === name);
+    if (fIdx >= 0) prefs.favorites.splice(fIdx, 1);
+    prefs.blacklist.push({ name, category, addedAt: new Date().toISOString() });
+    if (prefs.blacklist.length > PREFS_MAX.blacklist) prefs.blacklist.shift();
+  }
+  savePrefs();
+}
+
+function addRecentlyEaten(name, category) {
+  // Remove duplicate if exists
+  prefs.recentlyEaten = prefs.recentlyEaten.filter(r => r.name !== name);
+  prefs.recentlyEaten.unshift({ name, category, eatenAt: new Date().toISOString() });
+  if (prefs.recentlyEaten.length > PREFS_MAX.recentlyEaten) prefs.recentlyEaten.pop();
+  savePrefs();
+}
+
+function removeFavorite(name) { prefs.favorites = prefs.favorites.filter(f => f.name !== name); savePrefs(); }
+function removeBlacklist(name) { prefs.blacklist = prefs.blacklist.filter(f => f.name !== name); savePrefs(); }
+function removeRecentlyEaten(name) { prefs.recentlyEaten = prefs.recentlyEaten.filter(f => f.name !== name); savePrefs(); }
+
+/* ══════════════════════════════════════
    State & DOM
    ══════════════════════════════════════ */
 let activeCats = new Set();
@@ -885,13 +1033,41 @@ function renderCats() {
 function getPool() {
   const cats = activeCats.size > 0 ? [...activeCats] : Object.keys(menuData);
   const pool = [];
-  cats.forEach(c => (menuData[c]||[]).forEach(item => pool.push({ name: item, cat: c })));
+  cats.forEach(c => {
+    const items = menuData[c] || [];
+    const nonBlacklisted = items.filter(item => !isBlacklisted(item));
+    // If ALL items in this category are blacklisted, include them anyway with a warning
+    if (nonBlacklisted.length === 0 && items.length > 0) {
+      items.forEach(item => pool.push({ name: item, cat: c }));
+    } else {
+      nonBlacklisted.forEach(item => pool.push({ name: item, cat: c }));
+    }
+  });
   return pool;
 }
 function pickWheelItems() {
   const pool = getPool();
-  if (pool.length <= 12) return shuffle([...pool]);
-  return shuffle([...pool]).slice(0, 12);
+  // Reduce weight for recently eaten (last 3 per category)
+  const recentByCat = {};
+  prefs.recentlyEaten.forEach(r => {
+    if (!recentByCat[r.category]) recentByCat[r.category] = [];
+    if (recentByCat[r.category].length < 3) recentByCat[r.category].push(r.name);
+  });
+  // Weighted pool: recently eaten items appear once, others appear twice (effectively halving recent probability)
+  const weighted = [];
+  pool.forEach(item => {
+    const recentInCat = recentByCat[item.cat] || [];
+    if (recentInCat.includes(item.name)) {
+      weighted.push(item); // 1x weight
+    } else {
+      weighted.push(item); weighted.push(item); // 2x weight
+    }
+  });
+  if (weighted.length <= 12) return shuffle([...new Map(weighted.map(i => [i.name, i])).values()]);
+  const picked = shuffle([...weighted]).slice(0, 24);
+  // Deduplicate (weighted picks may have duplicates)
+  const unique = [...new Map(picked.map(i => [i.name, i])).values()];
+  return unique.slice(0, 12);
 }
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
@@ -1186,7 +1362,7 @@ function revealResult(item) {
 /* ══════════════════════════════════════
    History
    ══════════════════════════════════════ */
-function addHistory(name, cat) { history.unshift({name, cat}); if (history.length > 5) history.pop(); renderHistory(); }
+function addHistory(name, cat) { history.unshift({name, cat}); if (history.length > 5) history.pop(); renderHistory(); addRecentlyEaten(name, cat); }
 function renderHistory() {
   histLabel.classList.toggle('show', history.length > 0);
   histItems.innerHTML = '';
@@ -1825,8 +2001,9 @@ function renderRecCards(cat, tier) {
 
   filtered.forEach((r, i) => {
     const card = document.createElement('div');
-    card.className = 'rec-card';
-    const tierLabel = getPriceTier(r.price) === 'low' ? '低價' : getPriceTier(r.price) === 'high' ? '高價' : '平價';
+    card.className = 'rec-card' + (isBlacklisted(r.name) ? ' blacklisted' : '');
+    const favActive = isFavorited(r.name) ? ' fav-active' : '';
+    const banActive = isBlacklisted(r.name) ? ' ban-active' : '';
     card.innerHTML = `
       <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80'"></div>
       <div class="rec-body">
@@ -1843,6 +2020,10 @@ function renderRecCards(cat, tier) {
         <div class="rec-quotes">
           <div class="rec-quote-good"><span class="rec-qt">好評</span>「${r.best}」</div>
           <div class="rec-quote-bad"><span class="rec-qt">提醒</span>「${r.worst}」</div>
+        </div>
+        <div class="rec-pref-btns">
+          <button class="rec-pref-btn${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}">❤️ 收藏</button>
+          <button class="rec-pref-btn${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}">🚫 排除</button>
         </div>
       </div>`;
     recsList.appendChild(card);
@@ -1886,6 +2067,97 @@ function hideRecs() { recsOverlay.classList.remove('open'); }
 recsClose.onclick = hideRecs;
 document.getElementById('recsTopClose').onclick = hideRecs;
 recsOverlay.onclick = e => { if (e.target === recsOverlay) hideRecs(); };
+
+// Preference button clicks on rec cards (event delegation)
+recsList.addEventListener('click', e => {
+  const btn = e.target.closest('.rec-pref-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  const { action, name, cat } = btn.dataset;
+  if (action === 'fav') {
+    toggleFavorite(name, cat);
+  } else if (action === 'ban') {
+    toggleBlacklist(name, cat);
+  }
+  // Re-render to update button states
+  renderRecCards(currentRecsCat, currentTierFilter);
+});
+
+/* ══════════════════════════════════════
+   My List Panel
+   ══════════════════════════════════════ */
+const mylistOverlay = document.getElementById('mylistOverlay');
+const mylistContent = document.getElementById('mylistContent');
+const mylistTabs = document.getElementById('mylistTabs');
+let currentMylistTab = 'fav';
+
+function showMyList() {
+  currentMylistTab = 'fav';
+  mylistTabs.querySelectorAll('.mylist-tab').forEach(t => t.classList.toggle('on', t.dataset.tab === 'fav'));
+  renderMyListContent();
+  mylistOverlay.classList.add('open');
+}
+function hideMyList() { mylistOverlay.classList.remove('open'); }
+
+function renderMyListContent() {
+  mylistContent.innerHTML = '';
+  let items = [];
+  if (currentMylistTab === 'fav') {
+    items = prefs.favorites;
+    if (!items.length) { mylistContent.innerHTML = '<div class="mylist-empty">還沒有收藏餐廳</div>'; return; }
+    items.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'mylist-item';
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">❤️ ${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-fav" data-name="${f.name}">移除</button>`;
+      mylistContent.appendChild(el);
+    });
+  } else if (currentMylistTab === 'ban') {
+    items = prefs.blacklist;
+    if (!items.length) { mylistContent.innerHTML = '<div class="mylist-empty">還沒有排除餐廳</div>'; return; }
+    items.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'mylist-item';
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">🚫 ${f.name}</div><div class="mylist-item-meta">${f.category}</div></div><button class="mylist-item-remove" data-action="rm-ban" data-name="${f.name}">移除</button>`;
+      mylistContent.appendChild(el);
+    });
+  } else if (currentMylistTab === 'recent') {
+    items = prefs.recentlyEaten;
+    if (!items.length) { mylistContent.innerHTML = '<div class="mylist-empty">還沒有轉盤記錄</div>'; return; }
+    items.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'mylist-item';
+      const dateStr = f.eatenAt ? new Date(f.eatenAt).toLocaleDateString('zh-TW') : '';
+      el.innerHTML = `<div class="mylist-item-info"><div class="mylist-item-name">🕐 ${f.name}</div><div class="mylist-item-meta">${f.category}${dateStr ? ' · ' + dateStr : ''}</div></div><button class="mylist-item-remove" data-action="rm-recent" data-name="${f.name}">移除</button>`;
+      mylistContent.appendChild(el);
+    });
+  }
+}
+
+// Tab clicks
+mylistTabs.addEventListener('click', e => {
+  const tab = e.target.closest('.mylist-tab');
+  if (!tab) return;
+  currentMylistTab = tab.dataset.tab;
+  mylistTabs.querySelectorAll('.mylist-tab').forEach(t => t.classList.toggle('on', t.dataset.tab === currentMylistTab));
+  renderMyListContent();
+});
+
+// Remove button clicks
+mylistContent.addEventListener('click', e => {
+  const btn = e.target.closest('.mylist-item-remove');
+  if (!btn) return;
+  const { action, name } = btn.dataset;
+  if (action === 'rm-fav') removeFavorite(name);
+  else if (action === 'rm-ban') { removeBlacklist(name); refreshWheel(); }
+  else if (action === 'rm-recent') removeRecentlyEaten(name);
+  renderMyListContent();
+});
+
+// Open/close handlers
+document.getElementById('myListBtn').onclick = showMyList;
+document.getElementById('mylistClose').onclick = hideMyList;
+document.getElementById('mylistBottomClose').onclick = hideMyList;
+mylistOverlay.onclick = e => { if (e.target === mylistOverlay) hideMyList(); };
 
 /* ══════════════════════════════════════
    Music
