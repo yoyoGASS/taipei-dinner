@@ -394,6 +394,21 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
 .rec-card.blacklisted{opacity:.45;filter:saturate(.3)}
 .rec-card.blacklisted .rec-name{text-decoration:line-through;text-decoration-color:rgba(194,112,112,.5)}
 
+/* ══ Navigation & Distance ══ */
+.rec-nav-row{display:flex;gap:8px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,168,124,.06)}
+.rec-nav-btn{font-family:var(--serif);font-size:clamp(11px,1.3vw,12px);font-weight:300;
+  letter-spacing:.08em;color:var(--accent);background:transparent;
+  border:1px solid rgba(200,168,124,.2);padding:4px 14px;cursor:pointer;
+  border-radius:20px;transition:all .3s var(--ease);white-space:nowrap;text-decoration:none;display:inline-block}
+.rec-nav-btn:hover{border-color:rgba(200,168,124,.45);background:rgba(200,168,124,.08);color:var(--text)}
+.rec-distance{font-size:clamp(10px,1.2vw,11px);font-weight:300;color:var(--text2);letter-spacing:.04em}
+.center-map-link{font-size:clamp(9px,1.2vw,10px);font-weight:300;letter-spacing:.12em;
+  color:var(--accent-dim);margin-top:3px;opacity:0;transition:opacity .8s .6s;cursor:pointer;
+  z-index:1;text-decoration:none;padding:2px 8px;border-radius:10px;
+  border:1px solid transparent;transition:opacity .8s .6s,border-color .3s,color .3s}
+.center-map-link.show{opacity:.7}
+.center-map-link:hover{opacity:1;color:var(--accent);border-color:rgba(200,168,124,.2)}
+
 /* ══ My List Button (Header) ══ */
 .mylist-btn{font-family:var(--serif);font-size:10px;font-weight:300;letter-spacing:.18em;
   color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px;transition:color .5s;
@@ -465,6 +480,8 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   .spin-btn{font-size:16px;padding:16px 56px;letter-spacing:.35em}
   .center-main{font-size:clamp(11px,2.8vw,16px);letter-spacing:0}
   .center-sub{font-size:13px}
+  .center-map-link{font-size:9px}
+  .rec-nav-btn{font-size:12px;padding:5px 12px}
   .history{bottom:10px}
   .hist-label{font-size:12px}
   .hist-item{font-size:14px}
@@ -864,6 +881,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
       <div class="center-spin-text" id="centerSpinText"></div>
       <div class="center-main" id="centerMain">今晚吃什麼</div>
       <div class="center-sub" id="centerSub"></div>
+      <a class="center-map-link" id="centerMapLink" target="_blank" rel="noopener"></a>
     </div>
   </div>
   <div class="spin-area">
@@ -1305,6 +1323,9 @@ function spin() {
   centerCircle.classList.remove('glow');
   centerCircle.classList.remove('result-glow');
   centerSub.classList.remove('show');
+  centerMapLink.classList.remove('show');
+  centerMapLink.href = '';
+  centerMapLink.textContent = '';
   centerMain.textContent = '';
   centerSub.textContent = '';
   winnerIdx = -1;
@@ -1429,6 +1450,74 @@ function animateParticles() {
   pAnimId = requestAnimationFrame(animateParticles);
 }
 
+/* ══════════════════════════════════════
+   Map Navigation & Geolocation
+   ══════════════════════════════════════ */
+const DISTRICT_COORDS = {
+  '大安區': [25.0268, 121.5436],
+  '信義區': [25.0330, 121.5654],
+  '中山區': [25.0640, 121.5228],
+  '中正區': [25.0323, 121.5185],
+  '松山區': [25.0513, 121.5587],
+  '萬華區': [25.0353, 121.4997],
+  '大同區': [25.0631, 121.5131],
+  '南港區': [25.0550, 121.6067],
+  '內湖區': [25.0690, 121.5880],
+  '士林區': [25.0930, 121.5250],
+  '北投區': [25.1320, 121.5010],
+  '文山區': [24.9890, 121.5700],
+};
+let userCoords = null;
+
+function initGeolocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => { userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+    () => { /* denied or error — userCoords stays null */ },
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+  );
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function getMapUrl(name, area) {
+  const q = encodeURIComponent(name + ' ' + (area || '') + ' 台北');
+  if (isIOS()) return 'https://maps.apple.com/?q=' + q;
+  return 'https://www.google.com/maps/search/?api=1&query=' + q;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+
+function getDistanceText(area) {
+  if (!userCoords || !area) return '';
+  const coords = DISTRICT_COORDS[area];
+  if (!coords) return '';
+  const d = haversineKm(userCoords.lat, userCoords.lng, coords[0], coords[1]);
+  return '距離約 ' + d.toFixed(1) + ' km';
+}
+
+function findRestaurantArea(name) {
+  const cats = Object.keys(RESTAURANTS);
+  for (let i = 0; i < cats.length; i++) {
+    const list = RESTAURANTS[cats[i]];
+    if (!list) continue;
+    for (let j = 0; j < list.length; j++) {
+      if (list[j].name === name) return list[j].area || '';
+    }
+  }
+  return '';
+}
+
+const centerMapLink = document.getElementById('centerMapLink');
+
 function revealResult(item) {
   // Stop spinning center
   if (window._phraseTimer) { clearInterval(window._phraseTimer); window._phraseTimer = null; }
@@ -1455,6 +1544,14 @@ function revealResult(item) {
   centerCircle.classList.add('result-glow');
 
   setTimeout(() => { centerSub.textContent = item.cat; centerSub.classList.add('show'); }, 500);
+  // Map link in center circle
+  const winArea = findRestaurantArea(item.name);
+  setTimeout(() => {
+    centerMapLink.href = getMapUrl(item.name, winArea);
+    centerMapLink.textContent = '📍 看地圖';
+    centerMapLink.classList.add('show');
+    centerMapLink.onclick = e => e.stopPropagation();
+  }, 800);
   lastWinnerCat = item.cat;
   addHistory(item.name, item.cat);
   // Show restaurant recommendations after 1.5s
@@ -2112,6 +2209,8 @@ function renderRecCards(cat, tier) {
     card.className = 'rec-card' + (isBlacklisted(r.name) ? ' blacklisted' : '');
     const favActive = isFavorited(r.name) ? ' fav-active' : '';
     const banActive = isBlacklisted(r.name) ? ' ban-active' : '';
+    const dist = getDistanceText(r.area);
+    const navUrl = getMapUrl(r.name, r.area);
     card.innerHTML = `
       <div class="rec-img"><img src="${r.img}" alt="${r.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80'"></div>
       <div class="rec-body">
@@ -2122,14 +2221,15 @@ function renderRecCards(cat, tier) {
         <div class="rec-stars">${renderStarsSvg(r.stars)}<span class="rec-reviews">${r.reviews} 則評論</span></div>
         <div class="rec-info">
           <span class="rec-price">${r.price}</span>
-          <span class="rec-area">${r.area}</span>
+          <span class="rec-area">📍 ${r.area}</span>${dist ? `<span class="rec-distance">${dist}</span>` : ''}
         </div>
         <div class="rec-desc">${r.desc}</div>
         <div class="rec-quotes">
           <div class="rec-quote-good"><span class="rec-qt">好評</span>「${r.best}」</div>
           <div class="rec-quote-bad"><span class="rec-qt">提醒</span>「${r.worst}」</div>
         </div>
-        <div class="rec-pref-btns">
+        <div class="rec-nav-row">
+          <a class="rec-nav-btn" href="${navUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🗺️ 導航</a>
           <button class="rec-pref-btn${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}">❤️ 收藏</button>
           <button class="rec-pref-btn${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}">🚫 排除</button>
         </div>
@@ -3342,6 +3442,8 @@ document.fonts.ready.then(() => {
   document.querySelector('.entry-sub').textContent = greeting.sub;
   // Fetch weather
   fetchWeather();
+  // Request geolocation for distance display
+  initGeolocation();
 });
 </script>
 </body>
