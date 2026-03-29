@@ -382,15 +382,18 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   padding:12px 40px;cursor:pointer;letter-spacing:.25em;transition:all .4s}
 .recs-close:hover{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2)}
 
-/* ══ Preference Buttons on Rec Cards ══ */
-.rec-pref-btns{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(200,168,124,.06)}
-.rec-pref-btn{font-family:var(--serif);font-size:clamp(11px,1.3vw,13px);font-weight:300;
-  letter-spacing:.08em;color:var(--text3);background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.06);padding:5px 12px;cursor:pointer;
-  transition:all .3s var(--ease);display:flex;align-items:center;gap:5px;flex:1;justify-content:center}
-.rec-pref-btn:hover{border-color:rgba(255,255,255,.15);color:var(--text2)}
-.rec-pref-btn.fav-active{color:var(--accent);border-color:rgba(200,168,124,.25);background:rgba(200,168,124,.08)}
-.rec-pref-btn.ban-active{color:#c27070;border-color:rgba(194,112,112,.25);background:rgba(194,112,112,.08)}
+/* ══ Preference Icon Buttons on Rec Cards ══ */
+.rec-pref-icons{display:flex;gap:2px;margin-left:auto;align-items:center}
+.rec-pref-icon{width:28px;height:28px;border-radius:50%;border:none;background:transparent;
+  color:rgba(255,255,255,.2);cursor:pointer;transition:all .3s var(--ease);
+  display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+.rec-pref-icon svg{width:14px;height:14px;transition:all .3s var(--ease)}
+.rec-pref-icon:hover{color:rgba(255,255,255,.45);background:rgba(255,255,255,.04)}
+.rec-pref-icon.fav-active{color:var(--accent)}
+.rec-pref-icon.fav-active svg{filter:drop-shadow(0 0 4px rgba(200,168,124,.3))}
+.rec-pref-icon.fav-active:hover{color:var(--accent);background:rgba(200,168,124,.08)}
+.rec-pref-icon.ban-active{color:rgba(194,112,112,.7)}
+.rec-pref-icon.ban-active:hover{color:#c27070;background:rgba(194,112,112,.06)}
 .rec-card.blacklisted{opacity:.45;filter:saturate(.3)}
 .rec-card.blacklisted .rec-name{text-decoration:line-through;text-decoration-color:rgba(194,112,112,.5)}
 
@@ -473,7 +476,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
   .title{font-size:14px;letter-spacing:.3em}
   .music-btn{font-size:14px;padding:8px 4px}
   .mylist-btn{font-size:14px;padding:8px 4px}
-  .rec-pref-btn{font-size:13px;padding:6px 10px}
+  .rec-pref-icon{width:30px;height:30px}
   .cats{gap:5px 3px;margin:10px 0 8px}
   .cat{font-size:14px;padding:8px 12px;letter-spacing:.08em}
   .wheel-wrap{width:min(440px,88vw,56vh);height:min(440px,88vw,56vh)}
@@ -2143,37 +2146,90 @@ function renderHistory() {
    Restaurant Recommendations — Dynamic Loading
    ══════════════════════════════════════ */
 const FALLBACK_RESTAURANTS = {
-  '台式':[
-    {name:'雙月食品社',stars:4.8,desc:'連續八年米其林必比登推薦・養生雞湯名店',reviews:'5000+',price:'$300–600',area:'中正區',img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80',best:'雞湯鮮甜到骨子裡，食材新鮮價格又合理',worst:'用餐空間偏擠，排隊常要等很久'},
-    {name:'欣葉台菜',stars:4.5,desc:'40年經典台菜・從小吃到大的台北人記憶',reviews:'6000+',price:'$400–800',area:'中山區',img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80',best:'菜脯蛋和杏仁豆腐是永遠的神，家族聚餐首選',worst:'觀光客多價格年年漲，部分菜色不如從前'},
+  "台式":[
+    {name:"欣葉台菜",stars:4.3,desc:"經典台式料理・傳統台菜",reviews:["環境優雅，菜色道地","份量足夠，適合家庭聚餐","價位中上但品質穩定"],price:"$600-1000",area:"中山區",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80",best:"台菜口味道地，菜脯蛋和佛跳牆必點",worst:"假日人多需提前訂位"},
+    {name:"明福台菜海產",stars:4.5,desc:"經典台式料理・台菜海鮮",reviews:["米其林一星台菜","佛跳牆是招牌","需要預約才吃得到"],price:"$1000+",area:"中山區",img:"https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80",best:"佛跳牆料多味美，米其林品質",worst:"價位偏高，需提前數日預約"},
+    {name:"My灶",stars:4.2,desc:"經典台式料理・創意台菜",reviews:["小店面但味道好","滷肉飯很讚","巷弄美食代表"],price:"$100-300",area:"大安區",img:"https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&h=300&fit=crop&q=80",best:"價格親民，滷肉飯香氣十足",worst:"店面較小，用餐空間有限"},
+    {name:"山海樓",stars:4.6,desc:"經典台式料理・精緻台菜",reviews:["米其林一星","古早味重新詮釋","擺盤精美如藝術品"],price:"$1000+",area:"中山區",img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=300&fit=crop&q=80",best:"精緻台菜復刻古早味，米其林品質",worst:"價位偏高，需預約"},
+    {name:"金蓬萊遵古台菜",stars:4.4,desc:"經典台式料理・酒家菜",reviews:["排骨酥湯必喝","老台北味道","米其林必比登推薦"],price:"$600-1000",area:"士林區",img:"https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=300&h=300&fit=crop&q=80",best:"排骨酥湯湯鮮肉嫩，正宗酒家菜",worst:"位置在士林較遠，假日需排隊"},
+    {name:"雞家莊",stars:4.1,desc:"經典台式料理・雞肉專賣",reviews:["三味雞是招牌","台菜老店","合菜份量十足"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=300&h=300&fit=crop&q=80",best:"三味雞皮脆肉嫩，經典不敗",worst:"裝潢略顯老派"},
+    {name:"阿霞飯店(台北)",stars:4.3,desc:"經典台式料理・台南菜系",reviews:["紅蟳米糕必點","台南老店台北分店","辦桌菜原汁原味"],price:"$600-1000",area:"信義區",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop&q=80",best:"紅蟳米糕鮮甜飽滿，傳承台南手藝",worst:"價位中高，部分菜需預訂"},
+    {name:"真的好海鮮餐廳",stars:4.0,desc:"經典台式料理・海鮮熱炒",reviews:["海鮮新鮮現撈","適合多人聚餐","價格透明"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&h=300&fit=crop&q=80",best:"海鮮現點現做，新鮮度高",worst:"熱門時段需等候較久"},
+    {name:"鬍鬚張魯肉飯",stars:3.8,desc:"經典台式料理・滷肉飯連鎖",reviews:["台灣滷肉飯代表","快速方便","味道穩定"],price:"$100-300",area:"萬華區",img:"https://images.unsplash.com/photo-1569058242567-93de6f36f8e6?w=300&h=300&fit=crop&q=80",best:"滷肉飯香氣十足，價格平實",worst:"連鎖店制式化，少了手作感"}
   ],
-  '日式':[
-    {name:'大村武串燒居酒屋',stars:4.8,desc:'百年老屋・全四店4.8星以上的居酒屋傳奇',reviews:'9000+',price:'$400–800',area:'萬華區',img:'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=300&h=300&fit=crop&q=80',best:'每道串燒都不踩雷，百年老屋氛圍超棒',worst:'低消三百加一成服務費，沒訂位根本吃不到'},
-    {name:'鳥哲燒物專門店',stars:4.7,desc:'米其林必比登・全雞一鳥六吃的燒鳥名店',reviews:'3500+',price:'$500–900',area:'松山區',img:'https://images.unsplash.com/photo-1534256958597-7fe685cbd745?w=300&h=300&fit=crop&q=80',best:'雞肉串燒每個部位都精彩，親子丼滑嫩銷魂',worst:'座位不多等候時間長，價格比一般居酒屋高'},
+  "日式":[
+    {name:"肥前屋",stars:4.4,desc:"道地日式料理・鰻魚飯專門店",reviews:["台北最強鰻魚飯","排隊也值得","醬汁濃郁好吃"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=300&fit=crop&q=80",best:"鰻魚現烤香氣逼人，醬汁完美",worst:"經常大排長龍，需耐心等候"},
+    {name:"三井日本料理",stars:4.6,desc:"道地日式料理・高級日料",reviews:["食材新鮮頂級","師傅手藝精湛","壽司吧台體驗佳"],price:"$1000+",area:"中山區",img:"https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop&q=80",best:"食材頂級新鮮，omakase 體驗一流",worst:"消費偏高，需提前預約"},
+    {name:"梅村日本料理",stars:4.1,desc:"道地日式料理・家庭式日料",reviews:["老字號日本料理","定食選擇多","味噌湯好喝"],price:"$300-600",area:"松山區",img:"https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&h=300&fit=crop&q=80",best:"價格實惠，定食豐盛有誠意",worst:"裝潢較為老舊"},
+    {name:"添好運",stars:4.2,desc:"道地日式料理・平價壽司",reviews:["迴轉壽司CP值高","鮭魚系列超人氣","適合家庭用餐"],price:"$300-600",area:"信義區",img:"https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=300&h=300&fit=crop&q=80",best:"壽司新鮮平價，選擇多樣",worst:"尖峰時段需排隊等候"},
+    {name:"鮨天本",stars:4.8,desc:"道地日式料理・頂級握壽司",reviews:["米其林二星","師傅技藝登峰造極","食材直送日本築地"],price:"$1000+",area:"大安區",img:"https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop&q=80",best:"頂級 omakase，每一貫都是藝術品",worst:"人均消費極高，需提前數週預約"},
+    {name:"一蘭拉麵",stars:4.0,desc:"道地日式料理・豚骨拉麵",reviews:["濃郁豚骨湯頭","一人座位很自在","24小時營業"],price:"$300-600",area:"信義區",img:"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop&q=80",best:"豚骨湯頭濃郁正宗，可客製化口味",worst:"價格比日本貴，常需排隊"},
+    {name:"鳥哲燒物專門店",stars:4.3,desc:"道地日式料理・串燒居酒屋",reviews:["雞肉串燒超嫩","日本居酒屋氛圍","清酒選擇豐富"],price:"$600-1000",area:"松山區",img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=300&fit=crop&q=80",best:"串燒火候精準，雞肉鮮嫩多汁",worst:"座位有限，建議預約"},
+    {name:"勝博殿",stars:3.9,desc:"道地日式料理・日式豬排",reviews:["炸豬排酥脆","高麗菜絲吃到飽","醬料選擇多"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=300&h=300&fit=crop&q=80",best:"豬排外酥內嫩，定食套餐豐盛",worst:"連鎖經營，各店品質略有差異"},
+    {name:"魚心日本料理",stars:4.2,desc:"道地日式料理・生魚片丼飯",reviews:["生魚片超新鮮","丼飯料多實在","隱藏版巷弄名店"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=300&h=300&fit=crop&q=80",best:"生魚片厚切新鮮，丼飯CP值超高",worst:"店面不大，中午常客滿"}
   ],
-  '韓式':[
-    {name:'梨谷韓式料理烤肉',stars:4.8,desc:'鐵板炭火雙烤全台首創・ATT人氣王',reviews:'3200+',price:'$600–1,200',area:'信義區',img:'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=300&h=300&fit=crop&q=80',best:'鐵板炭火雙烤工法獨創，小菜無限續超佛心',worst:'永遠客滿，烤肉份量稍嫌不足'},
-    {name:'偷飯賊',stars:4.7,desc:'韓國媽媽手作・道地鍋巴飯和韓式小菜天堂',reviews:'1500+',price:'$250–500',area:'大安區',img:'https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=300&h=300&fit=crop&q=80',best:'鍋巴飯焦香四溢配小菜超下飯，像在韓國阿姨家吃飯',worst:'店面超小只有幾桌，等位是常態'},
+  "韓式":[
+    {name:"涓豆腐",stars:4.0,desc:"正宗韓式料理・豆腐煲專門店",reviews:["嫩豆腐鍋很棒","小菜無限續","韓國連鎖品牌"],price:"$300-600",area:"信義區",img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop&q=80",best:"豆腐煲滑嫩入味，小菜豐富免費續",worst:"百貨美食街位置，用餐時段擁擠"},
+    {name:"Ma C So Yo 築夢韓食",stars:4.2,desc:"正宗韓式料理・韓式烤肉",reviews:["烤肉品質好","起司系列必點","氣氛適合聚餐"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80",best:"烤肉鮮嫩多汁，起司料理濃郁",worst:"熱門時段等候時間較長"},
+    {name:"朝鮮味韓國料理",stars:4.1,desc:"正宗韓式料理・韓式家庭料理",reviews:["石鍋拌飯道地","部隊鍋料多","老字號韓國餐廳"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80",best:"韓式家庭味道地，石鍋拌飯焦香",worst:"店面空間較小，尖峰時段需等候"},
+    {name:"新麻蒲海鷗",stars:4.3,desc:"正宗韓式料理・韓式烤肉",reviews:["韓國人也愛來","醃漬烤肉超入味","小菜道地好吃"],price:"$600-1000",area:"中山區",img:"https://images.unsplash.com/photo-1590301157890-4810ed352733?w=300&h=300&fit=crop&q=80",best:"醃漬排骨烤肉入味鮮嫩，韓國人認證",worst:"價位中高，店內空間較擠"},
+    {name:"韓國村韓定食",stars:4.0,desc:"正宗韓式料理・韓定食",reviews:["小菜超多盤","銅盤烤肉經典","老字號韓食"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=300&h=300&fit=crop&q=80",best:"小菜種類多達十幾盤，銅盤烤肉香",worst:"裝潢較舊，翻桌率高"},
+    {name:"楓樹韓國烤肉",stars:4.4,desc:"正宗韓式料理・炭火烤肉",reviews:["炭火烤肉香氣足","牛五花入口即化","道地韓式氛圍"],price:"$600-1000",area:"大安區",img:"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=300&fit=crop&q=80",best:"炭火烤肉風味絕佳，肉質優秀",worst:"衣服會沾烤肉味，需預約"},
+    {name:"本格韓國料理",stars:3.9,desc:"正宗韓式料理・韓式炸雞",reviews:["炸雞酥脆多汁","啤酒炸雞組合讚","深夜好去處"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1575932444877-5106bee2a599?w=300&h=300&fit=crop&q=80",best:"韓式炸雞外酥內嫩，蜂蜜口味必點",worst:"等候時間長，外送品質不穩定"},
+    {name:"兩餐韓國年糕火鍋",stars:3.8,desc:"正宗韓式料理・年糕火鍋吃到飽",reviews:["年糕火鍋吃到飽","學生聚餐首選","辣度可調"],price:"$300-600",area:"中正區",img:"https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80",best:"吃到飽CP值高，年糕Q彈好吃",worst:"食材種類較為基本"}
   ],
-  '火鍋':[
-    {name:'橋山壽喜燒',stars:4.8,desc:'壽喜燒界的愛馬仕・百年名店全程桌邊服務',reviews:'5000+',price:'$2,880+',area:'大安區',img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80',best:'全程桌邊服務，A5和牛入口即化',worst:'一人2880起跳不親民，訂位超級困難'},
-    {name:'詹記麻辣火鍋',stars:4.5,desc:'台北麻辣鍋始祖・40年不敗的深夜傳奇',reviews:'8000+',price:'$500–900',area:'南港區',img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop&q=80',best:'鴨血豆腐入味到靈魂深處，宵夜場氛圍超嗨',worst:'排隊動輒一小時起跳，環境嘈雜像夜市'},
+  "火鍋":[
+    {name:"橘色涮涮屋",stars:4.5,desc:"精選火鍋店・頂級涮涮鍋",reviews:["肉品等級超高","湯底清甜","服務細心專業"],price:"$1000+",area:"大安區",img:"https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80",best:"頂級肉品入口即化，服務無可挑剔",worst:"價位偏高，需提前訂位"},
+    {name:"無老鍋",stars:4.3,desc:"精選火鍋店・中式養生鍋",reviews:["鍋底用料實在","蒙古鍋很香","蔬菜新鮮"],price:"$600-1000",area:"中山區",img:"https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&h=300&fit=crop&q=80",best:"養生鍋底溫潤回甘，食材新鮮",worst:"用餐時間限制較嚴格"},
+    {name:"馬辣頂級麻辣鴛鴦火鍋",stars:4.1,desc:"精選火鍋店・麻辣鍋吃到飽",reviews:["哈根達斯吃到飽","麻辣湯底夠味","肉品選擇多"],price:"$600-1000",area:"中正區",img:"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=300&fit=crop&q=80",best:"吃到飽CP值高，甜點飲料豐富",worst:"假日人潮多，需現場候位"},
+    {name:"詹記麻辣火鍋",stars:4.4,desc:"精選火鍋店・老牌麻辣鍋",reviews:["鴨血豆腐無限續","麻辣鍋底經典","宵夜好去處"],price:"$600-1000",area:"南港區",img:"https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&h=300&fit=crop&q=80",best:"鴨血豆腐無限續加，麻辣湯底夠味",worst:"排隊等候時間長，深夜人潮多"},
+    {name:"這一鍋",stars:4.2,desc:"精選火鍋店・皇室秘藏鍋物",reviews:["鍋底濃郁有層次","裝潢氣派","適合聚餐約會"],price:"$600-1000",area:"信義區",img:"https://images.unsplash.com/photo-1570275239925-4af0aa93a758?w=300&h=300&fit=crop&q=80",best:"獨門鍋底香氣濃郁，肉品品質佳",worst:"消費中高，假日需預訂"},
+    {name:"海底撈",stars:4.0,desc:"精選火鍋店・川味火鍋",reviews:["服務超級好","撈麵表演精彩","等位有美甲服務"],price:"$600-1000",area:"信義區",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80",best:"服務堪稱業界標竿，湯底選擇多",worst:"排隊時間極長，價格偏貴"},
+    {name:"老四川巴蜀麻辣燙",stars:4.1,desc:"精選火鍋店・重慶麻辣鍋",reviews:["正宗重慶味","花椒香氣足","牛油鍋底過癮"],price:"$600-1000",area:"松山區",img:"https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop&q=80",best:"牛油麻辣鍋底香氣十足，正宗川味",worst:"辣度偏重，不太適合不吃辣的人"},
+    {name:"肉大人",stars:4.3,desc:"精選火鍋店・精品肉鍋",reviews:["肉品等級很高","湯底清爽","小而精緻"],price:"$1000+",area:"大安區",img:"https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&h=300&fit=crop&q=80",best:"精選肉品油花分佈美，湯底鮮甜",worst:"店面小座位少，必須預約"},
+    {name:"錢都日式涮涮鍋",stars:3.7,desc:"精選火鍋店・平價涮涮鍋",reviews:["銅板價火鍋","學生最愛","份量實在"],price:"$100-300",area:"萬華區",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80",best:"價格超親民，白飯飲料吃到飽",worst:"食材品質較為基本"}
   ],
-  '西式':[
-    {name:'Range 餐酒館',stars:4.8,desc:'歐日融合鐵板精肉・8年口碑不墜',reviews:'3000+',price:'$800–1,800',area:'信義區',img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=300&fit=crop&q=80',best:'歐日融合創意十足，調酒用料實在回訪率百分百',worst:'份量偏少吃巧不吃飽，上菜順序有時隨興'},
-    {name:'教父牛排',stars:4.7,desc:'台灣乾式熟成教父・連續多年米其林一星',reviews:'4000+',price:'$2,500–4,000',area:'中山區',img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=300&h=300&fit=crop&q=80',best:'乾式熟成牛排風味濃郁，侍酒師搭配專業',worst:'價位高不適合隨興吃，甜點相較之下遜色'},
+  "西式":[
+    {name:"教父牛排",stars:4.7,desc:"西式餐廳・頂級牛排館",reviews:["台北最好的牛排之一","乾式熟成香氣足","紅酒搭配完美"],price:"$1000+",area:"中山區",img:"https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop&q=80",best:"乾式熟成牛排風味絕佳，氣氛高雅",worst:"消費極高，需提前預約"},
+    {name:"Toasteria Cafe",stars:4.2,desc:"西式餐廳・義式輕食",reviews:["帕尼尼很好吃","環境文青舒適","適合下午茶"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&h=300&fit=crop&q=80",best:"帕尼尼種類多且美味，氣氛悠閒",worst:"座位不多，常需等候"},
+    {name:"MUME",stars:4.6,desc:"西式餐廳・新派歐陸料理",reviews:["米其林一星","擺盤精美","食材運用創新"],price:"$1000+",area:"大安區",img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop&q=80",best:"創意料理令人驚艷，米其林水準",worst:"份量偏少，整體消費高"},
+    {name:"Smith & Wollensky",stars:4.5,desc:"西式餐廳・美式牛排館",reviews:["微風南山景觀絕佳","牛排品質頂級","紐約名店台北分店"],price:"$1000+",area:"信義區",img:"https://images.unsplash.com/photo-1558030006-450675393462?w=300&h=300&fit=crop&q=80",best:"頂級牛排搭配101夜景，氛圍滿分",worst:"人均消費極高"},
+    {name:"RAW",stars:4.7,desc:"西式餐廳・創意fine dining",reviews:["江振誠主廚","台灣食材法式技法","訂位比搶演唱會難"],price:"$1000+",area:"中山區",img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=300&fit=crop&q=80",best:"頂級創意料理，每季菜單驚喜連連",worst:"訂位極度困難，消費昂貴"},
+    {name:"樂子 the Diner",stars:4.0,desc:"西式餐廳・美式早午餐",reviews:["班尼迪克蛋必點","份量超大","假日排隊名店"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop&q=80",best:"美式早午餐份量十足，鬆餅超推",worst:"假日等候超過一小時"},
+    {name:"Trattoria di Primo",stars:4.3,desc:"西式餐廳・義大利餐廳",reviews:["手工義大利麵","窯烤披薩道地","紅白酒選擇豐富"],price:"$600-1000",area:"大安區",img:"https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=300&h=300&fit=crop&q=80",best:"手工義大利麵口感絕佳，披薩香脆",worst:"熱門時段需等位"},
+    {name:"貳樓餐廳",stars:3.9,desc:"西式餐廳・美式家庭料理",reviews:["適合聚餐","餐點選擇多","環境寬敞"],price:"$300-600",area:"中山區",img:"https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=300&h=300&fit=crop&q=80",best:"空間舒適適合多人聚餐，餐點穩定",worst:"口味偏美式，部分菜色普通"},
+    {name:"圈子 Circles",stars:4.1,desc:"西式餐廳・歐式小酒館",reviews:["調酒很厲害","排餐品質好","約會氣氛佳"],price:"$600-1000",area:"松山區",img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=300&fit=crop&q=80",best:"餐酒搭配用心，排餐水準出色",worst:"音樂稍大聲，不適合安靜聊天"}
   ],
-  '熱炒':[
-    {name:'有有1969',stars:4.6,desc:'米其林推薦・遼寧街50年精緻台味熱炒',reviews:'1000+',price:'$300–600',area:'中山區',img:'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&h=300&fit=crop&q=80',best:'滷肉飯冠軍實至名歸，百花油條手路菜驚艷',worst:'鳳梨蝦球美乃滋過甜，豬肝腥味偏重'},
-    {name:'阿才的店',stars:4.5,desc:'師大巷弄30年・文青最愛的深夜食堂熱炒',reviews:'2000+',price:'$200–400',area:'大安區',img:'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=300&h=300&fit=crop&q=80',best:'三杯雞和蒼蠅頭是招牌，便宜大碗學生最愛',worst:'座位擠到不行，夏天室外座位熱到融化'},
+  "熱炒":[
+    {name:"阿才的店",stars:4.0,desc:"台式熱炒・傳統熱炒店",reviews:["熱炒味道道地","啤酒配熱炒絕配","價格實惠"],price:"$100-300",area:"大同區",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80",best:"道地台味熱炒，三杯雞必點",worst:"環境較吵雜，油煙味較重"},
+    {name:"33區熱炒",stars:4.1,desc:"台式熱炒・平價熱炒",reviews:["便宜又大碗","適合三五好友聚餐","出菜速度快"],price:"$100-300",area:"大安區",img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&h=300&fit=crop&q=80",best:"價格平實份量大，聚餐首選",worst:"用餐環境較為簡單"},
+    {name:"快炒之星",stars:3.9,desc:"台式熱炒・海鮮熱炒",reviews:["海鮮新鮮","蒜香蛤蜊好吃","深夜食堂好去處"],price:"$100-300",area:"松山區",img:"https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80",best:"海鮮類熱炒新鮮美味",worst:"晚間時段座位難求"},
+    {name:"熱炒一條街(遼寧街)",stars:4.0,desc:"台式熱炒・經典街邊熱炒",reviews:["遼寧夜市經典","炒螺肉必點","在地老饕最愛"],price:"$100-300",area:"中山區",img:"https://images.unsplash.com/photo-1569058242567-93de6f36f8e6?w=300&h=300&fit=crop&q=80",best:"炒螺肉鮮甜彈牙，夜市氣氛十足",worst:"環境較為簡陋，夏天悶熱"},
+    {name:"川味海鮮熱炒",stars:4.2,desc:"台式熱炒・川味海鮮",reviews:["麻辣口味過癮","蝦子超大隻","老闆很阿莎力"],price:"$100-300",area:"萬華區",img:"https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&h=300&fit=crop&q=80",best:"川味調味獨特，海鮮新鮮大份量",worst:"位置較偏，停車不便"},
+    {name:"阿國海鮮",stars:4.1,desc:"台式熱炒・現撈海鮮",reviews:["魚貨每日新鮮直送","清蒸魚鮮甜","老饕口袋名單"],price:"$300-600",area:"大同區",img:"https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=300&h=300&fit=crop&q=80",best:"海鮮現撈現煮，清蒸手法佳",worst:"價格隨時價波動"},
+    {name:"龍門客棧",stars:3.8,desc:"台式熱炒・復古熱炒店",reviews:["宵夜好去處","價格便宜","啤酒暢飲"],price:"$100-300",area:"松山區",img:"https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=300&h=300&fit=crop&q=80",best:"深夜營業，宵夜聚餐好選擇",worst:"菜色較為基本，油膩感偏重"},
+    {name:"享鮮熱炒",stars:4.0,desc:"台式熱炒・精緻熱炒",reviews:["熱炒也能有質感","空心菜超好吃","環境比一般熱炒好"],price:"$100-300",area:"內湖區",img:"https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=300&h=300&fit=crop&q=80",best:"環境乾淨整潔，菜色有水準",worst:"價格略高於一般熱炒店"}
   ],
-  '麵食':[
-    {name:'湯神和牛牛肉麵',stars:4.8,desc:'M9和牛骨滴牛精湯頭・天然無添加',reviews:'1000+',price:'$200–350',area:'大安區',img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop&q=80',best:'牛骨湯第一口就驚艷，香濃卻清爽不膩口',worst:'和牛肉片預先烤過無法選熟度，像火鍋肉片'},
-    {name:'林東芳牛肉麵',stars:4.5,desc:'台北牛肉麵傳奇・清燉湯頭的極致代表',reviews:'8000+',price:'$200–300',area:'中山區',img:'https://images.unsplash.com/photo-1547592180-85f173990554?w=300&h=300&fit=crop&q=80',best:'清燉湯頭純淨鮮美，牛肉軟嫩帶筋超過癮',worst:'搬新址後價格漲不少，環境依然很陽春'},
+  "麵食":[
+    {name:"永康牛肉麵",stars:4.4,desc:"特色麵食・紅燒牛肉麵",reviews:["觀光客必訪","湯頭濃郁","牛肉塊大又嫩"],price:"$100-300",area:"大安區",img:"https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&h=300&fit=crop&q=80",best:"紅燒湯頭濃郁，牛肉軟嫩入味",worst:"觀光客多，用餐時段大排長龍"},
+    {name:"林東芳牛肉麵",stars:4.5,desc:"特色麵食・清燉牛肉麵",reviews:["在地人推薦","清燉湯頭鮮美","半筋半肉必點"],price:"$100-300",area:"中山區",img:"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=300&h=300&fit=crop&q=80",best:"清燉湯頭清甜回甘，牛筋Q彈",worst:"搬新址後價格微調"},
+    {name:"老王記牛肉麵",stars:4.2,desc:"特色麵食・川味牛肉麵",reviews:["老字號麵店","辣味湯頭過癮","小菜也不錯"],price:"$100-300",area:"中正區",img:"https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=300&fit=crop&q=80",best:"川味湯頭麻辣過癮，麵條Q彈",worst:"店面老舊，停車不便"},
+    {name:"劉山東牛肉麵",stars:4.3,desc:"特色麵食・山東手擀麵",reviews:["手擀麵條Q彈有勁","清燉牛肉麵清爽","在地人排隊名店"],price:"$100-300",area:"中正區",img:"https://images.unsplash.com/photo-1563245372-f21724e3856d?w=300&h=300&fit=crop&q=80",best:"手擀麵條口感一流，湯頭清爽",worst:"中午排隊很長，座位有限"},
+    {name:"阜杭豆漿",stars:4.4,desc:"特色麵食・傳統早餐",reviews:["蛋餅酥脆必吃","鹹豆漿經典","清晨排隊才吃得到"],price:"$100-300",area:"中正區",img:"https://images.unsplash.com/photo-1569058242567-93de6f36f8e6?w=300&h=300&fit=crop&q=80",best:"厚燒餅夾蛋酥脆可口，排隊值得",worst:"早上五點半就要排隊"},
+    {name:"老牌張豬腳飯",stars:4.1,desc:"特色麵食・豬腳麵線",reviews:["豬腳滷到入味","麵線Q彈","老台北味道"],price:"$100-300",area:"萬華區",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop&q=80",best:"豬腳滷得軟爛入味，膠質豐富",worst:"只有白天營業，下午就賣完"},
+    {name:"金華街溫州大餛飩",stars:4.0,desc:"特色麵食・餛飩湯麵",reviews:["餛飩皮薄餡大","麻醬麵香濃","份量實在"],price:"$100-300",area:"大安區",img:"https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&h=300&fit=crop&q=80",best:"大餛飩皮薄肉鮮，麻醬麵經典",worst:"用餐環境較簡單"},
+    {name:"鼎泰豐",stars:4.5,desc:"特色麵食・小籠包名店",reviews:["世界知名小籠包","皮薄湯多","服務一流"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1570275239925-4af0aa93a758?w=300&h=300&fit=crop&q=80",best:"小籠包18摺工藝，湯汁鮮美",worst:"觀光客多，等候時間長"},
+    {name:"老麵店",stars:3.9,desc:"特色麵食・眷村麵食",reviews:["眷村味牛肉捲餅","酸辣湯好喝","便宜大碗"],price:"$100-300",area:"中正區",img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=300&h=300&fit=crop&q=80",best:"牛肉捲餅皮酥餡香，眷村古早味",worst:"店面狹小，用餐空間擁擠"}
   ],
-  '東南亞':[
-    {name:'NARA Thai Cuisine',stars:4.5,desc:'連續12年泰國最佳泰菜・台灣米其林推薦',reviews:'2000+',price:'$500–800',area:'大安區',img:'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=300&h=300&fit=crop&q=80',best:'菜單任點都好吃，酸辣口味道地正宗',worst:'百貨連鎖價格偏高份量小，假日要等很久'},
-    {name:'依鼎越式美食',stars:4.7,desc:'信義區隱藏版越南小吃・平價滿分河粉',reviews:'2000+',price:'$100–200',area:'信義區',img:'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=300&h=300&fit=crop&q=80',best:'河粉湯頭鮮美到以為到了越南，CP值無敵',worst:'座位狹小環境簡陋，尖峰排隊時間長'},
+  "東南亞":[
+    {name:"瓦城泰統",stars:4.1,desc:"東南亞風味・泰式料理連鎖",reviews:["泰式料理老品牌","月亮蝦餅必點","酸辣湯開胃"],price:"$300-600",area:"信義區",img:"https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=300&h=300&fit=crop&q=80",best:"月亮蝦餅經典美味，口味穩定",worst:"連鎖店口味偏標準化"},
+    {name:"蘭那泰式餐廳",stars:4.3,desc:"東南亞風味・正宗泰北料理",reviews:["泰北風味道地","綠咖哩香濃","環境有異國風情"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&h=300&fit=crop&q=80",best:"泰北料理風味正宗，香料層次豐富",worst:"部分菜色辣度偏高"},
+    {name:"池先生 Mister Chi",stars:4.2,desc:"東南亞風味・馬來西亞料理",reviews:["叻沙麵濃郁好喝","海南雞飯嫩滑","異國風味十足"],price:"$300-600",area:"大安區",img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop&q=80",best:"叻沙麵湯頭濃郁，海南雞飯道地",worst:"店面不大，中午常客滿"},
+    {name:"Baan Taipei",stars:4.4,desc:"東南亞風味・精緻泰式料理",reviews:["米其林推薦泰菜","擺盤精美","創意泰式fusion"],price:"$600-1000",area:"大安區",img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=300&fit=crop&q=80",best:"精緻泰菜擺盤美味兼具，值得品嚐",worst:"價位中高，份量偏小"},
+    {name:"泰美泰國原始料理",stars:4.1,desc:"東南亞風味・街頭泰菜",reviews:["打拋豬道地","泰式奶茶好喝","平價泰國味"],price:"$100-300",area:"中山區",img:"https://images.unsplash.com/photo-1569058242567-93de6f36f8e6?w=300&h=300&fit=crop&q=80",best:"打拋豬飯味道正宗，價格平實",worst:"座位有限，用餐空間小"},
+    {name:"長鼻子泰國餐廳",stars:4.0,desc:"東南亞風味・家庭泰菜",reviews:["綠咖哩超濃郁","椒麻雞酥脆","在地人私藏名單"],price:"$300-600",area:"松山區",img:"https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=300&h=300&fit=crop&q=80",best:"綠咖哩香濃入味，椒麻雞外酥內嫩",worst:"店面不顯眼，第一次不好找"},
+    {name:"馬來一號",stars:4.2,desc:"東南亞風味・大馬料理",reviews:["肉骨茶超正宗","炒粿條夠味","馬來西亞老闆開的"],price:"$300-600",area:"中正區",img:"https://images.unsplash.com/photo-1590301157890-4810ed352733?w=300&h=300&fit=crop&q=80",best:"肉骨茶藥材香氣濃郁，正宗大馬味",worst:"店面較小，人多需等候"},
+    {name:"越王 Pho King",stars:3.9,desc:"東南亞風味・越南料理",reviews:["河粉湯頭清爽","春捲皮Q有彈性","越南咖啡必喝"],price:"$100-300",area:"大安區",img:"https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=300&h=300&fit=crop&q=80",best:"牛肉河粉湯頭清甜，春捲新鮮爽口",worst:"口味偏台灣化，不夠道地"}
   ],
 };
 let RESTAURANTS = FALLBACK_RESTAURANTS;
@@ -2302,8 +2358,10 @@ function renderRecCards(cat, tier) {
         </div>
         <div class="rec-nav-row">
           <a class="rec-nav-btn" href="${navUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">導航</a>
-          <button class="rec-pref-btn${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}">收藏</button>
-          <button class="rec-pref-btn${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}">排除</button>
+          <div class="rec-pref-icons">
+            <button class="rec-pref-icon${favActive}" data-action="fav" data-name="${r.name}" data-cat="${cat}" title="收藏"><svg viewBox="0 0 24 24" fill="${favActive ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+            <button class="rec-pref-icon${banActive}" data-action="ban" data-name="${r.name}" data-cat="${cat}" title="排除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
+          </div>
         </div>
       </div>`;
     recsList.appendChild(card);
@@ -2350,7 +2408,7 @@ recsOverlay.onclick = e => { if (e.target === recsOverlay) hideRecs(); };
 
 // Preference button clicks on rec cards (event delegation)
 recsList.addEventListener('click', e => {
-  const btn = e.target.closest('.rec-pref-btn');
+  const btn = e.target.closest('.rec-pref-icon');
   if (!btn) return;
   e.stopPropagation();
   const { action, name, cat } = btn.dataset;
