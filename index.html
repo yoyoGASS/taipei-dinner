@@ -932,6 +932,7 @@ header,.cats,.wheel-wrap,.spin-area{transform:translateY(12px)}
       <div class="center-main" id="centerMain">今晚吃什麼</div>
       <div class="center-sub" id="centerSub"></div>
       <a class="center-map-link" id="centerMapLink" target="_blank" rel="noopener"></a>
+      <button class="share-btn center-share" id="centerShare">📤 分享</button>
     </div>
   </div>
   <div class="spin-area">
@@ -1392,6 +1393,7 @@ function spin() {
   centerMapLink.textContent = '';
   centerMain.textContent = '';
   centerSub.textContent = '';
+  document.getElementById('centerShare').classList.remove('show');
   winnerIdx = -1;
 
   // Spinning center animation
@@ -1618,6 +1620,12 @@ function revealResult(item) {
   }, 800);
   lastWinnerCat = item.cat;
   addHistory(item.name, item.cat);
+  // Show share button
+  setTimeout(() => {
+    const shareBtn = document.getElementById('centerShare');
+    shareBtn.classList.add('show');
+    shareBtn.onclick = e => { e.stopPropagation(); shareWheelResult(item); };
+  }, 1000);
   // Show restaurant recommendations after 1.5s
   setTimeout(() => showRecs(item.cat), 1500);
   setTimeout(() => {
@@ -2772,6 +2780,7 @@ function renderFortuneCard(step, f) {
       <div class="fortune-rec-reason">${f.reason}</div>
     </div>
     <div class="fortune-tip">— ${f.tip}</div>
+    <div class="fortune-share"><button class="share-btn" id="fShare">📤 分享</button></div>
     <div class="fortune-actions">
       ${step < 2
         ? `<button class="fortune-act fortune-act-go" id="fNext">下一籤</button>
@@ -2784,6 +2793,7 @@ function renderFortuneCard(step, f) {
 
   // Bind
   document.getElementById('fClose').onclick = () => fortuneOverlay.classList.remove('open');
+  document.getElementById('fShare').onclick = () => shareFortune(f);
 
   if (step < 2) {
     document.getElementById('fNext').onclick = () => {
@@ -3148,7 +3158,8 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
     page_load:'開啟頁面', spin:'轉盤抽選', fortune_draw:'抽食籤',
     fortune_redraw:'再抽一次', fortune_bonus:'使用額外機會',
     filter:'篩選價位', recs_open:'查看推薦餐廳', history_click:'點擊歷史紀錄',
-    center_click:'點擊中心結果', entry_dismiss:'進入主畫面'
+    center_click:'點擊中心結果', entry_dismiss:'進入主畫面',
+    share_wheel:'分享轉盤結果', share_fortune:'分享食籤'
   };
   function _aName(a) { return _actionNames[a] || a; }
 
@@ -3495,6 +3506,134 @@ document.querySelector('.entry').addEventListener('click', () => _track('entry_d
   });
 })();
 
+/* ══════════════════════════════════════
+   Share Functions — Web Share API + Clipboard + URL
+   ══════════════════════════════════════ */
+const shareToast = document.getElementById('shareToast');
+let _toastTimer = null;
+
+function showShareToast(msg) {
+  if (_toastTimer) clearTimeout(_toastTimer);
+  shareToast.textContent = msg;
+  shareToast.classList.add('show');
+  _toastTimer = setTimeout(() => shareToast.classList.remove('show'), 2000);
+}
+
+function findRestaurantDetails(name) {
+  const cats = Object.keys(RESTAURANTS);
+  for (let i = 0; i < cats.length; i++) {
+    const list = RESTAURANTS[cats[i]];
+    if (!list) continue;
+    for (let j = 0; j < list.length; j++) {
+      if (list[j].name === name) return { ...list[j], cat: cats[i] };
+    }
+  }
+  return null;
+}
+
+function buildShareUrl(type, data) {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  return location.origin + location.pathname + '?share=' + type + '&d=' + encoded;
+}
+
+async function doShare(text, url) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '台北晚餐', text, url });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // user cancelled
+    }
+  }
+  // Clipboard fallback
+  const full = url ? text + '\n' + url : text;
+  try {
+    await navigator.clipboard.writeText(full);
+    showShareToast('已複製到剪貼簿！');
+  } catch {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = full; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showShareToast('已複製到剪貼簿！');
+  }
+}
+
+function shareWheelResult(item) {
+  const details = findRestaurantDetails(item.name);
+  const area = details ? details.area : '';
+  const stars = details ? details.stars : '';
+  const cat = item.cat || (details ? details.cat : '');
+  const parts = [`今晚吃 ${item.name}！`];
+  if (cat) parts[0] += ` ${cat}`;
+  if (area) parts[0] += ` · ${area}`;
+  if (stars) parts[0] += ` · ⭐${stars}`;
+  parts[0] += ' — 台北晚餐幫我選的 🎡';
+  const url = buildShareUrl('wheel', { cat, name: item.name, stars: stars || '' });
+  doShare(parts[0], url);
+  if (typeof _track === 'function') _track('share_wheel', { name: item.name });
+}
+
+function shareFortune(f) {
+  const text = `🔮 我的料理運勢：${f.poem} — 天命推薦：${f.cat} — 台北晚餐`;
+  const url = buildShareUrl('fortune', { cat: f.cat, poem: f.poem, luck: f.luck });
+  doShare(text, url);
+  if (typeof _track === 'function') _track('share_fortune', { cat: f.cat });
+}
+
+/* ── URL Share: parse on load ── */
+let _shareData = null;
+function parseShareUrl() {
+  const params = new URLSearchParams(location.search);
+  const type = params.get('share');
+  const encoded = params.get('d');
+  if (!type || !encoded) return null;
+  try {
+    const json = decodeURIComponent(escape(atob(encoded)));
+    const data = JSON.parse(json);
+    data._type = type;
+    return data;
+  } catch { return null; }
+}
+
+function showShareOverlay(data) {
+  const overlay = document.getElementById('shareOverlay');
+  const nameEl = document.getElementById('shareOverlayName');
+  const subEl = document.getElementById('shareOverlaySub');
+  if (data._type === 'wheel') {
+    nameEl.textContent = data.name || '';
+    const parts = [];
+    if (data.cat) parts.push(data.cat);
+    if (data.stars) parts.push('⭐' + data.stars);
+    subEl.textContent = parts.join(' · ');
+  } else if (data._type === 'fortune') {
+    nameEl.textContent = data.cat || '';
+    subEl.textContent = data.poem || data.luck || '';
+  }
+  overlay.classList.add('open');
+  _shareData = data;
+}
+
+function dismissShareOverlay() {
+  document.getElementById('shareOverlay').classList.remove('open');
+  // Clean URL
+  if (history.replaceState) {
+    history.replaceState(null, '', location.pathname);
+  }
+  // Auto-select category if available
+  if (_shareData && _shareData.cat) {
+    const catBtns = document.querySelectorAll('.cat');
+    catBtns.forEach(btn => {
+      if (btn.textContent.trim() === _shareData.cat) {
+        btn.click();
+      }
+    });
+  }
+  _shareData = null;
+}
+
 document.fonts.ready.then(() => {
   renderCats();
   setupCanvas();
@@ -3508,6 +3647,13 @@ document.fonts.ready.then(() => {
   fetchWeather();
   // Request geolocation for distance display
   initGeolocation();
+  // Check for share URL
+  const shareData = parseShareUrl();
+  if (shareData) {
+    document.getElementById('entry').addEventListener('click', () => {
+      setTimeout(() => showShareOverlay(shareData), 1300);
+    }, { once: true });
+  }
 });
 </script>
 </body>
